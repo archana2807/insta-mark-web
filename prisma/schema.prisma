@@ -1,0 +1,334 @@
+// Insta Mark: database schema (PostgreSQL, Prisma 6)
+// Conventions: tables snake_case plural (@@map), columns snake_case (@map),
+// ids = cuid strings; editable tables have created_at + updated_at.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // Neon pooled connection (app runtime)
+  directUrl = env("DIRECT_URL") // Neon direct connection (migrations)
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum AdminRole {
+  ADMIN // full access incl. users & settings
+  EDITOR // content + enquiries, no users/settings
+}
+
+enum CategoryGroup {
+  ARCHITECTURAL // "Architectural Signage"
+  ROAD_SAFETY // "Road Safety Solutions"
+}
+
+enum ImageType {
+  CATALOGUE // product profile images from the catalogue
+  EXECUTED // real photos from executed sites
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  WON
+  LOST
+  SPAM
+}
+
+// ─────────────────────────── Admin & audit ───────────────────────────
+
+model AdminUser {
+  id               String    @id @default(cuid())
+  name             String    @db.VarChar(100)
+  email            String    @unique @db.VarChar(255)
+  passwordHash     String    @map("password_hash")
+  role             AdminRole @default(EDITOR)
+  isActive         Boolean   @default(true) @map("is_active")
+  failedLoginCount Int       @default(0) @map("failed_login_count")
+  lockedUntil      DateTime? @map("locked_until")
+  lastLoginAt      DateTime? @map("last_login_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  assignedEnquiries Enquiry[]     @relation("EnquiryAssignee")
+  enquiryNotes      EnquiryNote[]
+  auditLogs         AuditLog[]
+
+  @@map("admin_users")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?  @map("actor_id")
+  action    String   @db.VarChar(50) // e.g. CREATE, UPDATE, DELETE, LOGIN
+  entity    String   @db.VarChar(50) // e.g. Category, Project, Enquiry
+  entityId  String?  @map("entity_id")
+  changes   Json? // { field: [old, new] }
+  createdAt DateTime @default(now()) @map("created_at")
+
+  actor AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ───────────────────────────── Media ─────────────────────────────
+
+/// Single source of truth for every uploaded image (stored on Cloudinary).
+model MediaAsset {
+  id        String   @id @default(cuid())
+  publicId  String   @unique @map("public_id") // Cloudinary public_id
+  url       String // secure_url
+  width     Int
+  height    Int
+  format    String   @db.VarChar(10)
+  bytes     Int
+  alt       String   @db.VarChar(255) // required for SEO & a11y
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  categoryHeroes Category[]      @relation("CategoryHero")
+  categoryImages CategoryImage[]
+  projectCovers  Project[]       @relation("ProjectCover")
+  projectImages  ProjectImage[]
+  clientLogos    ClientLogo[]
+
+  @@map("media_assets")
+}
+
+// ──────────────────────────── Catalogue ────────────────────────────
+
+model Category {
+  id               String        @id @default(cuid())
+  slug             String        @unique @db.VarChar(100)
+  name             String        @db.VarChar(100)
+  shortDescription String        @map("short_description") @db.VarChar(300) // card text on home grid
+  group            CategoryGroup @default(ARCHITECTURAL) @map("category_group") // mega menu column
+  icon             String?       @db.VarChar(50) // bootstrap-icons name, e.g. "fire"
+  overview         String        @db.Text
+  features         Json          @default("[]") // string[]: "Key Features"
+  applications     String        @db.Text
+  heroImageId      String?       @map("hero_image_id")
+  sortOrder        Int           @default(0) @map("sort_order")
+  isActive         Boolean       @default(true) @map("is_active")
+  seoTitle         String?       @map("seo_title") @db.VarChar(70)
+  seoDescription   String?       @map("seo_description") @db.VarChar(160)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  heroImage MediaAsset?       @relation("CategoryHero", fields: [heroImageId], references: [id], onDelete: SetNull)
+  images    CategoryImage[]
+  projects  ProjectCategory[]
+  faqs      Faq[]
+  enquiries Enquiry[]
+
+  @@index([isActive, sortOrder])
+  @@map("categories")
+}
+
+model CategoryImage {
+  id         String    @id @default(cuid())
+  categoryId String    @map("category_id")
+  assetId    String    @map("asset_id")
+  type       ImageType
+  caption    String?   @db.VarChar(200)
+  sortOrder  Int       @default(0) @map("sort_order")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  category Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  asset    MediaAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@unique([categoryId, assetId])
+  @@index([categoryId, type, sortOrder])
+  @@map("category_images")
+}
+
+model Industry {
+  id          String   @id @default(cuid())
+  slug        String   @unique @db.VarChar(100)
+  name        String   @db.VarChar(100)
+  icon        String?  @db.VarChar(50) // bootstrap-icons name, e.g. "hospital"
+  description String?  @db.VarChar(300)
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  projects Project[]
+
+  @@index([isActive, sortOrder])
+  @@map("industries")
+}
+
+// ──────────────────────────── Portfolio ────────────────────────────
+
+model Project {
+  id           String   @id @default(cuid())
+  slug         String   @unique @db.VarChar(150)
+  title        String   @db.VarChar(150)
+  clientName   String?  @map("client_name") @db.VarChar(150)
+  city         String?  @db.VarChar(100)
+  state        String?  @db.VarChar(100)
+  year         Int?
+  description  String?  @db.Text
+  industryId   String?  @map("industry_id")
+  coverImageId String?  @map("cover_image_id")
+  isFeatured   Boolean  @default(false) @map("is_featured")
+  isActive     Boolean  @default(true) @map("is_active")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  industry   Industry?         @relation(fields: [industryId], references: [id], onDelete: SetNull)
+  coverImage MediaAsset?       @relation("ProjectCover", fields: [coverImageId], references: [id], onDelete: SetNull)
+  images     ProjectImage[]
+  categories ProjectCategory[]
+
+  @@index([isActive, isFeatured, sortOrder])
+  @@index([city])
+  @@index([industryId])
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String   @map("project_id")
+  assetId   String   @map("asset_id")
+  caption   String?  @db.VarChar(200)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  project Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset   MediaAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@unique([projectId, assetId])
+  @@index([projectId, sortOrder])
+  @@map("project_images")
+}
+
+/// Many-to-many: one project can use several product categories.
+model ProjectCategory {
+  projectId  String   @map("project_id")
+  categoryId String   @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, categoryId])
+  @@index([categoryId])
+  @@map("project_categories")
+}
+
+model ClientLogo {
+  id         String   @id @default(cuid())
+  name       String   @db.VarChar(150)
+  websiteUrl String?  @map("website_url")
+  logoId     String   @map("logo_id")
+  sortOrder  Int      @default(0) @map("sort_order")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  logo MediaAsset @relation(fields: [logoId], references: [id], onDelete: Restrict)
+
+  @@index([isActive, sortOrder])
+  @@map("client_logos")
+}
+
+model Faq {
+  id         String   @id @default(cuid())
+  question   String   @db.VarChar(300)
+  answer     String   @db.Text
+  categoryId String?  @map("category_id") // null = global FAQ
+  showOnHome Boolean  @default(false) @map("show_on_home")
+  sortOrder  Int      @default(0) @map("sort_order")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, isActive, sortOrder])
+  @@map("faqs")
+}
+
+// ──────────────────────────── Leads ────────────────────────────
+
+model Enquiry {
+  id              String        @id @default(cuid())
+  name            String        @db.VarChar(100)
+  company         String?       @db.VarChar(150)
+  email           String        @db.VarChar(255)
+  phone           String        @db.VarChar(20) // stored as E.164, e.g. +919876543210
+  projectLocation String?       @map("project_location") @db.VarChar(150)
+  requirement     String?       @db.VarChar(150)
+  message         String?       @db.Text
+  categoryId      String?       @map("category_id")
+  status          EnquiryStatus @default(NEW)
+  assignedToId    String?       @map("assigned_to_id")
+  // Attribution
+  sourcePage      String?       @map("source_page") @db.VarChar(255)
+  utmSource       String?       @map("utm_source") @db.VarChar(100)
+  utmMedium       String?       @map("utm_medium") @db.VarChar(100)
+  utmCampaign     String?       @map("utm_campaign") @db.VarChar(100)
+  // Anti-spam / ops (no raw IP stored: privacy)
+  ipHash          String?       @map("ip_hash") @db.VarChar(64)
+  userAgent       String?       @map("user_agent") @db.VarChar(255)
+  notifiedAt      DateTime?     @map("notified_at") // sales email sent
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  category   Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  assignedTo AdminUser?    @relation("EnquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  notes      EnquiryNote[]
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([categoryId])
+  @@index([email])
+  @@index([assignedToId])
+  @@map("enquiries")
+}
+
+model EnquiryNote {
+  id        String   @id @default(cuid())
+  enquiryId String   @map("enquiry_id")
+  authorId  String?  @map("author_id")
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  enquiry Enquiry    @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author  AdminUser? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([enquiryId, createdAt])
+  @@map("enquiry_notes")
+}
+
+// ──────────────────────────── Ops ────────────────────────────
+
+/// Key-value site settings: phone, whatsapp, email, address, socials.
+model SiteSetting {
+  key       String   @id @db.VarChar(100)
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+/// Fixed-window rate limiting without Redis (enquiry form, admin login).
+model RateLimit {
+  key         String   @db.VarChar(150) // e.g. "enquiry:<ipHash>", "login:<email>"
+  windowStart DateTime @map("window_start")
+  count       Int      @default(1)
+
+  @@id([key, windowStart])
+  @@index([windowStart])
+  @@map("rate_limits")
+}

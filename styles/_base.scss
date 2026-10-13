@@ -1,0 +1,110 @@
+// Base typography & helpers (theme: big tight headings, airy body text).
+
+html {
+  scroll-padding-top: 96px;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+.h1 {
+  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5rem);
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+h2,
+.h2 {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 3.4rem);
+  letter-spacing: -0.035em;
+}
+
+h3,
+.h3 {
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem);
+  letter-spacing: -0.025em;
+}
+
+h4,
+.h4 {
+  font-size: 1.35rem;
+  letter-spacing: -0.015em;
+}
+
+h5,
+.h5 {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.font-alt {
+  font-family: $headings-font-family;
+}
+
+.text-ink {
+  color: $ink !important;
+}
+
+.lead-text {
+  font-size: 1.075rem;
+  max-width: 34rem;
+}
+
+.section {
+  padding-block: clamp(4.5rem, 3rem + 6vw, 8rem);
+}
+
+.section-sm {
+  padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+}
+
+.bg-surface {
+  background: $surface;
+}
+
+// Visible focus for keyboard users everywhere.
+:focus-visible {
+  outline: 2px solid $brand-teal;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 2000;
+  padding: 0.75rem 1.25rem;
+  background: $ink;
+  color: #fff;
+
+  &:focus {
+    top: 1rem;
+    color: #fff;
+  }
+}
+
+// Fade-up reveal (see components/ui/Reveal.jsx). Content is visible by
+// default; JS only marks below-the-fold elements as pending, so nothing is
+// hidden without JS and nothing above the fold flickers.
+.reveal {
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+
+  &.is-pending {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-pending {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

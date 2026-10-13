@@ -1,0 +1,102 @@
+// Design tokens — Crafto-inspired (Option A), adapted for Insta Mark.
+// All Bootstrap overrides live here and are loaded before Bootstrap.
+
+// ── Brand ───────────────────────────────────────────────
+// TODO(client): replace accent colours once the high-res logo is shared.
+// Darker than the theme's #e99022 / teal so text and buttons pass WCAG AA.
+$brand-orange: #b55f0b;
+$brand-teal: #177375;
+$brand-gradient: linear-gradient(90deg, $brand-orange 0%, $brand-teal 100%);
+
+$ink: #1d1d1d; // headings, dark buttons
+$charcoal: #232323; // footer
+$body-text: #5f5e5e; // 6.4:1 on white (theme #7b7a7a fails AA)
+$line: #e4e4e4;
+$surface: #f7f7f7;
+$muted: #6e6d6d; // secondary labels — 5.2:1 on white (WCAG AA)
+
+// ── Bootstrap overrides ─────────────────────────────────
+$primary: $brand-teal;
+$secondary: $body-text;
+$dark: $ink;
+$light: $surface;
+
+$body-bg: #ffffff;
+$body-color: $body-text;
+$headings-color: $ink;
+$link-color: $ink;
+$link-hover-color: $brand-teal;
+$link-decoration: none;
+
+$font-family-sans-serif:
+  var(--font-inter),
+  system-ui,
+  -apple-system,
+  "Segoe UI",
+  sans-serif;
+$headings-font-family: var(--font-grotesk), var(--font-inter), sans-serif;
+$headings-font-weight: 600;
+$headings-line-height: 1.1;
+$font-size-base: 1rem;
+$line-height-base: 1.75;
+
+$border-color: $line;
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
+$border-radius-xl: 0;
+$border-radius-pill: 50rem;
+
+$btn-font-family: var(--font-grotesk), sans-serif;
+$btn-font-weight: 500;
+$btn-padding-y: 0.85rem;
+$btn-padding-x: 1.75rem;
+$btn-padding-y-lg: 1.05rem;
+$btn-padding-x-lg: 2.25rem;
+$btn-font-size-lg: 1.05rem;
+
+$input-padding-y: 0.85rem;
+$input-padding-x: 1.1rem;
+$input-border-color: #d9d9d9;
+$input-focus-border-color: $ink;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba($brand-teal, 0.15);
+$input-placeholder-color: #757575; // 4.6:1
+
+$navbar-nav-link-padding-x: 1.1rem;
+
+$accordion-border-width: 0;
+$accordion-button-active-bg: transparent;
+$accordion-button-active-color: $ink;
+$accordion-button-focus-box-shadow: none;
+$accordion-body-padding-x: 0;
+$accordion-button-padding-x: 0;
+
+$enable-shadows: false;
+$enable-smooth-scroll: true;
+
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 4.5,
+  7: $spacer * 6,
+  8: $spacer * 8,
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1240px,
+);
+
+// Breadcrumb current page must meet AA contrast.
+$breadcrumb-active-color: $muted;
+
+// Form hints (admin) must meet AA contrast.
+$form-text-color: $muted;

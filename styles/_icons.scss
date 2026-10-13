@@ -1,0 +1,27 @@
+// SVG icons for CSS pseudo-elements (replaces the bootstrap-icons font).
+@import "icons.generated";
+
+// Inline <svg class="bi"> from components/ui/Icon & ClientIcon.
+.bi {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
+/// Draws icon `$name` as a mask filled with the current text colour.
+@mixin css-icon($name, $size: 1em) {
+  content: "";
+  display: inline-block;
+  width: $size;
+  height: $size;
+  background-color: currentColor;
+  -webkit-mask: map-get($icons, $name) center / contain no-repeat;
+  mask: map-get($icons, $name) center / contain no-repeat;
+}
+
+@mixin css-icon-swap($name) {
+  -webkit-mask-image: map-get($icons, $name);
+  mask-image: map-get($icons, $name);
+}

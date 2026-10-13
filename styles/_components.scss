@@ -1,0 +1,407 @@
+// Reusable UI pieces modelled on the Crafto branding-agency demo.
+
+// ── Eyebrow: short line + gradient uppercase label ─────
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+  font-family: $headings-font-family;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: $brand-orange;
+  }
+
+  span {
+    background: $brand-gradient;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  &.eyebrow-light::before {
+    background: rgba(#fff, 0.6);
+  }
+
+  &.eyebrow-light span {
+    background: none;
+    color: rgba(#fff, 0.85);
+  }
+}
+
+// ── Buttons ────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  letter-spacing: -0.01em;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+
+  .bi {
+    transition: transform 0.25s ease;
+  }
+
+  &:hover .bi-arrow-right,
+  &:hover .bi-arrow-up-right {
+    transform: translateX(3px);
+  }
+}
+
+.btn-dark {
+  box-shadow: 0 10px 25px rgba($ink, 0.12);
+
+  &:hover {
+    background: #000;
+    box-shadow: 0 14px 30px rgba($ink, 0.2);
+  }
+}
+
+.btn-outline-ink {
+  @include button-variant(
+    transparent,
+    #d4d4d4,
+    $ink,
+    $hover-background: $ink,
+    $hover-border: $ink,
+    $hover-color: #fff
+  );
+}
+
+.btn-gradient {
+  border: 0;
+  color: #fff;
+  background: $brand-gradient;
+  background-size: 160% 100%;
+  background-position: 0% 0%;
+
+  &:hover,
+  &:focus-visible {
+    color: #fff;
+    background-position: 100% 0%;
+  }
+}
+
+.btn-white {
+  @include button-variant(
+    #fff,
+    #fff,
+    $ink,
+    $hover-background: transparent,
+    $hover-border: #fff,
+    $hover-color: #fff
+  );
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: $headings-font-family;
+  font-weight: 600;
+  color: $ink;
+
+  .bi {
+    transition: transform 0.25s ease;
+  }
+
+  &:hover .bi {
+    transform: translateX(4px);
+  }
+}
+
+// ── Section heading block ──────────────────────────────
+.section-heading {
+  max-width: 44rem;
+
+  h2 {
+    margin-bottom: 1.25rem;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  &.text-center {
+    margin-inline: auto;
+  }
+}
+
+// ── Category card (home grid) ──────────────────────────
+.category-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  background: #fff;
+
+  &__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: $surface;
+
+    img {
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+  }
+
+  &__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 3.5rem;
+    color: $ink;
+    background: radial-gradient(circle at 30% 20%, rgba($brand-orange, 0.12), transparent 55%),
+      radial-gradient(circle at 80% 90%, rgba($brand-teal, 0.14), transparent 55%), $surface;
+  }
+
+  &__number {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0.55rem 0.9rem;
+    font-family: $headings-font-family;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $ink;
+    background: #fff;
+  }
+
+  &__body {
+    padding-top: 1.4rem;
+  }
+
+  &__title {
+    margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+  }
+
+  &__text {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 1rem;
+  }
+
+  &:hover &__media img {
+    transform: scale(1.06);
+  }
+
+  &:hover &__title {
+    color: $brand-teal;
+  }
+}
+
+// ── Gallery (masonry via CSS columns) ──────────────────
+.gallery-grid {
+  column-count: 3;
+  column-gap: 1.25rem;
+
+  @include media-breakpoint-down(lg) {
+    column-count: 2;
+  }
+
+  @include media-breakpoint-down(sm) {
+    column-count: 1;
+  }
+
+  > li {
+    break-inside: avoid;
+  }
+}
+
+.gallery-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-bottom: 1.25rem;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  break-inside: avoid;
+  background: $surface;
+  cursor: zoom-in;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.7s ease;
+  }
+
+  // White square (::after) with the expand icon (::before) on top of it.
+  &::after,
+  &::before {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.3s ease;
+  }
+
+  &::before {
+    @include css-icon("arrows-angle-expand", 1rem);
+    right: calc(0.9rem + 0.8rem);
+    bottom: calc(0.9rem + 0.8rem);
+    z-index: 1;
+    color: $ink;
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    opacity: 1;
+    transform: none;
+  }
+
+  &::after {
+    content: "";
+    right: 0.9rem;
+    bottom: 0.9rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    background: #fff;
+  }
+
+  &:hover img,
+  &:focus-visible img {
+    transform: scale(1.04);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ── Feature list (check rows) ──────────────────────────
+.check-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding: 0.85rem 0 0.85rem 2.1rem;
+    border-bottom: 1px solid $line;
+    font-family: $headings-font-family;
+    font-weight: 500;
+    color: $ink;
+
+    &::before {
+      @include css-icon("check2", 1.15rem);
+      position: absolute;
+      left: 0;
+      top: calc(0.85rem + 0.3em);
+      color: $brand-teal;
+    }
+  }
+}
+
+// ── Pill tags (applications) ───────────────────────────
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    padding: 0.45rem 0.95rem;
+    border: 1px solid $line;
+    font-size: 0.92rem;
+    color: $ink;
+    background: #fff;
+  }
+}
+
+// ── Accordion (FAQ) — theme style: lines, +/- icon ────
+.faq-accordion {
+  .accordion-item {
+    border-bottom: 1px solid $ink;
+    background: transparent;
+
+    &:first-child {
+      border-top: 0;
+    }
+  }
+
+  .accordion-button {
+    padding-block: 1.35rem;
+    font-family: $headings-font-family;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: $ink;
+    background: transparent;
+    box-shadow: none;
+
+    &::after {
+      @include css-icon("plus-lg", 1rem);
+      background-image: none;
+      transform: none;
+    }
+
+    &:not(.collapsed)::after {
+      @include css-icon-swap("dash-lg");
+      transform: none;
+    }
+  }
+
+  .accordion-body {
+    padding-top: 0;
+    padding-bottom: 1.5rem;
+    padding-right: 2rem;
+  }
+}
+
+// ── Forms ──────────────────────────────────────────────
+.enquiry-form {
+  .form-label {
+    margin-bottom: 0.4rem;
+    font-family: $headings-font-family;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $ink;
+  }
+
+  .form-control,
+  .form-select {
+    background-color: #fff;
+  }
+
+  .required::after {
+    content: " *";
+    color: $brand-orange;
+  }
+
+  // Honeypot: visually hidden but still in the DOM for bots.
+  .hp-field {
+    position: absolute !important;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+}
+
+.enquiry-panel {
+  padding: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+  background: #fff;
+  box-shadow: 0 30px 70px rgba($ink, 0.08);
+}

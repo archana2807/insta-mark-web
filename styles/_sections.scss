@@ -1,0 +1,505 @@
+// Page sections, mapped to the theme (see docs/architecture.md §8.2).
+
+// ── Home hero: split text / full-bleed image ───────────
+.hero-split {
+  position: relative;
+
+  &__text-col {
+    display: flex;
+    align-items: center;
+    padding-block: 4rem;
+  }
+
+  &__vertical {
+    display: none;
+
+    @include media-breakpoint-up(xl) {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      margin-right: 3.5rem;
+      padding-right: 2.25rem;
+      border-right: 1px solid $line;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: $headings-font-family;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: $ink;
+    }
+  }
+
+  h1 {
+    margin-bottom: 1.75rem;
+
+    @include media-breakpoint-up(lg) {
+      margin-right: -12%; // theme: headline overlaps toward the image
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  &__media {
+    position: relative;
+    min-height: 380px;
+    height: 100%;
+
+    @include media-breakpoint-up(lg) {
+      min-height: calc(100vh - 92px);
+      max-height: 860px;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    min-width: 220px;
+
+    strong {
+      display: block;
+      font-family: $headings-font-family;
+      font-size: 2.6rem;
+      line-height: 1;
+      color: $ink;
+      letter-spacing: -0.04em;
+    }
+
+    span {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// ── About collage (3 overlapping images) ───────────────
+.about-collage {
+  position: relative;
+  min-height: 540px;
+
+  &__item {
+    position: absolute;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba($ink, 0.14);
+
+    img {
+      object-fit: cover;
+    }
+
+    &:nth-child(1) {
+      left: 0;
+      top: 8%;
+      width: 44%;
+      aspect-ratio: 3 / 4;
+    }
+
+    &:nth-child(2) {
+      right: 4%;
+      top: 0;
+      width: 50%;
+      aspect-ratio: 4 / 3;
+    }
+
+    &:nth-child(3) {
+      left: 22%;
+      bottom: 0;
+      width: 48%;
+      aspect-ratio: 4 / 5;
+      z-index: 2;
+    }
+  }
+
+  @include media-breakpoint-down(md) {
+    min-height: 420px;
+  }
+}
+
+// ── Stats row: line with dot markers ───────────────────
+.stats-line {
+  position: relative;
+  border-top: 1px solid $line;
+
+  &__item {
+    position: relative;
+    padding-top: 3rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid $line;
+      box-shadow: inset 0 0 0 7px #fff;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: 9px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $ink;
+    }
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// ── Large statement band (static, no marquee) ──────────
+.statement-band {
+  overflow: hidden;
+  white-space: nowrap;
+
+  p {
+    margin: 0;
+    font-family: $headings-font-family;
+    font-size: clamp(3rem, 1rem + 7vw, 8rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: $ink;
+    text-align: center;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  }
+}
+
+// ── Solutions showcase rows (theme "latest projects") ──
+.showcase-row {
+  position: relative;
+
+  & + & {
+    margin-top: clamp(4rem, 3rem + 4vw, 7rem);
+  }
+
+  &__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: $surface;
+
+    img {
+      object-fit: cover;
+      transition: transform 1s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.04);
+    }
+  }
+
+  &__number {
+    display: block;
+    margin-bottom: -0.15em;
+    font-family: $headings-font-family;
+    font-size: clamp(5rem, 3rem + 6vw, 9rem);
+    font-weight: 600;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: #e3e3e3;
+
+    // Purely decorative: rendered from data-num so it is not page text
+    // (keeps the theme's light grey without failing contrast checks).
+    &::before {
+      content: attr(data-num);
+    }
+  }
+
+  h2 {
+    margin-bottom: 1.25rem;
+  }
+}
+
+// ── Process counters (title, text, rule, big number) ──
+.process-step {
+  height: 100%;
+
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__number {
+    padding-top: 1.25rem;
+    border-top: 1px solid $line;
+    font-family: $headings-font-family;
+    font-size: clamp(2.6rem, 2rem + 1.6vw, 3.4rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: $ink;
+  }
+}
+
+// ── Icon tiles (industries / why choose us) ────────────
+.icon-grid {
+  border-top: 1px solid $line;
+  border-left: 1px solid $line;
+}
+
+.icon-tile {
+  height: 100%;
+  padding: 2rem 1.75rem;
+  border-right: 1px solid $line;
+  border-bottom: 1px solid $line;
+  background: #fff;
+  transition: background-color 0.3s ease;
+
+  .bi {
+    display: inline-block;
+    margin-bottom: 1.1rem;
+    font-size: 1.9rem;
+    color: $brand-teal;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.35;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    font-size: 0.93rem;
+    line-height: 1.6;
+  }
+
+  &:hover {
+    background: $surface;
+  }
+}
+
+// ── Inner page hero ────────────────────────────────────
+.page-hero {
+  padding-top: clamp(3rem, 2rem + 4vw, 5.5rem);
+  padding-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+
+  .breadcrumb {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+
+    a {
+      color: $body-text;
+
+      &:hover {
+        color: $ink;
+      }
+    }
+  }
+
+  h1 {
+    max-width: 18ch;
+    margin-bottom: 1.25rem;
+  }
+
+  &__lead {
+    max-width: 44rem;
+    font-size: 1.1rem;
+  }
+}
+
+// Category hero: text + 2 stacked images
+.category-hero__images {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.25rem;
+  align-items: end;
+
+  .img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: $surface;
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  .img-wrap:first-child {
+    aspect-ratio: 3 / 4;
+  }
+
+  .img-wrap:last-child {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 3rem;
+  }
+}
+
+.category-hero__placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  font-size: 5rem;
+  color: $ink;
+  background: radial-gradient(circle at 25% 20%, rgba($brand-orange, 0.14), transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba($brand-teal, 0.16), transparent 55%), $surface;
+}
+
+// ── Quote / CTA band ───────────────────────────────────
+.quote-band {
+  blockquote {
+    max-width: 52rem;
+    margin: 0 auto;
+    font-family: $headings-font-family;
+    font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    color: $ink;
+  }
+}
+
+.cta-panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  color: rgba(#fff, 0.75);
+  background: $ink;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: auto -10% -60% auto;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba($brand-teal, 0.45), transparent 65%);
+  }
+
+  h2 {
+    color: #fff;
+    max-width: 22ch;
+  }
+
+  > * {
+    position: relative;
+  }
+}
+
+// ── Client logo strip ──────────────────────────────────
+.logo-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 2.5rem 3rem;
+  align-items: center;
+  margin-top: 3.5rem;
+
+  li {
+    display: flex;
+    justify-content: center;
+  }
+
+  img {
+    width: auto;
+    max-width: 160px;
+    height: auto;
+    max-height: 56px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.75;
+    transition:
+      filter 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  a:hover img,
+  a:focus-visible img {
+    filter: none;
+    opacity: 1;
+  }
+}
+
+// ── Project cards ──────────────────────────────────────
+.project-card {
+  display: block;
+  color: inherit;
+
+  &__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: $surface;
+
+    img {
+      object-fit: cover;
+      transition: transform 0.8s ease;
+    }
+  }
+
+  &:hover &__media img {
+    transform: scale(1.05);
+  }
+
+  h3 {
+    margin: 1.1rem 0 0.35rem;
+    font-size: 1.25rem;
+  }
+
+  &__meta {
+    font-size: 0.9rem;
+  }
+}
+
+// ── Contact details list ───────────────────────────────
+.contact-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid $line;
+  }
+
+  .bi {
+    font-size: 1.3rem;
+    color: $brand-teal;
+  }
+
+  small {
+    display: block;
+    font-family: $headings-font-family;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+
+  a,
+  span {
+    color: $ink;
+    font-weight: 500;
+  }
+}

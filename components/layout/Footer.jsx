@@ -21,7 +21,7 @@ export default function Footer({ site, categories, ctaTitle }) {
         <div className="mb-6">
           <BrandLogo light />
         </div>
-        <div className="row g-5">
+        <div className="row g-4 g-lg-5">
           <div className="col-lg-5">
             <h2 className="h3 mb-5">{ctaTitle}</h2>
             <div className="row g-4">

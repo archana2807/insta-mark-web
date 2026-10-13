@@ -1,6 +1,6 @@
-import PageHero from "@/components/sections/PageHero";
+import InnerHero from "@/components/sections/InnerHero";
 import EnquirySection from "@/components/sections/EnquirySection";
-import { getCategories, getContactPageContent, getSite } from "@/lib/data";
+import { getCategories, getContactPageContent, getPageHeroImage, getSite } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -11,17 +11,19 @@ export const metadata = pageMetadata({
 });
 
 export default async function ContactPage() {
-  const [page, site, categories] = await Promise.all([
+  const [page, site, categories, heroImage] = await Promise.all([
     getContactPageContent(),
     getSite(),
     getCategories(),
+    getPageHeroImage("contact"),
   ]);
   const { address, mapEmbedUrl } = site.contact;
 
   return (
     <>
-      <PageHero
-        eyebrow="Contact us"
+      <InnerHero
+        label="Contact us"
+        image={heroImage}
         title={page.title}
         lead={page.text}
         breadcrumbs={[{ label: "Contact", href: "/contact" }]}

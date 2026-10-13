@@ -105,6 +105,17 @@
   );
 }
 
+.btn-outline-white {
+  @include button-variant(
+    transparent,
+    rgba(#fff, 0.6),
+    #fff,
+    $hover-background: #fff,
+    $hover-border: #fff,
+    $hover-color: $ink
+  );
+}
+
 .link-arrow {
   display: inline-flex;
   align-items: center;
@@ -404,4 +415,21 @@
   padding: clamp(1.75rem, 1rem + 3vw, 3.25rem);
   background: #fff;
   box-shadow: 0 30px 70px rgba($ink, 0.08);
+}
+
+// ── CTA panel buttons: equal width, stacked on desktop ──
+.cta-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .btn {
+    justify-content: center;
+  }
+
+  @include media-breakpoint-up(lg) {
+    flex-direction: column;
+    max-width: 20rem;
+    margin-left: auto;
+  }
 }

@@ -1,7 +1,12 @@
-import PageHero from "@/components/sections/PageHero";
+import InnerHero from "@/components/sections/InnerHero";
 import ShowcaseRow from "@/components/sections/ShowcaseRow";
 import CtaPanel from "@/components/sections/CtaPanel";
-import { getCategoriesByGroup, getCategoryCoverImage, getHomeContent } from "@/lib/data";
+import {
+  getCategoriesByGroup,
+  getCategoryCoverImage,
+  getHomeContent,
+  getPageHeroImage,
+} from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -12,14 +17,19 @@ export const metadata = pageMetadata({
 });
 
 export default async function SolutionsPage() {
-  const [groups, home] = await Promise.all([getCategoriesByGroup(), getHomeContent()]);
+  const [groups, home, heroImage] = await Promise.all([
+    getCategoriesByGroup(),
+    getHomeContent(),
+    getPageHeroImage("solutions"),
+  ]);
   const rows = groups.flatMap((g) => g.items.map((c) => ({ category: c, groupLabel: g.label })));
   const covers = await Promise.all(rows.map((r) => getCategoryCoverImage(r.category.slug)));
 
   return (
     <>
-      <PageHero
-        eyebrow="Our solutions"
+      <InnerHero
+        label="Our solutions"
+        image={heroImage}
         title="Complete signage & road safety solutions"
         lead={home.about.text}
         breadcrumbs={[{ label: "Solutions", href: "/solutions" }]}

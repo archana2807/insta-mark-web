@@ -57,6 +57,14 @@
 | 6 | Home और Solutions की meta description 173–203 characters | Google snippet काटता | ≤ 160 characters |
 | 7 | Admin category icon free-text field | गलत नाम डालने पर icon नहीं दिखता | Dropdown (curated list) + server validation + `check:content` में icon check |
 
+| 8 | Mobile (390 px) पर हर page 12 px चौड़ा (footer और दूसरी rows का `g-5` gutter container padding से बड़ा) | Horizontal scroll | Rows पर `g-4 g-lg-5` |
+| 9 | Enquiry `requirement` field server पर किसी भी text को accept करता था | Tampered dropdown values DB में | Server अब current category names से check करता है |
+| 10 | 404 page पर header/footer नहीं थे | Visitor का रास्ता खो जाता था | `app/(site)/not-found.js` + catch-all route |
+
+### Enquiry form tests (13 Oct 2026)
+
+Browser (Playwright, local PostgreSQL wire server): empty submit blocked और 3 errors + पहले field पर focus; blur पर name error, `aria-invalid`; typing पर error हटना; email typo suggestion apply होना; dummy phone reject; message counter; 3 links वाला message reject; tampered requirement reject; error के बाद values बनी रहना; valid submit → `/thank-you` + DB row (company `"  Acme\u200B   Infra  "` → `"Acme Infra"`, phone `+919820012345`, UTM saved); 2.5 s से पहले submit → error, fake success नहीं, summary पर focus; no-JS में native `required`; 390 px पर no overflow। JS के बिना server path (direct POST): name/email/phone/requirement errors, valid post → 303 `/thank-you`। Rules के unit checks (Node): names (Devanagari, apostrophe), emails, typo suggestions, phone formats + dummy numbers, links, sanitisation।
+
 ---
 
 ## 4. Accessibility coverage

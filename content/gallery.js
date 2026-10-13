@@ -556,7 +556,14 @@ export const gallery = {
   ],
 };
 
-/** Hand-picked images for the home page hero / about collage. */
+/** Looks up a gallery image by file name; fails the build if it was removed. */
+const pick = (category, file) => {
+  const img = gallery[category].find((i) => i.src.endsWith(`/${file}`));
+  if (!img) throw new Error(`featured image not in gallery: ${category}/${file}`);
+  return img;
+};
+
+/** Hand-picked images for the home page hero / about collage and inner-page heroes. */
 export const featured = {
   hero: gallery["tailor-made-signage"][0],
   about: [
@@ -564,4 +571,13 @@ export const featured = {
     gallery["modular-signs"][0],
     gallery["tailor-made-signage"][13],
   ],
+  // Inner-page hero images (theme "About" layout: big image right of the title).
+  pages: {
+    about: pick("tailor-made-signage", "branding-071.jpg"),
+    solutions: pick("tailor-made-signage", "branding-057.jpg"),
+    projects: pick("tailor-made-signage", "branding-063.jpg"),
+    contact: pick("modular-signs", "modular-003.jpg"),
+  },
+  // Tall image for the About page manufacturing feature.
+  aboutFeature: pick("tailor-made-signage", "pylons-055.jpg"),
 };

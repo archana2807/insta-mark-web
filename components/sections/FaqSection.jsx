@@ -18,7 +18,7 @@ export default function FaqSection({ faqs, title = "Frequently asked questions" 
   return (
     <section className="section" aria-labelledby="faq-title">
       <div className="container">
-        <div className="row g-5">
+        <div className="row g-4 g-lg-5">
           <div className="col-lg-5">
             <Eyebrow>Basic information</Eyebrow>
             <h2 id="faq-title">{title}</h2>

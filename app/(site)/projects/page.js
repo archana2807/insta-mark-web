@@ -1,10 +1,16 @@
 import Link from "next/link";
-import PageHero from "@/components/sections/PageHero";
+import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
 import CtaPanel from "@/components/sections/CtaPanel";
 import Eyebrow from "@/components/ui/Eyebrow";
 import ProjectCard from "@/components/sections/ProjectCard";
-import { getExecutedWork, getHomeContent, getProjects, getProjectsPageContent } from "@/lib/data";
+import {
+  getExecutedWork,
+  getHomeContent,
+  getPageHeroImage,
+  getProjects,
+  getProjectsPageContent,
+} from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 import Icon from "@/components/ui/Icon";
 
@@ -16,18 +22,20 @@ export const metadata = pageMetadata({
 });
 
 export default async function ProjectsPage() {
-  const [page, work, home, projects] = await Promise.all([
+  const [page, work, home, projects, heroImage] = await Promise.all([
     getProjectsPageContent(),
     getExecutedWork(),
     getHomeContent(),
     getProjects(),
+    getPageHeroImage("projects"),
   ]);
   const total = work.reduce((n, g) => n + g.images.length, 0);
 
   return (
     <>
-      <PageHero
-        eyebrow="Our work"
+      <InnerHero
+        label="Our work"
+        image={heroImage}
         title={page.title}
         lead={page.text}
         breadcrumbs={[{ label: "Projects", href: "/projects" }]}
@@ -44,7 +52,7 @@ export default async function ProjectsPage() {
           </ul>
           <p className="small text-secondary mt-3 mb-0">{total} photos from executed sites</p>
         </nav>
-      </PageHero>
+      </InnerHero>
 
       {projects.length > 0 && (
         <section className="section pt-4" aria-labelledby="featured-projects-title">

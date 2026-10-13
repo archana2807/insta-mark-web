@@ -21,7 +21,7 @@ export default function EnquirySection({
   return (
     <section className="section bg-surface" id={id} aria-labelledby={`${id}-title`}>
       <div className="container">
-        <div className="row g-5">
+        <div className="row g-4 g-lg-5">
           <div className="col-lg-4">
             <Eyebrow>Request a quote</Eyebrow>
             <h2 id={`${id}-title`} className="mb-4">

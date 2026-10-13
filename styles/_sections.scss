@@ -503,3 +503,274 @@
     font-weight: 500;
   }
 }
+
+// ════════════════════════════════════════════════════════
+// Inner-page patterns (Crafto "Branding Agency – About")
+// ════════════════════════════════════════════════════════
+
+// Inner hero: vertical label + big title left, image right; title overlaps it.
+.inner-hero {
+  position: relative;
+  padding-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+
+  &__text {
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+    padding-block: 2.5rem;
+  }
+
+  &__vertical {
+    display: none;
+
+    @include media-breakpoint-up(xl) {
+      display: flex;
+      align-items: center;
+      align-self: center;
+      margin-right: 3rem;
+      padding: 1.5rem 0;
+      padding-right: 2.25rem;
+      border-right: 1px solid $line;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: $headings-font-family;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: $ink;
+    }
+  }
+
+  .breadcrumb {
+    margin-bottom: 1.25rem;
+    font-size: 0.88rem;
+
+    a {
+      color: $body-text;
+
+      &:hover {
+        color: $ink;
+      }
+    }
+  }
+
+  h1 {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 0;
+    font-size: clamp(2.4rem, 1.5rem + 3.2vw, 4.4rem);
+
+    @include media-breakpoint-up(lg) {
+      margin-right: -18%;
+    }
+  }
+
+  &__lead {
+    max-width: 34rem;
+    margin: 1.5rem 0 0;
+    font-size: 1.075rem;
+  }
+
+  &__media {
+    position: relative;
+    min-height: 300px;
+    height: 100%;
+    background: $surface;
+
+    @include media-breakpoint-up(lg) {
+      min-height: 560px;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+}
+
+// Big two-line statement with a static circular text badge (theme rotates it;
+// the client asked for minimal animation, so ours stays still).
+.statement {
+  &__title {
+    margin: 0;
+    font-family: $headings-font-family;
+    font-size: clamp(2.8rem, 1.2rem + 6vw, 7rem);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: $ink;
+  }
+
+  &__line2 {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 0.5rem + 2vw, 2.5rem);
+
+    @include media-breakpoint-up(lg) {
+      padding-left: 12%;
+    }
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    width: clamp(84px, 60px + 5vw, 130px);
+    height: auto;
+
+    text {
+      font-family: $headings-font-family;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+// Counter columns separated by vertical rules; text top, big number bottom.
+.counter-cols {
+  border-left: 1px solid $line;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    min-height: 220px;
+    padding: 1.75rem 2rem;
+    border-right: 1px solid $line;
+
+    @include media-breakpoint-down(md) {
+      min-height: 0;
+      gap: 1.5rem;
+      border-bottom: 1px solid $line;
+    }
+  }
+
+  p {
+    margin: 0;
+    max-width: 16rem;
+    font-weight: 500;
+    color: $ink;
+  }
+
+  strong {
+    display: flex;
+    align-items: flex-start;
+    font-family: $headings-font-family;
+    font-size: clamp(2.8rem, 2rem + 2.4vw, 4.2rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: $ink;
+
+    .bi {
+      font-size: 0.32em;
+      margin-right: 0.15em;
+      margin-top: 0.1em;
+    }
+  }
+}
+
+// Image left, large heading overlapping into the image, copy below on the right.
+.overlap-feature {
+  &__media {
+    position: relative;
+    min-height: 420px;
+    height: 100%;
+
+    @include media-breakpoint-up(lg) {
+      min-height: 640px;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  h2 {
+    position: relative;
+    z-index: 2;
+    font-size: clamp(2.2rem, 1.4rem + 2.6vw, 4rem);
+
+    // Theme look: the heading sits on a white panel cutting into the photo,
+    // so the text never runs over the image (contrast).
+    @include media-breakpoint-up(lg) {
+      display: inline-block;
+      margin-left: calc(-12% - 3rem);
+      padding: 2rem 2.5rem 1.5rem 3rem;
+      background: #fff;
+    }
+  }
+
+  &__highlight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid $line;
+    background: #fff;
+    font-family: $headings-font-family;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $ink;
+
+    .bi {
+      flex-shrink: 0;
+      font-size: 1.6rem;
+      color: $brand-teal;
+    }
+  }
+}
+
+// Heading left, list of rows (title | text) right, separated by rules.
+.row-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid $line;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    @include media-breakpoint-up(md) {
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 2rem;
+    }
+  }
+
+  h3 {
+    margin: 0;
+    font-family: $font-family-sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// ── Home: expertise lists ──────────────────────────────
+.expertise-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.25rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 2px solid $ink;
+
+  .icon {
+    color: $brand-teal;
+    font-size: 1.4rem;
+  }
+}

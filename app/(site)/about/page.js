@@ -1,14 +1,20 @@
 import Image from "next/image";
-import PageHero from "@/components/sections/PageHero";
+import Link from "next/link";
+import InnerHero from "@/components/sections/InnerHero";
+import StatementBadge from "@/components/sections/StatementBadge";
+import CounterColumns from "@/components/sections/CounterColumns";
+import OverlapFeature from "@/components/sections/OverlapFeature";
+import RowList from "@/components/sections/RowList";
 import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
+import LogoStrip from "@/components/sections/LogoStrip";
 import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
+import Icon from "@/components/ui/Icon";
 import { getAboutContent, getHomeContent } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
-import Icon from "@/components/ui/Icon";
 
 export const metadata = pageMetadata({
   title: "About Us",
@@ -17,75 +23,96 @@ export const metadata = pageMetadata({
   path: "/about",
 });
 
+/** Layout follows the Crafto "Branding Agency – About" page (own code, client copy). */
 export default async function AboutPage() {
   const [about, home] = await Promise.all([getAboutContent(), getHomeContent()]);
-  const [imgA, imgB] = about.featuredImages;
 
   return (
     <>
-      <PageHero
-        eyebrow="Who we are"
-        title="Signage that guides, safety that lasts"
-        lead={about.whoWeAre}
+      {/* 1. Hero: vertical label + title over a large photo */}
+      <InnerHero
+        label="About Insta Mark"
+        title="We design, build and install signage that guides."
+        image={about.heroImage}
         breadcrumbs={[{ label: "About", href: "/about" }]}
       />
 
-      {/* Vision & mission */}
-      <section className="pb-7">
+      {/* 2. Statement + badge + who we are */}
+      <StatementBadge
+        line1="Signage that"
+        line2="guides."
+        badgeText="Design · Manufacture · Install · Pan India · "
+        icon="signpost-split"
+        text={about.whoWeAre}
+      />
+
+      {/* 3. Real counts from the content */}
+      <CounterColumns items={about.counters} />
+
+      {/* 4. Collage + vision & mission */}
+      <section className="section pt-0" aria-labelledby="vision-title">
         <div className="container">
-          <div className="row g-5 align-items-center">
+          <div className="row align-items-center g-4 g-lg-5">
             <div className="col-lg-6">
-              <div className="category-hero__images">
-                {[imgA, imgB].map((img) => (
-                  <div className="img-wrap" key={img.src}>
-                    <Image src={img.src} alt={img.alt} fill sizes="(min-width: 992px) 28vw, 50vw" />
+              <div className="about-collage">
+                {about.featuredImages.map((img) => (
+                  <div className="about-collage__item" key={img.src}>
+                    <Image src={img.src} alt={img.alt} fill sizes="(min-width: 992px) 25vw, 50vw" />
                   </div>
                 ))}
               </div>
             </div>
-            <div className="col-lg-5 offset-lg-1">
-              <Reveal className="mb-5">
-                <Eyebrow>Vision</Eyebrow>
-                <p className="h4 fw-medium text-ink lh-base">{about.vision}</p>
-              </Reveal>
-              <Reveal delay={120}>
-                <Eyebrow>Mission</Eyebrow>
-                <p className="h4 fw-medium text-ink lh-base">{about.mission}</p>
-              </Reveal>
-            </div>
+            <Reveal className="col-lg-5 offset-lg-1">
+              <Eyebrow>Our vision</Eyebrow>
+              <h2 id="vision-title" className="h3 mb-4">
+                {about.vision}
+              </h2>
+              <h3 className="h6 text-uppercase fw-bold text-ink mb-2">Mission</h3>
+              <p className="mb-5">{about.mission}</p>
+              <div className="d-flex flex-wrap gap-3">
+                <Link href="/contact" className="btn btn-dark btn-lg">
+                  <Icon name="envelope" /> Let&apos;s talk
+                </Link>
+                <Link href="/solutions" className="btn btn-outline-ink btn-lg">
+                  <Icon name="grid" /> Our solutions
+                </Link>
+              </div>
+            </Reveal>
           </div>
+          <LogoStrip logos={home.clientLogos} />
         </div>
       </section>
 
-      {/* Why choose us + solutions */}
-      <section className="section bg-surface" aria-labelledby="why-title">
-        <div className="container">
-          <div className="row g-5">
-            <div className="col-lg-5">
-              <SectionHeading
-                eyebrow="Why choose us"
-                title={<span id="why-title">Why clients choose Insta Mark</span>}
-              />
-              <ul className="check-list mt-4">
-                {about.whyChooseUs.map((w) => (
-                  <li key={w}>{w}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="col-lg-6 offset-lg-1">
-              <Eyebrow>Solutions</Eyebrow>
-              {about.solutions.map((s, i) => (
-                <Reveal key={s.title} delay={i * 100} className="py-4 border-bottom">
-                  <h3 className="h4">{s.title}</h3>
-                  <p className="mb-0">{s.text}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 5. Manufacturing: image left, heading overlapping */}
+      <OverlapFeature
+        id="mfg-title"
+        eyebrow="Manufacturing excellence"
+        title="Precision-made in our own facility."
+        intro={about.manufacturing.title}
+        text={about.manufacturing.text}
+        image={about.featureImage}
+        tags={about.manufacturing.capabilities}
+        highlight={{ icon: "shield-check", text: about.manufacturing.quality }}
+      />
 
-      {/* Industries */}
+      {/* 6. Why choose us: heading left, rows right */}
+      <RowList
+        id="why-title"
+        eyebrow="Why choose us"
+        title="We work with developers and architects to make every space clear and safe."
+        rows={about.whyChooseRows}
+      />
+
+      {/* 7. Solutions overview rows */}
+      <RowList
+        id="solutions-title"
+        className="section bg-surface"
+        eyebrow="What we deliver"
+        title="Solutions under one roof."
+        rows={about.solutions}
+      />
+
+      {/* 8. Industries */}
       <section className="section" aria-labelledby="industries-title">
         <div className="container">
           <SectionHeading
@@ -98,35 +125,8 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Manufacturing */}
-      <section className="section bg-surface" aria-labelledby="mfg-title">
-        <div className="container">
-          <div className="row g-5">
-            <div className="col-lg-5">
-              <SectionHeading
-                eyebrow="Manufacturing excellence"
-                title={<span id="mfg-title">{about.manufacturing.title}</span>}
-                text={about.manufacturing.text}
-              />
-              <p className="mt-4 mb-0 fw-medium text-ink">
-                <Icon name="shield-check" className="me-2 text-primary" />
-                {about.manufacturing.quality}
-              </p>
-            </div>
-            <div className="col-lg-6 offset-lg-1">
-              <h3 className="h5 mb-4">Capabilities</h3>
-              <ul className="tag-list">
-                {about.manufacturing.capabilities.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Process (5 steps) */}
-      <section className="section" aria-labelledby="process-title">
+      {/* 9. Process */}
+      <section className="section bg-surface" aria-labelledby="process-title">
         <div className="container">
           <SectionHeading
             className="mb-6"

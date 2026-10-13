@@ -69,7 +69,7 @@ export default async function CategoryPage({ params }) {
       {/* Overview + images */}
       <section className="pb-7" aria-label="Overview">
         <div className="container">
-          <div className="row g-5 align-items-center">
+          <div className="row g-4 g-lg-5 align-items-center">
             <div className="col-lg-6">
               <p className="lead-text fs-5 mb-4" style={{ maxWidth: "40rem" }}>
                 {category.overview}
@@ -113,7 +113,7 @@ export default async function CategoryPage({ params }) {
       {/* Key features + applications */}
       <section className="section bg-surface" aria-labelledby="features-title">
         <div className="container">
-          <div className="row g-5">
+          <div className="row g-4 g-lg-5">
             <Reveal className="col-lg-5">
               <SectionHeading
                 eyebrow="Key features"

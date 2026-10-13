@@ -2,6 +2,7 @@ import Link from "next/link";
 import HomeHero from "@/components/sections/HomeHero";
 import AboutIntro from "@/components/sections/AboutIntro";
 import StatsLine from "@/components/sections/StatsLine";
+import ExpertiseLists from "@/components/sections/ExpertiseLists";
 import CategoryGrid from "@/components/sections/CategoryGrid";
 import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
@@ -44,10 +45,6 @@ export default async function HomePage() {
     ...work.flatMap((g) => g.images.slice(2, 4)),
   ].slice(0, 9);
 
-  const stats = home.whyChooseUs.filter((w) =>
-    ["End-to-End Expertise", "Premium Manufacturing", "Nationwide Service"].includes(w.title),
-  );
-
   return (
     <>
       {/* 1. Banner */}
@@ -59,10 +56,13 @@ export default async function HomePage() {
 
       {/* 2. About */}
       <AboutIntro about={home.about} images={home.featured.about} />
-      <StatsLine items={stats} />
+      <StatsLine title="Why choose Insta Mark" items={home.whyChooseUs} />
+
+      {/* Our expertise — both service groups from the content brief */}
+      <ExpertiseLists expertise={home.expertise} />
 
       {/* 3. Products — category grid */}
-      <section className="section pt-0" aria-labelledby="solutions-title">
+      <section className="section" aria-labelledby="solutions-title">
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading

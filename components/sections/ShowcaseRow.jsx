@@ -9,7 +9,7 @@ import Icon from "@/components/ui/Icon";
 export default function ShowcaseRow({ category, cover, number, groupLabel, reverse = false }) {
   return (
     <article className="showcase-row">
-      <div className={`row align-items-center g-5 ${reverse ? "flex-lg-row-reverse" : ""}`}>
+      <div className={`row align-items-center g-4 g-lg-5 ${reverse ? "flex-lg-row-reverse" : ""}`}>
         <div className="col-lg-7">
           <Link
             href={`/solutions/${category.slug}`}

@@ -6,7 +6,7 @@ export default function FloatingActions({ contact }) {
   if (!contact.whatsapp && !contact.phone) return null;
 
   return (
-    <div className="floating-actions">
+    <aside className="floating-actions" aria-label="Quick contact">
       {contact.whatsapp && (
         <a
           href={whatsappHref(
@@ -26,6 +26,6 @@ export default function FloatingActions({ contact }) {
           <Icon name="telephone" />
         </a>
       )}
-    </div>
+    </aside>
   );
 }

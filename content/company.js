@@ -49,7 +49,7 @@ export const home = {
   cta: {
     title: "Let's Build Smarter Spaces Together.",
     text: "Whether you're developing a commercial complex, healthcare facility, residential township, airport, retail destination, or infrastructure project, Insta Mark is your trusted partner for complete signage and road safety solutions.",
-    primaryCta: { label: "Get a Free Consultation", href: "/contact" },
+    primaryCta: { label: "Get a Free Consultation", href: "/contact#contact-form" },
     secondaryCta: { label: "Contact Our Team", href: "/contact" },
   },
 };

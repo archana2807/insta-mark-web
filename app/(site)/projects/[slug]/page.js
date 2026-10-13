@@ -54,7 +54,7 @@ export default async function ProjectPage({ params }) {
       />
       <section className="pb-7">
         <div className="container">
-          <div className="row g-5">
+          <div className="row g-4 g-lg-5">
             <div className="col-lg-7">
               {p.cover && (
                 <div className="position-relative mb-4" style={{ aspectRatio: "4 / 3" }}>

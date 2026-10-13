@@ -82,7 +82,7 @@ Insta Mark एक architectural signage और road safety solutions कंप�
 | ORM | **Prisma** | JS में type-safe-ish queries, migrations |
 | Auth (admin) | **Custom**: scrypt password hashes (Node crypto) + HMAC-SHA256 signed session cookie (Web Crypto), `middleware.js` + `requireAdmin()` | कोई third-party dependency नहीं। Auth.js v5 अभी beta है, और हमें सिर्फ़ email/password चाहिए। *(Phase 4 में बदला गया, ADR-13)* |
 | Media | **Cloudinary** | Upload, auto format/resize, CDN |
-| Forms | **React 19 `useActionState`** + Server Action + **Zod** | Server पर validation, browser में native HTML validation। JS के बिना भी form काम करता है। React Hook Form की ज़रूरत नहीं पड़ी। *(Implementation में बदला गया)* |
+| Forms | **React 19 `useActionState`** + Server Action + **Zod** | Field rules एक ही file में (`lib/validation/enquiry-rules.js`, plain JS)। Browser उन्हीं rules से blur/submit पर inline errors दिखाता है, server पर Zod schema वही rules चलाता है। JS के बिना native HTML validation + server validation। React Hook Form की ज़रूरत नहीं पड़ी। *(Implementation में बदला गया)* |
 | Email | **Resend** | Enquiry notifications |
 | Spam protection | **Cloudflare Turnstile** + honeypot + rate limit | Free, invisible captcha |
 | Hosting | **Vercel** | Next.js native, preview deployments |
@@ -372,17 +372,21 @@ sequenceDiagram
     participant D as DB
     participant E as Resend
     U->>F: Form भरता है
-    F->>F: Zod validation (instant errors)
-    F->>S: submitEnquiry(data, token)
-    S->>S: Honeypot + rate limit (IP)
+    F->>F: Shared rules (blur + submit): inline errors, error summary, first invalid field पर focus
+    F->>S: submitEnquiry(data, token, fillMs)
+    S->>S: Honeypot + time trap (fillMs < 2.5 s)
     S->>T: Token verify
-    S->>S: Zod validation (server)
+    S->>S: Sanitise + Zod (same rules) + requirement ∈ categories
+    S->>S: Rate limit (IP)
     S->>D: Enquiry save (status NEW)
     S->>E: Sales team को email
     S->>E: Customer को auto-reply
     S-->>U: /thank-you redirect (GA4 conversion)
 ```
 - Email fail होने पर भी enquiry DB में save रहेगी, यानी lead कभी loss नहीं होगी।
+- **Validation rules** (`enquiry-rules.js`): name में सिर्फ़ letters (हर भाषा, `\p{L}`), कम से कम 2; email strict format + typo suggestion (`gmial.com` → `gmail.com`, सिर्फ़ सुझाव, block नहीं); phone E.164 में normalise, dummy numbers (`9999999999`, `9876543210`, `1234567890`) reject; company/location में links या HTML नहीं; message में HTML/BBCode links नहीं और ज़्यादा से ज़्यादा 2 links; requirement सिर्फ़ dropdown की category list से।
+- **Sanitisation (server)**: NFC, control/zero-width/bidi-override characters हटाना, single-line fields में whitespace collapse, message में 2 से ज़्यादा blank lines नहीं। Email lowercase।
+- **Time trap**: JS वाला form browser में मापा गया fill time (`fillMs`) भेजता है (clock skew का असर नहीं)। 2.5 s से कम हो तो "please submit again" error, fake success नहीं। JS के बिना field नहीं होता, तो check skip।
 - Category page से आने पर `categoryId` और `sourcePage` अपने-आप भर जाएँगे।
 
 ### 10.2 Admin image upload
@@ -519,4 +523,6 @@ Admin edit करता है, Server Action (auth check, Zod) चलता ह
 | ADR-13 | **Custom auth** (scrypt + HMAC cookie) | Auth.js v5, bcrypt | सिर्फ़ email/password चाहिए। Auth.js v5 beta है। Zero dependencies (उस समय npm registry भी unreachable था)। Lockout, role checks और session invalidation पूरी तरह हमारे control में। 14 unit tests। |
 | ADR-14 | **ISR pages पर `dynamicParams = false` नहीं** | Unknown slugs के लिए `dynamicParams=false` | Next.js 15 में `revalidateTag` के बाद NoFallbackError आता है और page 404 देने लगता है (E2E test में पकड़ा गया)। Unknown slugs के लिए `notFound()` use करते हैं। |
 | ADR-16 | **Icon font की जगह generated inline SVG** (server: पूरा set, client: छोटा subset, CSS: SVG mask) | `bootstrap-icons` web font | 128 KB का font + ~2000 classes वाली CSS हर page पर render-blocking थी। Lighthouse: FCP 2.6s से 1.6s, performance 82 से 93–95। Admin का category icon free text से curated dropdown बना। |
+| ADR-17 | **Enquiry rules एक shared plain-JS module में**, Zod उन्हें wrap करता है | Client पर भी Zod import करना / सिर्फ़ server validation | Browser और server हमेशा एक जैसे errors देते हैं। Client bundle में Zod नहीं जाता। Rules Node में unit-test होते हैं। |
+| ADR-18 | **Inner pages का layout Crafto "Branding Agency – About" जैसा** (`InnerHero`: vertical label + बड़ा title + photo; About पर statement badge, counters, overlap feature, row lists) | पुराना text-only `PageHero` | Client ने theme का About page reference दिया। Counters में सिर्फ़ content से गिने गए असली numbers हैं (categories, industries, capabilities, process steps), कोई invented stat नहीं। Overlapping heading white panel पर है ताकि photo पर text का contrast न गिरे। |
 | ADR-15 | **Admin forms `onSubmit` से submit होते हैं** (`ActionForm`) | `<form action={…}>` | React 19 हर action के बाद form reset करता है, error पर भी, जिससे admin का भरा data मिट जाता था (E2E test में पकड़ा गया)। Reset सिर्फ़ success पर होता है। Public enquiry form values को खुद echo करता है, इसलिए वह JS के बिना भी काम करता है। |

@@ -15,10 +15,17 @@ export default function CtaPanel({ cta }) {
                 {cta.text}
               </p>
             </div>
-            <div className="col-lg-4 d-flex flex-wrap gap-3 justify-content-lg-end">
-              <Link href={cta.primaryCta.href} className="btn btn-white btn-lg">
-                {cta.primaryCta.label} <Icon name="arrow-right" />
-              </Link>
+            <div className="col-lg-4">
+              <div className="cta-panel__actions">
+                <Link href={cta.primaryCta.href} className="btn btn-white btn-lg">
+                  {cta.primaryCta.label} <Icon name="arrow-right" />
+                </Link>
+                {cta.secondaryCta && (
+                  <Link href={cta.secondaryCta.href} className="btn btn-outline-white btn-lg">
+                    {cta.secondaryCta.label}
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>

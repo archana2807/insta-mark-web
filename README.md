@@ -167,6 +167,16 @@ vercel.json            build command + cron schedule
 - axe WCAG 2.1 AA: 0 violations on 15 public + 12 admin pages (contrast fixes); 0 broken links; SEO checks clean; no mobile overflow; Chromium cross-browser smoke 13/13
 - Pending: Firefox/WebKit run (browser download failed on the network), real devices, PageSpeed field data after launch
 
+**UI polish + form validation (13 Oct 2026)**
+
+- About page rebuilt in the Crafto "Branding Agency – About" layout (hero with vertical label, statement + badge, real-count counters, collage + vision/mission, manufacturing overlap feature, why-choose and solutions row lists, industries, process, CTA); Solutions, Projects and Contact use the same photo hero
+- Home now covers the full content brief: all 6 "Why choose" points, both "Our expertise" lists (12 architectural + 9 road safety), CTA with "Get a Free Consultation" + "Contact Our Team"
+- 404 for unknown public URLs now keeps the header and footer
+- Enquiry form: shared client/server rules, inline errors on blur, error summary with links, focus management, email typo suggestion, dummy-phone rejection, link/HTML spam rules, character counter, time trap, server-side sanitisation, requirement checked against real categories
+- Fixed: 12 px horizontal scroll at 390 px (large Bootstrap gutters on mobile)
+
+**Verified:** build clean; 16/16 form browser checks + no-JS server path against a local PostgreSQL wire server; no horizontal scroll at 390 px on 7 pages; no console errors.
+
 **Phase 6 — preview live (13 Oct 2026):** https://insta-mark-web.vercel.app (Vercel Hobby + Neon Singapore, auto-deploys from `main`). Live checks passed: pages, security headers, enquiry → Neon → admin, admin login, cron, mobile. Still to do before the public launch: Vercel Pro (commercial use), Resend email, Turnstile, GA4, Cloudinary, client domain and content.
 
 **Remaining launch steps** — step-by-step: [docs/launch-checklist.md](docs/launch-checklist.md); client handover: [docs/admin-guide.md](docs/admin-guide.md)

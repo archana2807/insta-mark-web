@@ -167,7 +167,9 @@ vercel.json            build command + cron schedule
 - axe WCAG 2.1 AA: 0 violations on 15 public + 12 admin pages (contrast fixes); 0 broken links; SEO checks clean; no mobile overflow; Chromium cross-browser smoke 13/13
 - Pending: Firefox/WebKit run (browser download failed on the network), real devices, PageSpeed field data after launch
 
-**Next — Phase 6: launch** — step-by-step: [docs/launch-checklist.md](docs/launch-checklist.md); client handover: [docs/admin-guide.md](docs/admin-guide.md)
+**Phase 6 — preview live (13 Oct 2026):** https://insta-mark-web.vercel.app (Vercel Hobby + Neon Singapore, auto-deploys from `main`). Live checks passed: pages, security headers, enquiry → Neon → admin, admin login, cron, mobile. Still to do before the public launch: Vercel Pro (commercial use), Resend email, Turnstile, GA4, Cloudinary, client domain and content.
+
+**Remaining launch steps** — step-by-step: [docs/launch-checklist.md](docs/launch-checklist.md); client handover: [docs/admin-guide.md](docs/admin-guide.md)
 
 **Waiting on the client**
 

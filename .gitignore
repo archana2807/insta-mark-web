@@ -11,8 +11,8 @@ next-env.d.ts
 
 # env files (only .env.example is committed)
 .env
-.env*.local
-.env.production
+.env*
+!.env.example
 
 # debug
 npm-debug.log*

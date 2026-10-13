@@ -1,0 +1,5 @@
+# Always LF in the repo and working copy (matches Prettier and the Linux build on Vercel)
+* text=auto eol=lf
+*.jpg binary
+*.png binary
+*.woff2 binary

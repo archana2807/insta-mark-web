@@ -6,7 +6,15 @@ import { breadcrumbJsonLd } from "@/lib/seo";
  * Inner-page hero (theme "About" layout): vertical label + breadcrumb + large
  * title on the left, a big photo on the right that the title overlaps.
  */
-export default function InnerHero({ label, title, lead, image, breadcrumbs = [], children }) {
+export default function InnerHero({
+  label,
+  title,
+  lead,
+  image,
+  fallback,
+  breadcrumbs = [],
+  children,
+}) {
   const trail = [{ label: "Home", href: "/" }, ...breadcrumbs];
 
   return (
@@ -43,6 +51,7 @@ export default function InnerHero({ label, title, lead, image, breadcrumbs = [],
             </div>
           </div>
           <div className="col-lg-7">
+            {!image && fallback}
             {image && (
               <div className="inner-hero__media">
                 <Image

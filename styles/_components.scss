@@ -167,7 +167,7 @@
 
     img {
       object-fit: cover;
-      transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition: transform 0.3s ease;
     }
   }
 
@@ -210,29 +210,35 @@
   }
 
   &:hover &__media img {
-    transform: scale(1.06);
+    transform: scale(1.02);
   }
 
   &:hover &__title {
     color: $brand-teal;
   }
+
+  // Phones: two cards per row — picture + name only (picture-led, less reading).
+  @include media-breakpoint-down(sm) {
+    &__title {
+      font-size: 1.05rem;
+    }
+
+    &__text,
+    .link-arrow {
+      display: none;
+    }
+  }
 }
 
-// ── Gallery (masonry via CSS columns) ──────────────────
+// ── Gallery: even grid of square tiles ─────────────────
 .gallery-grid {
-  column-count: 3;
-  column-gap: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
 
   @include media-breakpoint-down(lg) {
-    column-count: 2;
-  }
-
-  @include media-breakpoint-down(sm) {
-    column-count: 1;
-  }
-
-  > li {
-    break-inside: avoid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 }
 
@@ -240,19 +246,16 @@
   position: relative;
   display: block;
   width: 100%;
-  margin-bottom: 1.25rem;
+  aspect-ratio: 1 / 1;
   padding: 0;
   border: 0;
   overflow: hidden;
-  break-inside: avoid;
   background: $surface;
   cursor: zoom-in;
 
   img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform 0.7s ease;
+    object-fit: cover;
+    transition: transform 0.3s ease;
   }
 
   // White square (::after) with the expand icon (::before) on top of it.
@@ -289,7 +292,7 @@
 
   &:hover img,
   &:focus-visible img {
-    transform: scale(1.04);
+    transform: scale(1.02);
   }
 
   &:hover::after,

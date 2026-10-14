@@ -177,6 +177,13 @@ vercel.json            build command + cron schedule
 
 **Verified:** build clean; 16/16 form browser checks + no-JS server path against a local PostgreSQL wire server; no horizontal scroll at 390 px on 7 pages; no console errors.
 
+**Client-flow fixes (14 Oct 2026)** — after re-checking the meeting recording
+
+- Home follows the meeting order exactly: banner → 1–2 line about → product grid → working process → sectors → executed-work pictures → CTA (why choose → About, expertise lists → Solutions, FAQs → Contact)
+- Category pages: client write-up with a project photo → product range (when catalogue images arrive) → executed work → enquiry form on the same page
+- Scroll fade-in animations removed; hovers shortened (0.3 s, 2 % zoom)
+- Galleries: even grid of square tiles, 9 shown + "Show all N photos", lightbox for the full image; product grid 2-up on phones (picture + name)
+
 **Phase 6 — preview live (13 Oct 2026):** https://insta-mark-web.vercel.app (Vercel Hobby + Neon Singapore, auto-deploys from `main`). Live checks passed: pages, security headers, enquiry → Neon → admin, admin login, cron, mobile. Still to do before the public launch: Vercel Pro (commercial use), Resend email, Turnstile, GA4, Cloudinary, client domain and content.
 
 **Remaining launch steps** — step-by-step: [docs/launch-checklist.md](docs/launch-checklist.md); client handover: [docs/admin-guide.md](docs/admin-guide.md)

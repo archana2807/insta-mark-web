@@ -203,11 +203,11 @@
 
     img {
       object-fit: cover;
-      transition: transform 1s ease;
+      transition: transform 0.3s ease;
     }
 
     &:hover img {
-      transform: scale(1.04);
+      transform: scale(1.02);
     }
   }
 
@@ -326,34 +326,7 @@
   }
 }
 
-// Category hero: text + 2 stacked images
-.category-hero__images {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 1.25rem;
-  align-items: end;
-
-  .img-wrap {
-    position: relative;
-    overflow: hidden;
-    background: $surface;
-
-    img {
-      object-fit: cover;
-    }
-  }
-
-  .img-wrap:first-child {
-    aspect-ratio: 3 / 4;
-  }
-
-  .img-wrap:last-child {
-    aspect-ratio: 4 / 5;
-    margin-bottom: 3rem;
-  }
-}
-
+// Category hero placeholder (no photos yet)
 .category-hero__placeholder {
   display: grid;
   place-items: center;
@@ -451,12 +424,12 @@
 
     img {
       object-fit: cover;
-      transition: transform 0.8s ease;
+      transition: transform 0.3s ease;
     }
   }
 
   &:hover &__media img {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
 
   h3 {
@@ -773,4 +746,19 @@
     color: $brand-teal;
     font-size: 1.4rem;
   }
+}
+
+// Category without photos yet: icon panel fills the hero image area.
+.inner-hero .category-hero__placeholder {
+  aspect-ratio: auto;
+  min-height: 320px;
+
+  @include media-breakpoint-up(lg) {
+    min-height: 560px;
+  }
+}
+
+// ── Home: short about strip ────────────────────────────
+.about-short {
+  border-bottom: 1px solid $line;
 }

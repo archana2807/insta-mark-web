@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import PageHero from "@/components/sections/PageHero";
+import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
 import FaqSection from "@/components/sections/FaqSection";
 import EnquirySection from "@/components/sections/EnquirySection";
@@ -53,62 +52,36 @@ export default async function CategoryPage({ params }) {
       category.related.map(async (c) => [c.slug, await getCategoryCoverImage(c.slug)]),
     ),
   );
-  const [heroA, heroB] = category.heroImages;
 
   return (
     <>
-      <PageHero
-        eyebrow={`Solution ${String(category.number).padStart(2, "0")}`}
+      {/* 1. Write-up (client's content) with a real project photo */}
+      <InnerHero
+        label={`Solution ${String(category.number).padStart(2, "0")}`}
         title={category.name}
+        lead={category.overview}
+        image={category.heroImages[0]}
+        fallback={
+          <div className="category-hero__placeholder h-100" aria-hidden="true">
+            <Icon name={category.icon} />
+          </div>
+        }
         breadcrumbs={[
           { label: "Solutions", href: "/solutions" },
           { label: category.name, href: `/solutions/${category.slug}` },
         ]}
-      />
-
-      {/* Overview + images */}
-      <section className="pb-7" aria-label="Overview">
-        <div className="container">
-          <div className="row g-4 g-lg-5 align-items-center">
-            <div className="col-lg-6">
-              <p className="lead-text fs-5 mb-4" style={{ maxWidth: "40rem" }}>
-                {category.overview}
-              </p>
-              <div className="d-flex flex-wrap gap-3">
-                <Link href="#enquiry" className="btn btn-gradient btn-lg">
-                  Get a quote <Icon name="arrow-right" />
-                </Link>
-                {category.executedImages.length > 0 && (
-                  <Link href="#work" className="btn btn-outline-ink btn-lg">
-                    See our work
-                  </Link>
-                )}
-              </div>
-            </div>
-            <div className="col-lg-6">
-              {heroA ? (
-                <div className="category-hero__images">
-                  {[heroA, heroB].filter(Boolean).map((img, i) => (
-                    <div className="img-wrap" key={img.src}>
-                      <Image
-                        src={img.src}
-                        alt={img.alt}
-                        fill
-                        priority={i === 0}
-                        sizes="(min-width: 992px) 28vw, 50vw"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="category-hero__placeholder" aria-hidden="true">
-                  <Icon name={category.icon} />
-                </div>
-              )}
-            </div>
-          </div>
+      >
+        <div className="d-flex flex-wrap gap-3 mt-4">
+          <Link href="#enquiry" className="btn btn-dark btn-lg">
+            Get a quote <Icon name="arrow-right" />
+          </Link>
+          {category.executedImages.length > 0 && (
+            <Link href="#work" className="btn btn-outline-ink btn-lg">
+              See our work
+            </Link>
+          )}
         </div>
-      </section>
+      </InnerHero>
 
       {/* Key features + applications */}
       <section className="section bg-surface" aria-labelledby="features-title">

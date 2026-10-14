@@ -3,7 +3,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
 
-/** Home "Our expertise": the two service groups from the client's content. */
+/** "Our expertise": the two service groups from the client's content (Solutions page). */
 export default function ExpertiseLists({ expertise }) {
   const groups = [
     {
@@ -30,8 +30,8 @@ export default function ExpertiseLists({ expertise }) {
               title={<span id="expertise-title">Everything your project needs, from one team</span>}
               text="Design, manufacturing and installation for interior and exterior signage and on-ground road safety."
             />
-            <Link href="/solutions" className="link-arrow mt-4">
-              Explore solutions <Icon name="arrow-right" />
+            <Link href="/contact#contact-form" className="link-arrow mt-4">
+              Request a quote <Icon name="arrow-right" />
             </Link>
           </div>
           {groups.map((g, i) => (

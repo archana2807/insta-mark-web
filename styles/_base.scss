@@ -86,25 +86,11 @@ h5,
   }
 }
 
-// Fade-up reveal (see components/ui/Reveal.jsx). Content is visible by
-// default; JS only marks below-the-fold elements as pending, so nothing is
-// hidden without JS and nothing above the fold flickers.
-.reveal {
-  transition:
-    opacity 0.7s ease,
-    transform 0.7s ease;
-
-  &.is-pending {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-}
-
+// Motion: only short hover feedback (no scroll animations, per client).
 @media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal.is-pending {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
   }
 }

@@ -1,6 +1,7 @@
 import InnerHero from "@/components/sections/InnerHero";
 import ShowcaseRow from "@/components/sections/ShowcaseRow";
 import CtaPanel from "@/components/sections/CtaPanel";
+import ExpertiseLists from "@/components/sections/ExpertiseLists";
 import {
   getCategoriesByGroup,
   getCategoryCoverImage,
@@ -48,6 +49,7 @@ export default async function SolutionsPage() {
           ))}
         </div>
       </section>
+      <ExpertiseLists expertise={home.expertise} />
       <CtaPanel cta={home.cta} />
     </>
   );

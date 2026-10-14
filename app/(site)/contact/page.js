@@ -1,6 +1,13 @@
 import InnerHero from "@/components/sections/InnerHero";
 import EnquirySection from "@/components/sections/EnquirySection";
-import { getCategories, getContactPageContent, getPageHeroImage, getSite } from "@/lib/data";
+import FaqSection from "@/components/sections/FaqSection";
+import {
+  getCategories,
+  getContactPageContent,
+  getHomeContent,
+  getPageHeroImage,
+  getSite,
+} from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -11,11 +18,12 @@ export const metadata = pageMetadata({
 });
 
 export default async function ContactPage() {
-  const [page, site, categories, heroImage] = await Promise.all([
+  const [page, site, categories, heroImage, home] = await Promise.all([
     getContactPageContent(),
     getSite(),
     getCategories(),
     getPageHeroImage("contact"),
+    getHomeContent(),
   ]);
   const { address, mapEmbedUrl } = site.contact;
 
@@ -48,6 +56,7 @@ export default async function ContactPage() {
           />
         </section>
       )}
+      <FaqSection faqs={home.faqs} />
     </>
   );
 }

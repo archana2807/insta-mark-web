@@ -574,7 +574,7 @@ export const featured = {
   // Inner-page hero images (theme "About" layout: big image right of the title).
   pages: {
     about: pick("tailor-made-signage", "branding-071.jpg"),
-    solutions: pick("tailor-made-signage", "branding-057.jpg"),
+    solutions: pick("tailor-made-signage", "branding-067.jpg"),
     projects: pick("tailor-made-signage", "branding-063.jpg"),
     contact: pick("modular-signs", "modular-003.jpg"),
   },

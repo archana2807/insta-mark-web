@@ -39,11 +39,11 @@ export default function ExpertiseLists({ expertise }) {
               <h3 className="expertise-title">
                 <Icon name={g.icon} /> {g.title}
               </h3>
-              <ul className="check-list">
+              <Reveal as="ul" effect="flip-y" stagger={100} className="check-list">
                 {g.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
-              </ul>
+              </Reveal>
             </Reveal>
           ))}
         </div>

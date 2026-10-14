@@ -1,5 +1,6 @@
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
+import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
  * Theme "Brand experience / agency" block: a two-line statement with a static
@@ -14,9 +15,13 @@ export default function StatementBadge({ line1, line2, badgeText, icon = "signpo
         </h2>
         <div className="row align-items-end g-4 g-lg-5">
           <Reveal stagger={250} className="col-lg-8">
-            <p className="statement__title" aria-hidden="true">
-              {line1}
-            </p>
+            <div>
+              <ScrollDrift axis="x" from={-50} to={50}>
+                <p className="statement__title" aria-hidden="true">
+                  {line1}
+                </p>
+              </ScrollDrift>
+            </div>
             <div className="statement__line2" aria-hidden="true">
               <svg className="statement__badge" viewBox="0 0 120 120" role="presentation">
                 <defs>

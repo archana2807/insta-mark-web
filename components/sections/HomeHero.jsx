@@ -4,6 +4,7 @@ import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
 import FancyText from "@/components/ui/FancyText";
 import BtnText from "@/components/ui/BtnText";
+import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /** Theme hero: vertical label + huge headline left, full-bleed image right. */
 export default function HomeHero({ hero, image, establishedYear }) {
@@ -35,13 +36,15 @@ export default function HomeHero({ hero, image, establishedYear }) {
           </div>
           <div className="col-lg-6">
             <div className="hero-split__media load-wipe">
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                priority
-                sizes="(min-width: 992px) 50vw, 100vw"
-              />
+              <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  priority
+                  sizes="(min-width: 992px) 50vw, 100vw"
+                />
+              </ScrollDrift>
               {years > 0 && (
                 <div className="hero-split__badge">
                   <strong>{years}+</strong>

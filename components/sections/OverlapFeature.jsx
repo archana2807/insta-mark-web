@@ -2,6 +2,7 @@ import Image from "next/image";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
+import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
  * Theme "We create highly unique…" block: tall image left, large heading that
@@ -23,7 +24,14 @@ export default function OverlapFeature({
         <div className="row g-0 align-items-center">
           <div className="col-lg-5">
             <Reveal effect="wipe" className="overlap-feature__media">
-              <Image src={image.src} alt={image.alt} fill sizes="(min-width: 992px) 42vw, 100vw" />
+              <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.1}>
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="(min-width: 992px) 42vw, 100vw"
+                />
+              </ScrollDrift>
             </Reveal>
           </div>
           <div className="col-lg-6 px-3 px-sm-4 px-lg-5 pt-5 pt-lg-0">

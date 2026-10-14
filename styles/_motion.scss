@@ -44,8 +44,10 @@ $motion-duration: 0.6s;
   transform-origin: 50% 100%;
 }
 
-// Image wipe: a light panel covers the image and slides off left → right.
-.motion-wipe {
+// Image wipe: a light panel covers the image and slides off left → right
+// (`wipe`) or right → left (`wipe-rl`), 1000 ms as in the theme.
+.motion-wipe,
+.motion-wipe-rl {
   position: relative;
   overflow: hidden;
 
@@ -69,6 +71,32 @@ $motion-duration: 0.6s;
       transform: scaleX(1);
     }
   }
+}
+
+.motion-wipe-rl::after {
+  transform-origin: left center;
+}
+
+// List items swing in around the vertical axis while rising
+// (theme services lists: rotateY 100° → 0, 30 px, 800 ms, 150 ms apart).
+.motion-flip-y {
+  perspective: 1200px;
+}
+
+.motion-flip-y.motion-stagger > * {
+  transform-origin: 0 50%;
+  transition-duration: 0.8s;
+}
+
+.motion-flip-y.motion-stagger.motion-armed > * {
+  opacity: 0;
+  transform: translateY(30px) rotateY(100deg);
+}
+
+// Scroll drift wrapper that fills an image box (components/ui/ScrollDrift.jsx).
+.drift-fill {
+  position: absolute;
+  inset: 0;
 }
 
 // 2. Page-load animations (hero, inner hero) — CSS only, no JS wait ────
@@ -208,4 +236,9 @@ $motion-duration: 0.6s;
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+// Sections with horizontal scroll drift must never widen the page.
+.statement {
+  overflow-x: clip;
 }

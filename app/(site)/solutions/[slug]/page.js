@@ -93,20 +93,20 @@ export default async function CategoryPage({ params }) {
                 eyebrow="Key features"
                 title={<span id="features-title">What you get</span>}
               />
-              <ul className="check-list mt-4">
+              <Reveal as="ul" effect="flip-y" stagger={150} className="check-list mt-4">
                 {category.features.map((f) => (
                   <li key={f}>{f}</li>
                 ))}
-              </ul>
+              </Reveal>
             </Reveal>
             <Reveal className="col-lg-6 offset-lg-1" delay={120}>
               <SectionHeading eyebrow="Applications" title="Where it is used" />
               <p className="mt-4 mb-4">{category.applications}</p>
-              <ul className="tag-list">
+              <Reveal as="ul" effect="flip-y" stagger={80} className="tag-list">
                 {toList(category.applications).map((a) => (
                   <li key={a}>{a}</li>
                 ))}
-              </ul>
+              </Reveal>
             </Reveal>
           </div>
         </div>

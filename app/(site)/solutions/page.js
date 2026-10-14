@@ -4,7 +4,7 @@ import CtaPanel from "@/components/sections/CtaPanel";
 import ExpertiseLists from "@/components/sections/ExpertiseLists";
 import {
   getCategoriesByGroup,
-  getCategoryCoverImage,
+  getExecutedWork,
   getHomeContent,
   getPageHeroImage,
 } from "@/lib/data";
@@ -18,13 +18,15 @@ export const metadata = pageMetadata({
 });
 
 export default async function SolutionsPage() {
-  const [groups, home, heroImage] = await Promise.all([
+  const [groups, home, heroImage, work] = await Promise.all([
     getCategoriesByGroup(),
     getHomeContent(),
     getPageHeroImage("solutions"),
+    getExecutedWork(),
   ]);
   const rows = groups.flatMap((g) => g.items.map((c) => ({ category: c, groupLabel: g.label })));
-  const covers = await Promise.all(rows.map((r) => getCategoryCoverImage(r.category.slug)));
+  // Two executed-work photos per solution (big + small, as in the theme's service blocks).
+  const photos = Object.fromEntries(work.map((g) => [g.category.slug, g.images.slice(0, 2)]));
 
   return (
     <>
@@ -35,14 +37,14 @@ export default async function SolutionsPage() {
         lead={home.about.text}
         breadcrumbs={[{ label: "Solutions", href: "/solutions" }]}
       />
-      <section className="section pt-4">
+      <section className="section">
         <div className="container">
           {rows.map((r, i) => (
             <ShowcaseRow
               key={r.category.slug}
               category={r.category}
               groupLabel={r.groupLabel}
-              cover={covers[i]}
+              images={photos[r.category.slug]}
               number={i + 1}
               reverse={i % 2 === 1}
             />

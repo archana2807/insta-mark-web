@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { breadcrumbJsonLd } from "@/lib/seo";
 import FancyText from "@/components/ui/FancyText";
+import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
  * Inner-page hero (theme "About" layout): vertical label + breadcrumb + large
@@ -55,13 +56,15 @@ export default function InnerHero({
             {!image && fallback}
             {image && (
               <div className="inner-hero__media load-wipe">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  priority
-                  sizes="(min-width: 992px) 58vw, 100vw"
-                />
+                <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    priority
+                    sizes="(min-width: 992px) 58vw, 100vw"
+                  />
+                </ScrollDrift>
               </div>
             )}
           </div>

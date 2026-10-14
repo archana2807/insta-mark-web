@@ -187,49 +187,94 @@
   }
 }
 
-// ── Solutions showcase rows (theme "latest projects") ──
-.showcase-row {
+// ── Solutions: service blocks (theme "Branding Agency – Services") ──
+.service-block {
   position: relative;
 
   & + & {
-    margin-top: clamp(4rem, 3rem + 4vw, 7rem);
-  }
-
-  &__media {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: $surface;
-
-    img {
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover img {
-      transform: scale(1.02);
-    }
+    margin-top: clamp(5rem, 3.5rem + 5vw, 9rem);
   }
 
   &__number {
     display: block;
-    margin-bottom: -0.15em;
     font-family: $headings-font-family;
-    font-size: clamp(5rem, 3rem + 6vw, 9rem);
-    font-weight: 600;
-    line-height: 0.8;
+    font-size: clamp(4.5rem, 3rem + 5vw, 8rem);
+    font-weight: 700;
+    line-height: 0.85;
     letter-spacing: -0.06em;
     color: #e3e3e3;
 
-    // Purely decorative: rendered from data-num so it is not page text
-    // (keeps the theme's light grey without failing contrast checks).
+    // Decorative: rendered from data-num so it isn't page text (contrast).
     &::before {
       content: attr(data-num);
     }
   }
 
-  h2 {
-    margin-bottom: 1.25rem;
+  &__title {
+    font-size: clamp(1.9rem, 1.4rem + 1.4vw, 2.6rem);
+    letter-spacing: -0.03em;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: $brand-teal;
+      }
+    }
+  }
+
+  &__photo {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: $surface;
+
+    &--big {
+      aspect-ratio: 16 / 10;
+    }
+
+    // Same height as the big photo in the 8/4 split.
+    &--small {
+      aspect-ratio: 4 / 5;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  &__placeholder {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 6;
+    font-size: 5rem;
+    color: $ink;
+    background: radial-gradient(circle at 25% 20%, rgba($brand-orange, 0.14), transparent 55%),
+      radial-gradient(circle at 80% 85%, rgba($brand-teal, 0.16), transparent 55%), $surface;
+  }
+}
+
+// Feature list with "+" markers (theme list-style-02).
+.plus-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding: 0.7rem 0 0.7rem 1.6rem;
+    border-bottom: 1px solid $line;
+    font-family: $headings-font-family;
+    font-weight: 500;
+    color: $ink;
+
+    &::before {
+      @include css-icon("plus-lg", 0.8rem);
+      position: absolute;
+      left: 0;
+      top: calc(0.7rem + 0.45em);
+    }
   }
 }
 

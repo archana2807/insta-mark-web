@@ -13,7 +13,7 @@ export default function StatementBadge({ line1, line2, badgeText, icon = "signpo
           {line1} {line2}
         </h2>
         <div className="row align-items-end g-4 g-lg-5">
-          <div className="col-lg-8">
+          <Reveal stagger={250} className="col-lg-8">
             <p className="statement__title" aria-hidden="true">
               {line1}
             </p>
@@ -26,9 +26,11 @@ export default function StatementBadge({ line1, line2, badgeText, icon = "signpo
                     <stop offset="1" stopColor="#177375" />
                   </linearGradient>
                 </defs>
-                <text fill="url(#badge-gradient)">
-                  <textPath href="#badge-circle">{badgeText}</textPath>
-                </text>
+                <g className="statement__badge-ring">
+                  <text fill="url(#badge-gradient)">
+                    <textPath href="#badge-circle">{badgeText}</textPath>
+                  </text>
+                </g>
                 <foreignObject x="44" y="44" width="32" height="32">
                   <div style={{ fontSize: 22, color: "#1d1d1d", lineHeight: 1 }}>
                     <Icon name={icon} />
@@ -37,7 +39,7 @@ export default function StatementBadge({ line1, line2, badgeText, icon = "signpo
               </svg>
               <span className="statement__title">{line2}</span>
             </div>
-          </div>
+          </Reveal>
           <Reveal className="col-lg-4">
             <p className="mb-0">{text}</p>
           </Reveal>

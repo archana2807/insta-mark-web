@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
+import FancyText from "@/components/ui/FancyText";
+import BtnText from "@/components/ui/BtnText";
 
 /** Theme hero: vertical label + huge headline left, full-bleed image right. */
 export default function HomeHero({ hero, image, establishedYear }) {
@@ -14,25 +16,25 @@ export default function HomeHero({ hero, image, establishedYear }) {
           <div className="col-lg-6 hero-split__text-col px-3 px-sm-4 px-lg-5">
             <div className="d-flex w-100 ps-xl-4">
               <div className="hero-split__vertical" aria-hidden="true">
-                Signage · Wayfinding · Road Safety
+                <FancyText text="Signage · Wayfinding · Road Safety" />
               </div>
-              <div>
+              <div className="load-stagger">
                 <Eyebrow>{hero.eyebrow}</Eyebrow>
                 <h1 id="hero-title">{hero.title}</h1>
                 <p className="lead-text mb-5">{hero.text}</p>
                 <div className="d-flex flex-wrap gap-3">
                   <Link href={hero.primaryCta.href} className="btn btn-gradient btn-lg">
-                    {hero.primaryCta.label} <Icon name="arrow-right" />
+                    <BtnText>{hero.primaryCta.label}</BtnText> <Icon name="arrow-right" />
                   </Link>
                   <Link href={hero.secondaryCta.href} className="btn btn-outline-ink btn-lg">
-                    {hero.secondaryCta.label}
+                    <BtnText>{hero.secondaryCta.label}</BtnText>
                   </Link>
                 </div>
               </div>
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="hero-split__media">
+            <div className="hero-split__media load-wipe">
               <Image
                 src={image.src}
                 alt={image.alt}

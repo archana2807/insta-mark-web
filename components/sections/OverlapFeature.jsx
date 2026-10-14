@@ -22,9 +22,9 @@ export default function OverlapFeature({
       <div className="container-fluid px-0">
         <div className="row g-0 align-items-center">
           <div className="col-lg-5">
-            <div className="overlap-feature__media">
+            <Reveal effect="wipe" className="overlap-feature__media">
               <Image src={image.src} alt={image.alt} fill sizes="(min-width: 992px) 42vw, 100vw" />
-            </div>
+            </Reveal>
           </div>
           <div className="col-lg-6 px-3 px-sm-4 px-lg-5 pt-5 pt-lg-0">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}

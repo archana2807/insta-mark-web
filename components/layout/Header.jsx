@@ -7,6 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import BrandLogo from "@/components/ui/BrandLogo";
 import ClientIcon from "@/components/ui/ClientIcon";
+import BtnText from "@/components/ui/BtnText";
 
 function isActive(pathname, href) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -93,7 +94,7 @@ export default function Header({ nav, solutionGroups }) {
           <div className="d-flex align-items-center gap-2 ms-auto ms-lg-0">
             <Link href="/contact" className="btn btn-outline-ink d-none d-sm-inline-flex">
               <ClientIcon name="envelope" />
-              Get a Quote
+              <BtnText>Get a Quote</BtnText>
             </Link>
             <button
               type="button"

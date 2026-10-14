@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import ClientIcon from "@/components/ui/ClientIcon";
 import "yet-another-react-lightbox/styles.css";
+import Reveal from "@/components/ui/Reveal";
 
 // Lightbox JS only loads when someone opens a photo.
 const Lightbox = dynamic(() => import("yet-another-react-lightbox"), { ssr: false });
@@ -24,7 +25,7 @@ export default function Gallery({ images, label, initial = 9 }) {
 
   return (
     <>
-      <ul className="gallery-grid list-unstyled mb-0" aria-label={label}>
+      <Reveal as="ul" stagger={80} className="gallery-grid list-unstyled mb-0" aria-label={label}>
         {visible.map((img, i) => (
           <li key={img.src}>
             <button
@@ -42,7 +43,7 @@ export default function Gallery({ images, label, initial = 9 }) {
             </button>
           </li>
         ))}
-      </ul>
+      </Reveal>
       {hidden > 0 && (
         <div className="text-center mt-5">
           <button

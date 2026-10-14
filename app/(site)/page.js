@@ -17,6 +17,7 @@ import {
 } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 import Icon from "@/components/ui/Icon";
+import BtnText from "@/components/ui/BtnText";
 
 export const metadata = pageMetadata({
   title: null,
@@ -69,7 +70,7 @@ export default async function HomePage() {
               text="Click a category to see the products, real projects we have executed, and to request a quote."
             />
             <Link href="/solutions" className="btn btn-outline-ink btn-lg flex-shrink-0">
-              View all solutions <Icon name="arrow-right" />
+              <BtnText>View all solutions</BtnText> <Icon name="arrow-right" />
             </Link>
           </div>
           <CategoryGrid categories={categories} covers={covers} />
@@ -111,7 +112,7 @@ export default async function HomePage() {
               text={home.trustedBy.text}
             />
             <Link href="/projects" className="btn btn-dark btn-lg flex-shrink-0">
-              See all projects <Icon name="arrow-right" />
+              <BtnText>See all projects</BtnText> <Icon name="arrow-right" />
             </Link>
           </div>
           <Gallery images={recentWork} label="Recent executed work" />

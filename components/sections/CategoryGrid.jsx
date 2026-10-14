@@ -14,11 +14,11 @@ export default function CategoryGrid({
   const Title = headingLevel;
 
   return (
-    <div className="row g-3 gy-4 g-sm-4 gy-sm-5">
+    <Reveal stagger={150} className="row g-3 gy-4 g-sm-4 gy-sm-5">
       {categories.map((c, i) => {
         const cover = covers[c.slug];
         return (
-          <Reveal className="col-6 col-lg-3" key={c.slug}>
+          <div className="col-6 col-lg-3" key={c.slug}>
             <Link href={`/solutions/${c.slug}`} className="category-card">
               <div className="category-card__media">
                 {cover ? (
@@ -43,9 +43,9 @@ export default function CategoryGrid({
                 </span>
               </div>
             </Link>
-          </Reveal>
+          </div>
         );
       })}
-    </div>
+    </Reveal>
   );
 }

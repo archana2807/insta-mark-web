@@ -181,7 +181,7 @@ vercel.json            build command + cron schedule
 
 - Home follows the meeting order exactly: banner → 1–2 line about → product grid → working process → sectors → executed-work pictures → CTA (why choose → About, expertise lists → Solutions, FAQs → Contact)
 - Category pages: client write-up with a project photo → product range (when catalogue images arrive) → executed work → enquiry form on the same page
-- Scroll fade-in animations removed; hovers shortened (0.3 s, 2 % zoom)
+- Motion rebuilt like the Crafto Branding Agency demo (own CSS, no library): staggered fade-ups, 3D flip on tile grids, image wipes, blur-in vertical label, rolling counters, rotating badge, switch-text buttons; no parallax/marquee/sliders; off for reduced-motion users
 - Galleries: even grid of square tiles, 9 shown + "Show all N photos", lightbox for the full image; product grid 2-up on phones (picture + name)
 
 **Phase 6 — preview live (13 Oct 2026):** https://insta-mark-web.vercel.app (Vercel Hobby + Neon Singapore, auto-deploys from `main`). Live checks passed: pages, security headers, enquiry → Neon → admin, admin login, cron, mobile. Still to do before the public launch: Vercel Pro (commercial use), Resend email, Turnstile, GA4, Cloudinary, client domain and content.

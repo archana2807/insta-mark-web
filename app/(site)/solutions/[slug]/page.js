@@ -11,6 +11,7 @@ import { getCategories, getCategoryCoverImage, getCategoryPage, getSite } from "
 import { pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { toList } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
+import BtnText from "@/components/ui/BtnText";
 
 // Unknown slugs 404 via notFound() below. Do NOT set `dynamicParams = false`:
 // with it, Next.js 15 answers on-demand revalidation (revalidateTag after an
@@ -73,11 +74,11 @@ export default async function CategoryPage({ params }) {
       >
         <div className="d-flex flex-wrap gap-3 mt-4">
           <Link href="#enquiry" className="btn btn-dark btn-lg">
-            Get a quote <Icon name="arrow-right" />
+            <BtnText>Get a quote</BtnText> <Icon name="arrow-right" />
           </Link>
           {category.executedImages.length > 0 && (
             <Link href="#work" className="btn btn-outline-ink btn-lg">
-              See our work
+              <BtnText>See our work</BtnText>
             </Link>
           )}
         </div>

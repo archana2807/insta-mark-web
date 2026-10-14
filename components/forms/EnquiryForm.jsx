@@ -12,6 +12,7 @@ import {
 } from "@/lib/validation/enquiry-rules";
 import Turnstile from "./Turnstile";
 import ClientIcon from "@/components/ui/ClientIcon";
+import BtnText from "@/components/ui/BtnText";
 
 const initialState = { status: "idle" };
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -385,7 +386,7 @@ export default function EnquiryForm({
               </>
             ) : (
               <>
-                Get a Quote <ClientIcon name="arrow-right" />
+                <BtnText>Get a Quote</BtnText> <ClientIcon name="arrow-right" />
               </>
             )}
           </button>

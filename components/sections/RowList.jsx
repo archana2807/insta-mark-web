@@ -1,4 +1,5 @@
 import SectionHeading from "@/components/ui/SectionHeading";
+import Reveal from "@/components/ui/Reveal";
 
 /** Theme "We work with brands…" block: heading left, title | text rows right. */
 export default function RowList({ eyebrow, title, id, rows, className = "section" }) {
@@ -10,14 +11,14 @@ export default function RowList({ eyebrow, title, id, rows, className = "section
             <SectionHeading eyebrow={eyebrow} title={<span id={id}>{title}</span>} />
           </div>
           <div className="col-lg-7">
-            <ul className="row-list">
+            <Reveal as="ul" stagger={120} className="row-list">
               {rows.map((r) => (
                 <li key={r.title}>
                   <h3>{r.title}</h3>
                   <p>{r.text}</p>
                 </li>
               ))}
-            </ul>
+            </Reveal>
           </div>
         </div>
       </div>

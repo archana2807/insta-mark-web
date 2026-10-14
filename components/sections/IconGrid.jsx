@@ -1,8 +1,9 @@
 import Icon from "@/components/ui/Icon";
+import Reveal from "@/components/ui/Reveal";
 /** Bordered tile grid with icons — Industries We Serve / Why Choose Us. */
 export default function IconGrid({ items, cols = "col-6 col-md-4 col-lg-3" }) {
   return (
-    <ul className="row g-0 icon-grid list-unstyled mb-0">
+    <Reveal as="ul" effect="flip" stagger={80} className="row g-0 icon-grid list-unstyled mb-0">
       {items.map((item) => (
         <li className={cols} key={item.name ?? item.title}>
           <div className="icon-tile">
@@ -12,6 +13,6 @@ export default function IconGrid({ items, cols = "col-6 col-md-4 col-lg-3" }) {
           </div>
         </li>
       ))}
-    </ul>
+    </Reveal>
   );
 }

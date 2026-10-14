@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { breadcrumbJsonLd } from "@/lib/seo";
+import FancyText from "@/components/ui/FancyText";
 
 /**
  * Inner-page hero (theme "About" layout): vertical label + breadcrumb + large
@@ -25,10 +26,10 @@ export default function InnerHero({
             <div className="d-flex w-100 ps-xl-4">
               {label && (
                 <div className="inner-hero__vertical" aria-hidden="true">
-                  {label}
+                  <FancyText text={label} />
                 </div>
               )}
-              <div>
+              <div className="load-stagger">
                 <nav aria-label="Breadcrumb">
                   <ol className="breadcrumb">
                     {trail.map((b, i) =>
@@ -53,7 +54,7 @@ export default function InnerHero({
           <div className="col-lg-7">
             {!image && fallback}
             {image && (
-              <div className="inner-hero__media">
+              <div className="inner-hero__media load-wipe">
                 <Image
                   src={image.src}
                   alt={image.alt}

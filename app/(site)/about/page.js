@@ -15,6 +15,7 @@ import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
 import { getAboutContent, getHomeContent } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
+import BtnText from "@/components/ui/BtnText";
 
 export const metadata = pageMetadata({
   title: "About Us",
@@ -55,10 +56,15 @@ export default async function AboutPage() {
           <div className="row align-items-center g-4 g-lg-5">
             <div className="col-lg-6">
               <div className="about-collage">
-                {about.featuredImages.map((img) => (
-                  <div className="about-collage__item" key={img.src}>
+                {about.featuredImages.map((img, i) => (
+                  <Reveal
+                    effect="wipe"
+                    delay={i * 200}
+                    className="about-collage__item"
+                    key={img.src}
+                  >
                     <Image src={img.src} alt={img.alt} fill sizes="(min-width: 992px) 25vw, 50vw" />
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             </div>
@@ -71,10 +77,10 @@ export default async function AboutPage() {
               <p className="mb-5">{about.mission}</p>
               <div className="d-flex flex-wrap gap-3">
                 <Link href="/contact" className="btn btn-dark btn-lg">
-                  <Icon name="envelope" /> Let&apos;s talk
+                  <Icon name="envelope" /> <BtnText>Let’s talk</BtnText>
                 </Link>
                 <Link href="/solutions" className="btn btn-outline-ink btn-lg">
-                  <Icon name="grid" /> Our solutions
+                  <Icon name="grid" /> <BtnText>Our solutions</BtnText>
                 </Link>
               </div>
             </Reveal>

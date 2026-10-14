@@ -5,9 +5,9 @@ import { pad2 } from "@/lib/format";
 export default function ProcessSteps({ steps }) {
   const cols = steps.length >= 5 ? "col-sm-6 col-lg" : "col-sm-6 col-lg-3";
   return (
-    <ol className="row g-4 g-lg-5 list-unstyled mb-0">
+    <Reveal as="ol" stagger={200} className="row g-4 g-lg-5 list-unstyled mb-0">
       {steps.map((step, i) => (
-        <Reveal as="li" className={cols} key={step.title} delay={i * 100}>
+        <li className={cols} key={step.title}>
           <div className="process-step d-flex flex-column">
             <h3>{step.title}</h3>
             <p className="flex-grow-1">{step.text}</p>
@@ -15,8 +15,8 @@ export default function ProcessSteps({ steps }) {
               {pad2(i + 1)}
             </div>
           </div>
-        </Reveal>
+        </li>
       ))}
-    </ol>
+    </Reveal>
   );
 }

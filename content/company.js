@@ -48,7 +48,7 @@ export const home = {
   quote: "We craft ideas into impactful signage experiences.",
   // Logos of projects we have worked on, from the company profile PDF (client asked for
   // 4–5 right under the banner, 21 Oct 2026). Adani Realty and Tata Projects are too faint
-  // in the PDF; add them when clean files arrive.
+  // in the PDF; swap in clean files when they arrive.
   projectLogos: [
     {
       name: "Reliance Industries Limited",
@@ -58,6 +58,7 @@ export const home = {
     },
     { name: "Nykaa", src: "/images/clients/nykaa.png", width: 155, height: 63 },
     { name: "Rustomjee", src: "/images/clients/rustomjee.png", width: 179, height: 32 },
+    { name: "Nirlon", src: "/images/clients/nirlon.png", width: 162, height: 34 },
     {
       name: "Brookfield Properties",
       src: "/images/clients/brookfield-properties.png",

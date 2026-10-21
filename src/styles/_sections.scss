@@ -119,6 +119,12 @@
   position: relative;
   min-height: 540px;
 
+  // The wipe entrance (_motion.scss, loaded later) sets `position: relative` on the same
+  // element; the extra specificity keeps the photos laid out as an overlapping collage.
+  > .about-collage__item {
+    position: absolute;
+  }
+
   &__item {
     position: absolute;
     overflow: hidden;

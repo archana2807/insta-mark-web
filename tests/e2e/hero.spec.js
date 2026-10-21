@@ -80,6 +80,29 @@ test("project logos sit right under the banner: 4–5 logos that load (R-3.10)",
   expect(band.y - (hero.y + hero.height)).toBeLessThan(40);
 });
 
+test("home About: three overlapping photos on the left, the company text on the right", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const about = page.locator("#about-title").locator("xpath=ancestor::section[1]");
+  const imgs = about.locator(".about-collage__item img");
+  await expect(imgs).toHaveCount(3);
+  const text = await about.locator("#about-title").boundingBox();
+  const first = await about.locator(".about-collage").boundingBox();
+  expect(first.x + first.width).toBeLessThanOrEqual(text.x + 1);
+  // The photos overlap each other (a collage, not three separate tiles). They reveal on
+  // scroll, so scroll to them and wait until the animation has settled.
+  await about.locator(".about-collage").scrollIntoViewIfNeeded();
+  const overlapCount = () =>
+    about.locator(".about-collage__item").evaluateAll((items) => {
+      const r = items.map((el) => el.getBoundingClientRect());
+      const hit = (a, b) =>
+        a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      return [hit(r[0], r[1]), hit(r[0], r[2]), hit(r[1], r[2])].filter(Boolean).length;
+    });
+  await expect.poll(overlapCount, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
+});
+
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
   page,
 }) => {

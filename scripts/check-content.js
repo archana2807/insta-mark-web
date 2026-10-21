@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { gallery } from "../content/gallery.js";
 import { categories } from "../content/categories.js";
-import { industries, whyChooseUs } from "../content/company.js";
+import { home, industries, whyChooseUs } from "../content/company.js";
 import { ICONS } from "../src/components/ui/icons.generated.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -46,6 +46,21 @@ for (const [slug, images] of Object.entries(gallery)) {
     }
   }
   if (!images.length) console.warn(`warn: no photos yet for "${slug}"`);
+}
+
+// The logo row under the home banner: files exist and the declared sizes are real.
+for (const logo of home.projectLogos) {
+  const file = path.join(root, "public", logo.src);
+  if (!fs.existsSync(file)) {
+    errors.push(`${logo.src}: file not found`);
+    continue;
+  }
+  const meta = await sharp(file).metadata();
+  if (meta.width !== logo.width || meta.height !== logo.height) {
+    errors.push(
+      `${logo.src}: declared ${logo.width}x${logo.height}, actual ${meta.width}x${meta.height}`,
+    );
+  }
 }
 
 if (errors.length) {

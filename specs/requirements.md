@@ -55,7 +55,7 @@ except where noted as an open question (§11).
 | R-3.7 | Industries We Serve: 12 sectors. | S1, S2, S3 | ✅ (name differences, Q4) |
 | R-3.8 | The Working Process: 4 steps (Site Survey, Design Concept, Manufacturing, Installation) with the S3 text. | S1, S3 | ✅ |
 | R-3.9 | Quote: "We craft ideas into impactful signage experiences." | S2, S3 | ⬜ not shown anywhere |
-| R-3.10 | Featured Projects / client logos ("pick logos from the website") + "Trusted by Leading Brands" text. | S2, S3 | 🟡 text and photos shown; logos not supplied yet |
+| R-3.10 | Featured Projects / client logos ("pick logos from the website") + "Trusted by Leading Brands" text. | S2, S3 | 🟡 text and photos shown; since 21 Oct 2026 a row of 4 project logos (from the company profile PDF) sits right under the banner; more logos when clean files arrive |
 | R-3.11 | Pictures of executed work near the end of the page. | S1 | ✅ |
 | R-3.12 | CTA "Let's Build Smarter Spaces Together." with **Get a Free Consultation** and **Contact Our Team**. | S2, S3 | ✅ |
 | R-3.13 | FAQs (5) on the home page. | S2, S3 | 🟡 moved to Contact on 14 Oct for brevity; S3 lists them on Home (Q1) |

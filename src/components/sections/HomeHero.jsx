@@ -35,9 +35,7 @@ function BannerPicture({ banner, fallback }) {
 }
 
 /** Theme hero: huge headline left, full-bleed image right (no vertical label, R-3.4). */
-export default function HomeHero({ hero, image, banner = null, establishedYear }) {
-  const years = establishedYear ? new Date().getFullYear() - establishedYear : null;
-
+export default function HomeHero({ hero, image, banner = null }) {
   return (
     <section className="hero-split" aria-labelledby="hero-title">
       <div className="container-fluid px-0">
@@ -74,12 +72,6 @@ export default function HomeHero({ hero, image, banner = null, establishedYear }
                   />
                 )}
               </ScrollDrift>
-              {years > 0 && (
-                <div className="hero-split__badge">
-                  <strong>{years}+</strong>
-                  <span>Years of signage expertise</span>
-                </div>
-              )}
             </div>
           </div>
         </div>

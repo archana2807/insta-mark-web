@@ -64,24 +64,21 @@ test("the home banner has no vertical side label (inner pages keep theirs, quest
   await expect(page.locator(".inner-hero__vertical")).toHaveCount(1);
 });
 
-test("the years badge stays hidden until a founding year is set in admin", async ({ page }) => {
+test("the years badge is gone, even when a founding year is set in admin", async ({ page }) => {
+  // Removed on 21 Oct 2026: the client confirmed "10+ years" was incorrect.
   await login(page);
-  const badge = page.locator(".hero-split__badge");
+  const hero = page.locator(".hero-split");
 
-  await saveFoundedYear(page, "");
-  await page.goto("/");
-  await expect(page.locator(".hero-split")).toBeVisible();
-  await expect(badge).toHaveCount(0);
-  await expect(page.locator("main")).not.toContainText("Years of signage expertise");
+  for (const year of ["", "2016"]) {
+    await saveFoundedYear(page, year);
+    await page.goto("/");
+    await expect(hero).toBeVisible();
+    await expect(hero.locator(".hero-split__badge")).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText(/years of signage expertise/i);
+    await expect(hero).not.toContainText(/\d+\+/); // no "10+" style figure in the banner
+  }
 
-  // Once the client confirms the year and an admin enters it, the badge appears.
-  await saveFoundedYear(page, "2016");
-  await page.goto("/");
-  await expect(badge).toContainText(`${new Date().getFullYear() - 2016}+`);
-
-  await saveFoundedYear(page, "");
-  await page.goto("/");
-  await expect(badge).toHaveCount(0);
+  await saveFoundedYear(page, ""); // leave the test database as it was
 });
 
 test("About 'Why Choose Us' shows the six items from the client's About text", async ({ page }) => {

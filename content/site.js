@@ -10,9 +10,10 @@ export const site = {
   tagline: "Signage That Guides. Safety That Lasts.",
   description:
     "Insta Mark delivers end-to-end design, manufacturing and installation of architectural signage, wayfinding systems and road safety solutions across India.",
-  // Unconfirmed (IndiaMART listing says 2016; question 3). Stays null — and the
-  // "years of expertise" badge stays hidden — until the client confirms it and an
-  // admin enters it in Settings (R-1.5).
+  // Unconfirmed (IndiaMART listing says 2016; question 3). Stays null until the client
+  // confirms it and an admin enters it in Settings (R-1.5). Only used in search-engine
+  // data (JSON-LD foundingDate); the "years of expertise" badge was removed (21 Oct 2026,
+  // the client said it was incorrect).
   establishedYear: null,
   city: "Mumbai",
   contact: {

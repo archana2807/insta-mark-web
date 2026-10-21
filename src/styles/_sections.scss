@@ -34,29 +34,6 @@
       object-fit: cover;
     }
   }
-
-  &__badge {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    z-index: 2;
-    padding: 1.5rem 1.75rem;
-    background: #fff;
-    min-width: 220px;
-
-    strong {
-      display: block;
-      font-family: $headings-font-family;
-      font-size: 2.6rem;
-      line-height: 1;
-      color: $ink;
-      letter-spacing: -0.04em;
-    }
-
-    span {
-      font-size: 0.9rem;
-    }
-  }
 }
 
 // ── About collage (3 overlapping images) ───────────────

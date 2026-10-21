@@ -10,7 +10,6 @@ import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
-import * as settingService from "@/server/modules/settings/setting.service";
 import { pageMetadata } from "@/lib/seo";
 import Icon from "@/components/ui/Icon";
 import BtnText from "@/components/ui/BtnText";
@@ -29,9 +28,8 @@ export const metadata = pageMetadata({
  * Contact and the category pages.
  */
 export default async function HomePage() {
-  const [home, site, categories, work] = await Promise.all([
+  const [home, categories, work] = await Promise.all([
     pageSectionService.getHomeContent(),
-    settingService.getSite(),
     categoryService.listCategories(),
     categoryService.listExecutedWork(),
   ]);
@@ -49,12 +47,7 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. Banner + tagline */}
-      <HomeHero
-        hero={home.hero}
-        image={home.featured.hero}
-        banner={home.banner}
-        establishedYear={site.establishedYear}
-      />
+      <HomeHero hero={home.hero} image={home.featured.hero} banner={home.banner} />
 
       {/* 2. About — one or two lines */}
       <AboutIntro about={home.about} />

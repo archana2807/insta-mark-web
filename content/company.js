@@ -3,8 +3,10 @@
 
 export const home = {
   hero: {
-    eyebrow: "Architectural signage & road safety",
-    title: "Signage That Guides. Safety That Lasts.",
+    // Swapped on 21 Oct 2026 (owner's decision): the big H1 names the business, the small
+    // label above it carries the tagline. Styling is unchanged.
+    eyebrow: "Signage That Guides. Safety That Lasts.",
+    title: "Architectural Signage & Road Safety",
     text: "From intelligent wayfinding and architectural signage to road safety solutions, Insta Mark delivers end-to-end design, manufacturing, and installation for spaces that are smarter, safer, and built to perform.",
     primaryCta: { label: "Explore Our Solutions", href: "/solutions" },
     secondaryCta: { label: "Request a Consultation", href: "/contact" },

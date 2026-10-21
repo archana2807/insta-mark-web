@@ -220,13 +220,18 @@ test("gallery order / cover / remove", async () => {
     .catch(() => {});
   const secondAlt = await p.locator(".image-manager__item textarea").nth(1).inputValue();
   check("move down reorders gallery", secondAlt === firstAlt);
-  const pub = await (await fetch(`${base}/solutions/road-safety-products`)).text();
+  const newFirstAlt = await p.locator(".image-manager__item textarea").first().inputValue();
+  const esc = (t) => t.replace(/&/g, "&amp;");
+  // Compare inside the gallery only: since task 03 the hero shows the chosen cover (R-8.2),
+  // which does not move with the gallery order.
   check(
     "public gallery order follows admin",
-    (await eventually(
-      "/solutions/road-safety-products",
-      (h) => h.indexOf(firstAlt.replace(/&/g, "&amp;")) > h.indexOf("Our work on site"),
-    )) && Boolean(pub),
+    await eventually("/solutions/road-safety-products", (h) => {
+      const gallery = h.slice(h.indexOf("Our work on site"));
+      const a = gallery.indexOf(esc(newFirstAlt));
+      const b = gallery.indexOf(esc(firstAlt));
+      return a !== -1 && b !== -1 && a < b;
+    }),
   );
   p.once("dialog", (d) => d.accept());
   await p

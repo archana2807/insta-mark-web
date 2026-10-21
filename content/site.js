@@ -10,8 +10,10 @@ export const site = {
   tagline: "Signage That Guides. Safety That Lasts.",
   description:
     "Insta Mark delivers end-to-end design, manufacturing and installation of architectural signage, wayfinding systems and road safety solutions across India.",
-  // TODO(client): confirm founding year (IndiaMART listing says 2016).
-  establishedYear: 2016,
+  // Unconfirmed (IndiaMART listing says 2016; question 3). Stays null — and the
+  // "years of expertise" badge stays hidden — until the client confirms it and an
+  // admin enters it in Settings (R-1.5).
+  establishedYear: null,
   city: "Mumbai",
   contact: {
     phone: null, // e.g. "+91 98XXX XXXXX"

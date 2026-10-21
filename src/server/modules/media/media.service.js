@@ -27,7 +27,11 @@ const kinds = () => ({
     entity: "category",
     folder: (slug, type) => `insta-mark/categories/${slug}/${(type ?? "EXECUTED").toLowerCase()}`,
     adminPath: (id) => `/admin/categories/${id}`,
-    revalidate: (slug) => revalidateGallery(slug),
+    // The category list carries the cover (R-8.2), so refresh it with the gallery.
+    revalidate: (slug) => {
+      revalidateGallery(slug);
+      revalidateCategory(slug);
+    },
   },
   project: {
     gallery: projectService.gallery,
@@ -178,7 +182,6 @@ export async function setCoverImage({ kind, id }, actor) {
     cover: [null, img.assetId],
   });
   cfg.revalidate(img.owner.slug);
-  if (kind === "category") revalidateCategory(img.owner.slug);
   revalidatePage(cfg.adminPath(img.ownerId));
 }
 

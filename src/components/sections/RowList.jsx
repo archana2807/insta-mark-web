@@ -15,7 +15,7 @@ export default function RowList({ eyebrow, title, id, rows, className = "section
               {rows.map((r) => (
                 <li key={r.title}>
                   <h3>{r.title}</h3>
-                  <p>{r.text}</p>
+                  {r.text && <p>{r.text}</p>}
                 </li>
               ))}
             </Reveal>

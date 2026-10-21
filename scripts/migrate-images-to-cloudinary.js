@@ -13,7 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PrismaClient } from "@prisma/client";
-import { signParams } from "../lib/cloudinary.js";
+import { signParams } from "../src/server/integrations/cloudinary/cloudinary.adapter.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DRY_RUN = process.argv.includes("--dry-run");

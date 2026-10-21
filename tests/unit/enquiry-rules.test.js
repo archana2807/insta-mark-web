@@ -7,7 +7,7 @@ import {
   normalizePhone,
   suggestEmail,
   validateField,
-} from "../../lib/validation/enquiry-rules.js";
+} from "../../src/shared/schemas/enquiry-rules.js";
 
 const check = (name, value, opts) => validateField(name, cleanField(name, value), opts);
 

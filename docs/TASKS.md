@@ -7,7 +7,7 @@
 
 - [x] **01 `01-kit-setup`** — kit docs and rules (no code)
 
-- [~] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
+- [x] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
   - Done when: the Playwright suites (enquiry form, admin, a11y/links/SEO crawl, 390 px overflow) live in `tests/e2e/` and run with one npm command.
   - Done when: the test runner starts PGlite on 127.0.0.1:5433 and **refuses to run** if `DATABASE_URL` points anywhere else (R-13.4).
   - Done when: ESLint is set up (`eslint.config.mjs`, `next/core-web-vitals`) and `npm run lint` passes without disabling rules.
@@ -23,7 +23,7 @@
   - Done when: the category cover chosen in admin is the photo shown on the category hero, product grid and Solutions page (R-8.2).
   - Done when: the e2e tests cover these four changes.
 
-- [ ] **04 `04-mvc-structure`** (L — split into 04a enquiries, 04b content, 04c admin if too big) — Website looks different: **no**
+- [x] **04 `04-mvc-structure`** (L — split into 04a enquiries, 04b content, 04c admin if too big) — Website looks different: **no**
   - Done when: code lives in `src/` module folders with `<module>.controller.js`, `.service.js`, `.repository.js` (2-ARCHITECTURE §3).
   - Done when: Prisma is imported only in `*.repository.js` and `src/server/db.js`, and an ESLint rule fails the build otherwise (R-11.2).
   - Done when: controllers do parse → auth → ONE service call; services call other modules only through their services (R-11.1, R-11.4).

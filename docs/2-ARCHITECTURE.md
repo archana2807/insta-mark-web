@@ -65,7 +65,7 @@ src/
 content/           stays as is for now (§10, D5)
 prisma/ · public/ · tests/unit · tests/e2e
 ```
-**Today** the code is grouped by file type (`app/`, `components/`, `lib/`, `content/`, no `src/`), and server actions call Prisma directly. Task 04 moves it; behaviour and look must not change.
+**Since task 04** the code follows this layout. Page copy from `/content` (D5) is served by a service-only module, `modules/page-sections/`, until the `page_sections` table exists.
 
 ### 3.2 Naming (spec-update §2.4)
 | Thing | Convention | Example |
@@ -141,38 +141,38 @@ Notes:
 ## 5. API list
 No public REST API and **no `docs/api/openapi.yaml`** (decision D12). This list is the contract:
 update it **before** adding or changing any server action or route handler.
-Paths are today's; task 04 moves each action into `src/server/modules/<module>/<module>.controller.js`.
+Since task 04 every action lives in `src/server/modules/<module>/<singular>.controller.js`.
 
 ### 5.1 Server actions (`'use server'`)
-| Action | File today | Who can call | Purpose | Feature |
+| Action | File | Who can call | Purpose | Feature |
 |---|---|---|---|---|
-| `submitEnquiry` | `lib/actions/enquiry.js` | Public | Enquiry form: validate → store → email → `/thank-you` | F5 |
-| `login` | `lib/admin/actions/auth.js` | Public | Admin login (rate limit, lockout, audit) | F6 |
-| `logout` | `lib/admin/actions/auth.js` | Editor, Admin | Log out (audit) | F6 |
-| `changeOwnPassword` | `lib/admin/actions/auth.js` | Editor, Admin | Change own password; signs out other sessions | F6 |
-| `updateCategory` | `lib/admin/actions/categories.js` | Editor, Admin | Edit category text, group, icon, SEO, order, active | F7 |
-| `getUploadSignature` | `lib/admin/actions/media.js` | Editor, Admin | Signed Cloudinary params for a gallery upload | F7 |
-| `attachUploadedImage` | `lib/admin/actions/media.js` | Editor, Admin | Verify upload, save asset, add to category/project gallery | F7 |
-| `updateImage` | `lib/admin/actions/media.js` | Editor, Admin | Alt text, caption, type (catalogue / executed) | F7 |
-| `moveImage` | `lib/admin/actions/media.js` | Editor, Admin | Reorder gallery | F7 |
-| `setCoverImage` | `lib/admin/actions/media.js` | Editor, Admin | Set category / project cover | F7 |
-| `removeImage` | `lib/admin/actions/media.js` | Editor, Admin | Remove from gallery; delete asset if unused | F7 |
-| `createProject`, `updateProject`, `deleteProject` | `lib/admin/actions/projects.js` | Editor, Admin | Projects CRUD | F7 |
-| `getLogoUploadSignature` | `lib/admin/actions/clients.js` | Editor, Admin | Signed Cloudinary params for a logo | F7 |
-| `createClientLogo`, `updateClientLogo`, `deleteClientLogo` | `lib/admin/actions/clients.js` | Editor, Admin | Client logos | F7 |
-| `saveFaq`, `deleteFaq` | `lib/admin/actions/faqs.js` | Editor, Admin | FAQs | F7 |
-| `updateEnquiry` | `lib/admin/actions/enquiries.js` | Editor, Admin | Status and owner | F8 |
-| `addEnquiryNote` | `lib/admin/actions/enquiries.js` | Editor, Admin | Internal note | F8 |
-| `saveSettings` | `lib/admin/actions/settings.js` | Admin | Contact, socials, founding year | F9 |
-| `createUser`, `updateUser`, `resetUserPassword` | `lib/admin/actions/users.js` | Admin | Users and roles | F6 |
+| `submitEnquiry` | `enquiries/enquiry.controller.js` | Public | Enquiry form: validate → store → email → `/thank-you` | F5 |
+| `login` | `auth/auth.controller.js` | Public | Admin login (rate limit, lockout, audit) | F6 |
+| `logout` | `auth/auth.controller.js` | Editor, Admin | Log out (audit) | F6 |
+| `changeOwnPassword` | `auth/auth.controller.js` | Editor, Admin | Change own password; signs out other sessions | F6 |
+| `updateCategory` | `categories/category.controller.js` | Editor, Admin | Edit category text, group, icon, SEO, order, active | F7 |
+| `getUploadSignature` | `media/media.controller.js` | Editor, Admin | Signed Cloudinary params for a gallery upload | F7 |
+| `attachUploadedImage` | `media/media.controller.js` | Editor, Admin | Verify upload, save asset, add to category/project gallery | F7 |
+| `updateImage` | `media/media.controller.js` | Editor, Admin | Alt text, caption, type (catalogue / executed) | F7 |
+| `moveImage` | `media/media.controller.js` | Editor, Admin | Reorder gallery | F7 |
+| `setCoverImage` | `media/media.controller.js` | Editor, Admin | Set category / project cover | F7 |
+| `removeImage` | `media/media.controller.js` | Editor, Admin | Remove from gallery; delete asset if unused | F7 |
+| `createProject`, `updateProject`, `deleteProject` | `projects/project.controller.js` | Editor, Admin | Projects CRUD | F7 |
+| `getLogoUploadSignature` | `client-logos/client-logo.controller.js` | Editor, Admin | Signed Cloudinary params for a logo | F7 |
+| `createClientLogo`, `updateClientLogo`, `deleteClientLogo` | `client-logos/client-logo.controller.js` | Editor, Admin | Client logos | F7 |
+| `saveFaq`, `deleteFaq` | `faqs/faq.controller.js` | Editor, Admin | FAQs | F7 |
+| `updateEnquiry` | `enquiries/enquiry.controller.js` | Editor, Admin | Status and owner | F8 |
+| `addEnquiryNote` | `enquiries/enquiry.controller.js` | Editor, Admin | Internal note | F8 |
+| `saveSettings` | `settings/setting.controller.js` | Admin | Contact, socials, founding year | F9 |
+| `createUser`, `updateUser`, `resetUserPassword` | `users/user.controller.js` | Admin | Users and roles | F6 |
 
 ### 5.2 Route handlers
-| Method | Path | File today | Who can call | Purpose | Feature |
+| Method | Path | File | Who can call | Purpose | Feature |
 |---|---|---|---|---|---|
-| GET | `/admin/enquiries/export` | `app/admin/enquiries/export/route.js` | Editor, Admin (session) | CSV of filtered enquiries (BOM, formula-injection safe, max 10,000 rows, audit-logged) | F8 |
-| GET | `/api/cron/maintenance` | `app/api/cron/maintenance/route.js` | Vercel cron (`Authorization: Bearer $CRON_SECRET`) | Email retries + data retention | F8 |
-| GET | `/sitemap.xml` | `app/sitemap.js` | Public | Sitemap | F10 |
-| GET | `/robots.txt` | `app/robots.js` | Public | Robots rules | F10 |
+| GET | `/admin/enquiries/export` | `src/app/admin/enquiries/export/route.js` | Editor, Admin (session) | CSV of filtered enquiries (BOM, formula-injection safe, max 10,000 rows, audit-logged) | F8 |
+| GET | `/api/cron/maintenance` | `src/app/api/cron/maintenance/route.js` | Vercel cron (`Authorization: Bearer $CRON_SECRET`) | Email retries + data retention | F8 |
+| GET | `/sitemap.xml` | `src/app/sitemap.js` | Public | Sitemap | F10 |
+| GET | `/robots.txt` | `src/app/robots.js` | Public | Robots rules | F10 |
 
 ## 6. Auth and permissions
 - **Method:** one **JWT access token** signed with `jose` (HS256), stored in an **HttpOnly, Secure (prod), SameSite=Lax** cookie. Valid **8 hours**. Never in localStorage. No refresh token (D3).

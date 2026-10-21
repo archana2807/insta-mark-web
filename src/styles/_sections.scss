@@ -11,13 +11,25 @@
   }
 
   h1 {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1rem;
 
     @include media-breakpoint-up(lg) {
       margin-right: -12%; // theme: headline overlaps toward the image
       position: relative;
       z-index: 2;
     }
+  }
+
+  // Tagline under the H1 (client feedback 21 Oct 2026): clearly smaller than the H1,
+  // larger than the intro text.
+  &__tagline {
+    margin-bottom: 1.5rem;
+    font-family: $headings-font-family;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: $ink;
   }
 
   &__media {

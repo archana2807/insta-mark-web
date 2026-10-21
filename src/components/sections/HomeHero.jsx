@@ -1,6 +1,5 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
 import BtnText from "@/components/ui/BtnText";
 import ScrollDrift from "@/components/ui/ScrollDrift";
@@ -43,8 +42,8 @@ export default function HomeHero({ hero, image, banner = null }) {
           <div className="col-lg-6 hero-split__text-col px-3 px-sm-4 px-lg-5">
             <div className="d-flex w-100 ps-xl-4">
               <div className="load-stagger">
-                <Eyebrow>{hero.eyebrow}</Eyebrow>
                 <h1 id="hero-title">{hero.title}</h1>
+                <p className="hero-split__tagline">{hero.tagline}</p>
                 <p className="lead-text mb-5">{hero.text}</p>
                 <div className="d-flex flex-wrap gap-3">
                   <Link href={hero.primaryCta.href} className="btn btn-gradient btn-lg">

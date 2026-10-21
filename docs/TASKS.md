@@ -62,3 +62,13 @@
   - Done when: backups run: Neon's built-in restore is on, and a daily GitHub Actions job saves a `pg_dump` as an artifact kept 30 days (private repo) (D15).
   - Done when: a restore from backup has been tested and dated in `3-INFRA.md`.
   - Blocked by: client (domain, Pro plan, privacy approval, facts).
+
+- [~] **10 `10-client-feedback`** (L — client feedback doc of 21 Oct 2026; one branch per sub-task, client reviews each PR) — Website looks different: **yes**
+  - Blocked by (for 10c–10f): the reference images from the feedback doc, the company profile PDF (project logos + permission to show them), the official Insta Mark logo (SVG), the About text document, confirmed contact details and social links, the 3 featured industries per solution.
+  - [~] **10a `10a-hero-tagline`** — Done when: the home H1 is "Architectural Signage & Road Safety" with the tagline as a smaller line under it and no label above (R-3.3); e2e checks text, order and sizes.
+  - [ ] **10b `10b-no-eyebrows`** — Done when: the small labels above headlines are removed site-wide; the official logo is in the header top-left (when supplied).
+  - [ ] **10c `10c-home-layout`** — Done when: home order is Banner → project logos → photo collage + company text → Products (new grid) → Industries → Working process → Trusted by (logos) → contact block (answers question 1); the animated line is on "Signage and Road Safety Solutions".
+  - [ ] **10d `10d-contact-block`** — Done when: one contact block with confirmed contact details and social icons is on every page; unset values stay hidden (R-1.5).
+  - [ ] **10e `10e-solution-pages`** — Done when: Solutions dropdown on the left; the headline overlaps the banner (readable, WCAG AA) with its animation; "What You Get" and "Where It Is Used" (3 photos + industry list with + icons) match the references; the logo section is on every product page; a "Contact us" button (solution pre-filled) replaces the inline form.
+  - [ ] **10f `10f-about-contact`** — Done when: About and Contact heroes overlap the photo; Contact has the photo left and the form right; the About text matches the client's document word for word.
+  - [ ] **10g `10g-final-check`** — Done when: one animation style everywhere; e2e, axe 0 violations, no sideways scroll at 390 px, Lighthouse ≥ 90; desktop and phone screenshots approved by the client.

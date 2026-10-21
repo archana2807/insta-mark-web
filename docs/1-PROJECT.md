@@ -25,7 +25,7 @@ A short, picture-led home page that leads visitors to the products (R-1.1, R-1.4
 - [ ] ⚠️ Sections follow the agreed order (R-3.0; question 1).
 - [ ] ⬜ The banner shows the desktop image on wide screens and the mobile image on phones; both uploaded in admin (R-3.1, R-8.1).
 - [ ] ⬜ The client has the banner sizes for their design team (R-3.2).
-- [x] ✅ The banner shows the H1 "Architectural Signage & Road Safety" with the tagline "Signage That Guides. Safety That Lasts." as the small label above it, the intro and the buttons "Explore Our Solutions" and "Request a Consultation" (R-3.3; texts swapped 21 Oct 2026, owner's decision — show the client).
+- [x] ✅ The banner shows the H1 "Architectural Signage & Road Safety" with the tagline "Signage That Guides. Safety That Lasts." as a smaller line under it (no label above), the intro and the buttons "Explore Our Solutions" and "Request a Consultation" (R-3.3; client feedback 21 Oct 2026).
 - [ ] ⬜ The banner has no vertical side label (R-3.4).
 - [ ] 🟡 The About block shows the title and the agreed text length (R-3.5; question 2).
 - [x] ✅ All 8 categories are shown as a grid; clicking one opens its page (R-3.6).

@@ -52,6 +52,7 @@ src/
 ├─ server/
 │  ├─ modules/     enquiries/ categories/ projects/ client-logos/ faqs/ industries/
 │  │               settings/ banner/ media/ users/ auth/ audit/ rate-limits/
+│  │               page-sections/ (service only until the page_sections table, D5)
 │  ├─ integrations/ resend/ cloudinary/ turnstile/
 │  ├─ auth/        jwt.js · cookies.js · password.js · session.js (requireAuth) · permissions.js
 │  ├─ errors/      app-error.js
@@ -111,6 +112,7 @@ ProjectForm (View, client component)
 | media | `media_assets` | Cloudinary signing, verify upload, delete unused | cloudinary |
 | audit | `audit_logs` | write and list the log | — |
 | rate-limits | `rate_limits` | fixed-window limiter | — |
+| page-sections | — (reads `/content`, D5) | page copy for Home, About, Projects, Contact, category pages; nav | categories, faqs, industries, client-logos |
 
 ## 4. Data model
 Full schema: `prisma/schema.prisma` (PostgreSQL, Prisma 6). Conventions: cuid ids, snake_case tables and columns, `created_at` / `updated_at`.

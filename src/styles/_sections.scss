@@ -33,6 +33,10 @@
       display: flex;
       align-items: center;
       align-self: stretch;
+      // In a vertical writing mode the main axis is vertical: after the 180° turn the text
+      // would sit at the bottom of the tall column (cut off below the fold). flex-end keeps it
+      // at the top, in the first screen.
+      justify-content: flex-end;
       flex-shrink: 0;
       margin: 0 3.5rem 0 0;
       // Left side before the 180° turn = right side on screen: text, gap, then the line

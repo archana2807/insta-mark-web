@@ -50,6 +50,16 @@ test("home banner (desktop): vertical tagline on the left, headline runs onto th
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(vertical)) * 2);
 });
 
+test("home banner (desktop): the vertical tagline is fully visible without scrolling", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto("/");
+  const label = await page.locator(".hero-split__vertical [aria-hidden=true]").boundingBox();
+  expect(label.y).toBeGreaterThanOrEqual(0);
+  expect(label.y + label.height).toBeLessThanOrEqual(800);
+});
+
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
   page,
 }) => {

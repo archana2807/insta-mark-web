@@ -15,6 +15,7 @@ const publicSelect = {
   applications: true,
   seoTitle: true,
   seoDescription: true,
+  heroImage: { select: assetSelect }, // the cover chosen in admin (R-8.2)
 };
 
 /** Active categories for the public site, in display order. */

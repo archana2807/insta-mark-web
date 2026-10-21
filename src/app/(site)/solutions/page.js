@@ -14,15 +14,22 @@ export const metadata = pageMetadata({
 });
 
 export default async function SolutionsPage() {
-  const [groups, home, heroImage, work] = await Promise.all([
+  const [groups, home, heroImage] = await Promise.all([
     categoryService.listCategoriesByGroup(),
     pageSectionService.getHomeContent(),
     pageSectionService.getPageHeroImage("solutions"),
-    categoryService.listExecutedWork(),
   ]);
   const rows = groups.flatMap((g) => g.items.map((c) => ({ category: c, groupLabel: g.label })));
-  // Two executed-work photos per solution (big + small, as in the theme's service blocks).
-  const photos = Object.fromEntries(work.map((g) => [g.category.slug, g.images.slice(0, 2)]));
+  // Two photos per solution (big + small, as in the theme's service blocks): the cover
+  // chosen in admin first, then executed work (R-8.2).
+  const photos = Object.fromEntries(
+    await Promise.all(
+      rows.map(async (r) => [
+        r.category.slug,
+        await categoryService.getCategoryPhotos(r.category.slug, 2),
+      ]),
+    ),
+  );
 
   return (
     <>

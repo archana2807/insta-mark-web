@@ -32,15 +32,16 @@ export async function getCategoryPage(slug) {
   if (index === -1) return null;
 
   const category = categories[index];
-  const [images, categoryFaqs, globalFaqs] = await Promise.all([
+  const [images, heroImages, categoryFaqs, globalFaqs] = await Promise.all([
     categoryService.getCategoryImages(slug),
+    categoryService.getCategoryPhotos(slug, 2),
     faqService.listFaqs(slug),
     faqService.listFaqs(),
   ]);
   return {
     ...category,
     number: index + 1,
-    heroImages: images.executed.slice(0, 2),
+    heroImages, // the cover chosen in admin first (R-8.2)
     catalogueImages: images.catalogue,
     executedImages: images.executed,
     faqs: categoryFaqs.length ? categoryFaqs : globalFaqs,
@@ -65,7 +66,8 @@ export async function getAboutContent() {
   return {
     ...about,
     industries,
-    whyChooseRows: whyChooseUs,
+    // The client's six About-page items (R-5.3). Titles only: no invented text.
+    whyChooseRows: about.whyChooseUs.map((title) => ({ title })),
     featuredImages: featured.about,
     heroImage: featured.pages.about,
     featureImage: featured.aboutFeature,

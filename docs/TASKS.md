@@ -16,7 +16,7 @@
   - Done when: all existing checks still pass (form 16/16, admin 42/42, axe 0 violations, no overflow).
   - Not in this task: Husky, lint-staged, commitlint, `checkJs` (D4, D7).
 
-- [ ] **03 `03-quick-client-fixes`** (S) — Website looks different: **yes** (show the client)
+- [x] **03 `03-quick-client-fixes`** (S) — Website looks different: **yes** (show the client)
   - Done when: the home banner has no vertical side label (R-3.4; inner pages per question 7).
   - Done when: the "10+ years" badge is hidden until the founding year is confirmed (R-1.5).
   - Done when: About "Why Choose Us" shows the six items from the client's About text (R-5.3).

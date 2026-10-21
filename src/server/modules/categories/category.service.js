@@ -10,8 +10,9 @@ import { isDatabaseConfigured } from "@/server/config/env";
 import * as auditService from "@/server/modules/audit/audit.service";
 import * as categoryRepository from "./category.repository";
 
-const toCategory = (row) => ({
+const toCategory = ({ heroImage, ...row }) => ({
   ...row,
+  cover: toImage(heroImage) ?? null,
   group: enumToGroup[row.group] ?? "architectural",
   icon: row.icon ?? "signpost",
   features: Array.isArray(row.features) ? row.features : [],
@@ -62,10 +63,29 @@ export async function getCategoryImages(slug) {
   return (await loadAllCategoryImages())[slug] ?? { catalogue: [], executed: [] };
 }
 
-/** @param {string} slug */
+/**
+ * Photos that represent a category: the cover chosen in admin first (R-8.2), then its
+ * executed work (and, with `catalogue`, catalogue photos), without repeating the cover.
+ * @param {string} slug
+ * @param {number} count
+ * @param {{ catalogue?: boolean }} [options]
+ * @returns {Promise<{ src: string, width: number, height: number, alt: string }[]>}
+ */
+export async function getCategoryPhotos(slug, count, { catalogue = false } = {}) {
+  const [categories, images] = await Promise.all([listCategories(), getCategoryImages(slug)]);
+  const cover = categories.find((c) => c.slug === slug)?.cover ?? null;
+  const rest = [...images.executed, ...(catalogue ? images.catalogue : [])].filter(
+    (img) => img.src !== cover?.src,
+  );
+  return (cover ? [cover, ...rest] : rest).slice(0, count);
+}
+
+/**
+ * The cover chosen in admin; without one, the first executed (else catalogue) photo.
+ * @param {string} slug
+ */
 export async function getCategoryCoverImage(slug) {
-  const images = await getCategoryImages(slug);
-  return images.executed[0] ?? images.catalogue[0] ?? null;
+  return (await getCategoryPhotos(slug, 1, { catalogue: true }))[0] ?? null;
 }
 
 /** Executed work grouped by category for the Projects page. */

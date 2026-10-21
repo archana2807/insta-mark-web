@@ -2,11 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
-import FancyText from "@/components/ui/FancyText";
 import BtnText from "@/components/ui/BtnText";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 
-/** Theme hero: vertical label + huge headline left, full-bleed image right. */
+/** Theme hero: huge headline left, full-bleed image right (no vertical label, R-3.4). */
 export default function HomeHero({ hero, image, establishedYear }) {
   const years = establishedYear ? new Date().getFullYear() - establishedYear : null;
 
@@ -16,9 +15,6 @@ export default function HomeHero({ hero, image, establishedYear }) {
         <div className="row g-0">
           <div className="col-lg-6 hero-split__text-col px-3 px-sm-4 px-lg-5">
             <div className="d-flex w-100 ps-xl-4">
-              <div className="hero-split__vertical" aria-hidden="true">
-                <FancyText text="Signage · Wayfinding · Road Safety" />
-              </div>
               <div className="load-stagger">
                 <Eyebrow>{hero.eyebrow}</Eyebrow>
                 <h1 id="hero-title">{hero.title}</h1>

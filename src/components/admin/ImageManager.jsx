@@ -14,6 +14,7 @@ import {
 import ActionForm from "./ActionForm";
 import SubmitButton from "./SubmitButton";
 import ClientIcon from "@/components/ui/ClientIcon";
+import { resultMessage } from "@/shared/errors";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 
@@ -64,7 +65,7 @@ export default function ImageManager({
         if (file.size > MAX_BYTES) throw new Error(`${file.name} is larger than 10 MB.`);
         setProgress(`Uploading ${i + 1} of ${files.length}: ${file.name}`);
         const sig = await getUploadSignature({ kind, ownerId, type: uploadType });
-        if (sig.error) throw new Error(sig.error);
+        if (sig.ok === false) throw new Error(resultMessage(sig));
         const upload = await uploadToCloudinary(file, sig);
         const res = await attachUploadedImage({
           kind,
@@ -73,7 +74,7 @@ export default function ImageManager({
           alt: `${ownerName} — ${file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")}`,
           upload,
         });
-        if (res.error) throw new Error(res.error);
+        if (res.ok === false) throw new Error(resultMessage(res));
       }
       setProgress("");
       router.refresh();

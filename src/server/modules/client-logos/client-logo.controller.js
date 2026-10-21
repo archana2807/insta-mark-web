@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, validationFailed } from "@/server/errors/app-error";
 import { requireAuth } from "@/server/auth/session";
 import { clientLogoSchema, clientLogoUploadSchema } from "@/shared/schemas/client-logo.schema";
 import * as clientLogoService from "./client-logo.service";
@@ -7,7 +8,7 @@ import * as clientLogoService from "./client-logo.service";
 /** Signed Cloudinary params for a logo upload. */
 export async function getLogoUploadSignature() {
   await requireAuth("media:upload");
-  return clientLogoService.getUploadSignature();
+  return attempt(() => clientLogoService.getUploadSignature());
 }
 
 /**
@@ -17,15 +18,15 @@ export async function getLogoUploadSignature() {
 export async function createClientLogo(_prev, formData) {
   const me = await requireAuth("content:write");
   const fields = clientLogoSchema.safeParse(Object.fromEntries(formData));
-  if (!fields.success) return { fieldErrors: fields.error.flatten().fieldErrors };
+  if (!fields.success) return validationFailed(fields.error);
 
   let upload;
   try {
     upload = clientLogoUploadSchema.parse(JSON.parse(String(formData.get("upload") || "null")));
   } catch {
-    return { error: "Please upload the logo image first." };
+    return { ok: false, code: "UPLOAD_MISSING" };
   }
-  return clientLogoService.createClientLogo(fields.data, upload, me);
+  return attempt(() => clientLogoService.createClientLogo(fields.data, upload, me));
 }
 
 /**
@@ -36,8 +37,8 @@ export async function updateClientLogo(_prev, formData) {
   const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const fields = clientLogoSchema.safeParse(Object.fromEntries(formData));
-  if (!fields.success) return { fieldErrors: fields.error.flatten().fieldErrors };
-  return clientLogoService.updateClientLogo(id, fields.data, me);
+  if (!fields.success) return validationFailed(fields.error);
+  return attempt(() => clientLogoService.updateClientLogo(id, fields.data, me));
 }
 
 /**

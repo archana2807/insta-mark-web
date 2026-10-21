@@ -2,6 +2,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
+import { getEnv } from "@/server/config/env";
 
 /**
  * @param {string | null | undefined} ip
@@ -10,7 +11,7 @@ import { headers } from "next/headers";
 export function hashIp(ip) {
   if (!ip) return undefined;
   return createHash("sha256")
-    .update(`${ip}:${process.env.IP_HASH_SALT ?? ""}`)
+    .update(`${ip}:${getEnv().IP_HASH_SALT ?? ""}`)
     .digest("hex");
 }
 

@@ -3,13 +3,15 @@ import Image from "next/image";
 import * as projectService from "@/server/modules/projects/project.service";
 import { requireAuth } from "@/server/auth/session";
 import Icon from "@/components/ui/Icon";
+import { EmptyRow } from "@/components/shared/EmptyState";
+import Pagination from "@/components/shared/Pagination";
 
 export const metadata = { title: "Projects" };
 
 export default async function ProjectsAdminPage({ searchParams }) {
   await requireAuth("content:write");
-  const { deleted } = await searchParams;
-  const projects = await projectService.listForAdmin();
+  const { deleted, page: pageParam } = await searchParams;
+  const { rows: projects, page, pages } = await projectService.listForAdmin(pageParam);
 
   return (
     <>
@@ -41,12 +43,10 @@ export default async function ProjectsAdminPage({ searchParams }) {
             </thead>
             <tbody>
               {projects.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-secondary">
-                    No projects yet. Add the client’s executed projects (e.g. “CCI Residential
-                    Tower, Kandivali”).
-                  </td>
-                </tr>
+                <EmptyRow colSpan={5}>
+                  No projects yet. Add the client’s executed projects (e.g. “CCI Residential Tower,
+                  Kandivali”).
+                </EmptyRow>
               )}
               {projects.map((p) => (
                 <tr key={p.id}>
@@ -85,6 +85,7 @@ export default async function ProjectsAdminPage({ searchParams }) {
           </table>
         </div>
       </div>
+      <Pagination page={page} pages={pages} href={(n) => `?page=${n}`} />
     </>
   );
 }

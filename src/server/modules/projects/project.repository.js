@@ -40,17 +40,26 @@ export async function findActiveBySlug(slug) {
   });
 }
 
-/** Admin list with cover, photo count and categories. */
-export async function findAllForAdmin() {
+/**
+ * One page of the admin list (cover, photo count, categories) with the total.
+ * @param {{ skip: number, take: number }} page
+ */
+export async function findPageForAdmin({ skip, take }) {
   const prisma = await getPrisma();
-  return prisma.project.findMany({
-    orderBy: [{ isFeatured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
-    include: {
-      coverImage: { select: { url: true } },
-      _count: { select: { images: true } },
-      categories: { select: { category: { select: { name: true } } } },
-    },
-  });
+  const [total, rows] = await Promise.all([
+    prisma.project.count(),
+    prisma.project.findMany({
+      orderBy: [{ isFeatured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
+      skip,
+      take,
+      include: {
+        coverImage: { select: { url: true } },
+        _count: { select: { images: true } },
+        categories: { select: { category: { select: { name: true } } } },
+      },
+    }),
+  ]);
+  return { total, rows };
 }
 
 /** @param {string} id project with category ids and gallery, for the admin edit page */

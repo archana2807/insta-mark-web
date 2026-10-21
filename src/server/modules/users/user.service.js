@@ -1,6 +1,7 @@
 // Admin users: list, create, role / active changes, password resets, and the
 // account lookups the auth module needs.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { hashPassword } from "@/server/auth/password";
 import { revalidatePage } from "@/server/cache";
 import * as auditService from "@/server/modules/audit/audit.service";
@@ -66,7 +67,7 @@ export async function revokeTokens(id) {
 export async function createUser(input, actor) {
   const { password, ...data } = input;
   if (await userRepository.findByEmail(data.email)) {
-    return { fieldErrors: { email: ["A user with this email already exists."] } };
+    throw new AppError("USER_EMAIL_TAKEN", { field: "email" });
   }
   const user = await userRepository.create({ ...data, passwordHash: await hashPassword(password) });
   await auditService.log(actor, "CREATE", "AdminUser", user.id, {
@@ -89,15 +90,15 @@ export async function createUser(input, actor) {
 export async function updateUser(input, actor) {
   const { id, ...data } = input;
   if (id === actor.id && (!data.isActive || data.role !== "ADMIN")) {
-    return { error: "You cannot deactivate yourself or remove your own admin role." };
+    throw new AppError("USER_SELF_LOCKOUT");
   }
   const before = await userRepository.findById(id);
-  if (!before) return { error: "User not found." };
+  if (!before) throw new AppError("USER_NOT_FOUND");
 
   const losesAdmin =
     before.role === "ADMIN" && before.isActive && (data.role !== "ADMIN" || !data.isActive);
   if (losesAdmin && (await userRepository.countActiveAdmins()) <= 1) {
-    return { error: "At least one active administrator is required." };
+    throw new AppError("USER_LAST_ADMIN");
   }
 
   // A role or active change logs the user out everywhere at once.

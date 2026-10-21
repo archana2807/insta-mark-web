@@ -5,6 +5,8 @@ import { requireAuth } from "@/server/auth/session";
 import { ENQUIRY_STATUSES } from "@/shared/constants";
 import { formatDateTime } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
+import { EmptyRow } from "@/components/shared/EmptyState";
+import Pagination from "@/components/shared/Pagination";
 
 export const metadata = { title: "Enquiries" };
 
@@ -112,11 +114,7 @@ export default async function EnquiriesPage({ searchParams }) {
             </thead>
             <tbody>
               {rows.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="text-secondary">
-                    No enquiries match these filters.
-                  </td>
-                </tr>
+                <EmptyRow colSpan={7}>No enquiries match these filters.</EmptyRow>
               )}
               {rows.map((e) => (
                 <tr key={e.id}>
@@ -147,27 +145,7 @@ export default async function EnquiriesPage({ searchParams }) {
         </div>
       </div>
 
-      {pages > 1 && (
-        <nav aria-label="Pagination" className="mt-3">
-          <ul className="pagination pagination-sm">
-            <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
-              <Link className="page-link" href={qs({ page: String(page - 1) })}>
-                Previous
-              </Link>
-            </li>
-            <li className="page-item disabled">
-              <span className="page-link">
-                Page {page} of {pages}
-              </span>
-            </li>
-            <li className={`page-item ${page >= pages ? "disabled" : ""}`}>
-              <Link className="page-link" href={qs({ page: String(page + 1) })}>
-                Next
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      )}
+      <Pagination page={page} pages={pages} href={(n) => qs({ page: String(n) })} />
     </>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
 import { createContext, startTransition, useActionState, useEffect, useRef } from "react";
+import { resultMessage } from "@/shared/errors";
 
 /** Lets SubmitButton show a spinner for forms submitted via onSubmit. */
 export const PendingContext = createContext(false);
 
 /**
  * Generic wrapper for admin server actions that return
- * { ok?, message?, error?, fieldErrors?, reset? }.
+ * { ok: true, message?, reset? } or { ok: false, code, fieldErrors?, message? }.
+ * Error text comes from the error catalog (src/shared/errors.js).
  *
  * Submits via onSubmit instead of <form action>: React 19 automatically resets
  * uncontrolled fields after every form action — including failed ones — which
@@ -31,7 +33,9 @@ export default function ActionForm({ action, children, className = "", resetOnSu
   return (
     <form ref={ref} onSubmit={onSubmit} className={className}>
       <div aria-live="polite">
-        {state.error && <div className="alert alert-danger py-2">{state.error}</div>}
+        {state.ok === false && !state.fieldErrors && (
+          <div className="alert alert-danger py-2">{resultMessage(state)}</div>
+        )}
         {state.ok && state.message && (
           <div className="alert alert-success py-2">{state.message}</div>
         )}

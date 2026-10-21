@@ -2,6 +2,7 @@ import Link from "next/link";
 import * as auditService from "@/server/modules/audit/audit.service";
 import { requireAuth } from "@/server/auth/session";
 import { formatDateTime } from "@/lib/format";
+import { EmptyRow } from "@/components/shared/EmptyState";
 
 export const metadata = { title: "Audit log" };
 
@@ -26,6 +27,7 @@ export default async function AuditPage({ searchParams }) {
               </tr>
             </thead>
             <tbody>
+              {rows.length === 0 && <EmptyRow colSpan={5}>No activity yet.</EmptyRow>}
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td className="text-nowrap small">{formatDateTime(r.createdAt)}</td>

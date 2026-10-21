@@ -35,7 +35,8 @@
 
 ## 6. Secrets
 - Kept in Vercel env settings (and `.env.local` / `.env.production.local` on the developer machine, never committed). `.env.example` lists every variable with a fake value.
-- Required: `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET` (→ JWT secret in task 05), `CRON_SECRET`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`. Optional: Resend, Turnstile, GA4, Cloudinary keys.
+- Required: `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET` (signs the admin JWT, 32+ chars), `CRON_SECRET`, `IP_HASH_SALT`, `NEXT_PUBLIC_SITE_URL`. Optional: Resend, Turnstile, GA4, Cloudinary keys.
+- Enforced since task 06 by `src/server/config/env.js`: a Production deploy (`VERCEL_ENV=production`) without any required variable **fails to build**. Previews (no database, D14) need none of them. Check before deploying, without showing values: `node --env-file=.env.production.local scripts/check-env.js`.
 
 ## 7. Backups and recovery
 - **Daily backup (task 08, D15):** Neon's built-in restore, plus a nightly GitHub Actions job that runs `pg_dump` against `DIRECT_URL` and saves it as an artifact (private repo, kept 30 days).

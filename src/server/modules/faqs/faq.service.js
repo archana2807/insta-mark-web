@@ -1,5 +1,6 @@
 // FAQs: public lists (home, general, per category) and admin CRUD.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { faqs as contentFaqs } from "@/content/company";
 import { TAGS, cached, revalidateFaqs, revalidatePage } from "@/server/cache";
 import { isDatabaseConfigured } from "@/server/config/env";
@@ -39,7 +40,7 @@ export async function listForAdmin() {
 export async function saveFaq(id, data, actor) {
   if (id) {
     const before = await faqRepository.findById(id);
-    if (!before) return { error: "FAQ not found." };
+    if (!before) throw new AppError("FAQ_NOT_FOUND");
     await faqRepository.update(id, data);
     await auditService.log(actor, "UPDATE", "Faq", id, auditService.diff(before, data));
     revalidateFaqs(await categoryService.findSlugById(before.categoryId));

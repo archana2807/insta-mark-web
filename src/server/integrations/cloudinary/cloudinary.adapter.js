@@ -3,14 +3,15 @@
 // path. node:crypto keeps it out of browser bundles.
 
 import { createHash } from "node:crypto";
+import { getEnv } from "../../config/env.js";
 
 export function isCloudinaryConfigured() {
-  const e = process.env;
+  const e = getEnv();
   return Boolean(e.CLOUDINARY_CLOUD_NAME && e.CLOUDINARY_API_KEY && e.CLOUDINARY_API_SECRET);
 }
 
 /** Cloudinary signature: sha1 of sorted "k=v&k=v" params + API secret. */
-export function signParams(params, apiSecret = process.env.CLOUDINARY_API_SECRET) {
+export function signParams(params, apiSecret = getEnv().CLOUDINARY_API_SECRET) {
   const toSign = Object.keys(params)
     .filter((k) => params[k] !== undefined && params[k] !== "")
     .sort()
@@ -32,8 +33,8 @@ export function createUploadParams(folder) {
   const timestamp = Math.floor(Date.now() / 1000);
   const params = { allowed_formats: ALLOWED_FORMATS, folder, timestamp };
   return {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
+    cloudName: getEnv().CLOUDINARY_CLOUD_NAME,
+    apiKey: getEnv().CLOUDINARY_API_KEY,
     ...params,
     signature: signParams(params),
   };
@@ -55,11 +56,11 @@ export async function destroyAsset(publicId) {
   const params = { public_id: publicId, timestamp };
   const body = new URLSearchParams({
     ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
-    api_key: process.env.CLOUDINARY_API_KEY,
+    api_key: getEnv().CLOUDINARY_API_KEY,
     signature: signParams(params),
   });
   const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/destroy`,
+    `https://api.cloudinary.com/v1_1/${getEnv().CLOUDINARY_CLOUD_NAME}/image/destroy`,
     { method: "POST", body },
   );
   return res.ok;

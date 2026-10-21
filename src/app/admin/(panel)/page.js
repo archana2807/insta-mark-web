@@ -4,6 +4,7 @@ import { requireAuth } from "@/server/auth/session";
 import { ENQUIRY_STATUSES } from "@/shared/constants";
 import { formatDateTime } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
+import EmptyState, { EmptyRow } from "@/components/shared/EmptyState";
 
 export const metadata = { title: "Dashboard" };
 
@@ -74,13 +75,7 @@ export default async function DashboardPage({ searchParams }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {recent.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="text-secondary">
-                        No enquiries yet.
-                      </td>
-                    </tr>
-                  )}
+                  {recent.length === 0 && <EmptyRow colSpan={4}>No enquiries yet.</EmptyRow>}
                   {recent.map((e) => (
                     <tr key={e.id}>
                       <td className="text-nowrap">{formatDateTime(e.createdAt)}</td>
@@ -116,7 +111,7 @@ export default async function DashboardPage({ searchParams }) {
           <div className="admin-card">
             <h2>Top solutions (30 days)</h2>
             {byCategory.length === 0 ? (
-              <p className="text-secondary mb-0">No data yet.</p>
+              <EmptyState>No data yet.</EmptyState>
             ) : (
               <ul className="list-unstyled mb-0">
                 {byCategory.slice(0, 6).map((r) => (

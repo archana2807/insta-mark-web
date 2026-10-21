@@ -87,11 +87,22 @@
 }
 
 .admin-content {
+  position: relative;
   padding: 1.5rem;
 
   @include media-breakpoint-up(lg) {
     padding: 2rem 2.5rem;
   }
+}
+
+// Section loading screen (sidebar navigation): covers the old section until the new
+// one arrives. Same padding as .admin-content, so the card sits where content starts.
+.admin-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  padding: inherit;
+  background: $surface;
 }
 
 .admin-card {

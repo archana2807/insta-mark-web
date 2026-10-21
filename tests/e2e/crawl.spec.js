@@ -170,6 +170,8 @@ test("admin pages: axe WCAG 2.1 AA 0 violations", async ({ page }) => {
   for (const path of paths) {
     const resp = await page.goto(path);
     if ((resp?.status() ?? 0) >= 400) broken.push(`${path} → ${resp.status()}`);
+    // Never run axe on the admin loading screen (task 06); check the loaded section.
+    await page.locator(".admin-loading").waitFor({ state: "detached" });
     violations.push(...(await axeViolations(page, path)));
   }
   expect(broken, "admin pages load").toEqual([]);

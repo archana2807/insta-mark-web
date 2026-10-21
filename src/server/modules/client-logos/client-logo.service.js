@@ -1,5 +1,6 @@
 // Client logos for the home page "Trusted by" strip. Without a database there are none.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { toImage } from "@/lib/image";
 import { TAGS, cached, revalidateClients, revalidatePage } from "@/server/cache";
 import { isDatabaseConfigured } from "@/server/config/env";
@@ -50,7 +51,7 @@ export async function getUploadSignature() {
  * @param {{ id: string }} actor
  */
 export async function createClientLogo(fields, upload, actor) {
-  if (!mediaService.isGenuineUpload(upload)) return { error: "Upload could not be verified." };
+  if (!mediaService.isGenuineUpload(upload)) throw new AppError("UPLOAD_NOT_VERIFIED");
   const asset = await mediaService.saveAsset(upload, `${fields.name} logo`);
   const logo = await clientLogoRepository.create({ ...fields, logoId: asset.id });
   await auditService.log(actor, "CREATE", "ClientLogo", logo.id, { name: [null, logo.name] });
@@ -64,7 +65,7 @@ export async function createClientLogo(fields, upload, actor) {
  */
 export async function updateClientLogo(id, fields, actor) {
   const before = await clientLogoRepository.findById(id);
-  if (!before) return { error: "Logo not found." };
+  if (!before) throw new AppError("CLIENT_LOGO_NOT_FOUND");
   await clientLogoRepository.update(id, fields);
   await mediaService.updateAlt(before.logoId, `${fields.name} logo`);
   await auditService.log(actor, "UPDATE", "ClientLogo", id, auditService.diff(before, fields));

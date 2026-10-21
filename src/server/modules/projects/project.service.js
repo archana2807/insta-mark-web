@@ -1,6 +1,8 @@
 // Named projects: public pages, admin CRUD, and the project gallery table (driven by
 // media.service). Without a database there are no projects.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
+import { PROJECT_PAGE_SIZE } from "@/shared/constants";
 import { toImage } from "@/lib/image";
 import { uniqueSlug } from "@/lib/slug";
 import { TAGS, cached, revalidatePage, revalidateProjects } from "@/server/cache";
@@ -52,8 +54,17 @@ export async function getProject(slug) {
 
 // ── Admin ─────────────────────────────────────────────────────────────
 
-export async function listForAdmin() {
-  return projectRepository.findAllForAdmin();
+/**
+ * Paginated admin list.
+ * @param {string | number | undefined} pageParam page from the URL
+ */
+export async function listForAdmin(pageParam) {
+  const page = Math.max(1, Number.parseInt(String(pageParam), 10) || 1);
+  const { rows, total } = await projectRepository.findPageForAdmin({
+    skip: (page - 1) * PROJECT_PAGE_SIZE,
+    take: PROJECT_PAGE_SIZE,
+  });
+  return { rows, total, page, pages: Math.max(1, Math.ceil(total / PROJECT_PAGE_SIZE)) };
 }
 
 /** @param {string} id */
@@ -84,13 +95,13 @@ export async function createProject(input, categoryIds, actor) {
  */
 export async function updateProject(id, input, categoryIds, actor) {
   const before = await projectRepository.findById(id);
-  if (!before) return { error: "Project not found." };
+  if (!before) throw new AppError("PROJECT_NOT_FOUND");
 
   const { slug: wanted, ...data } = input;
   let slug = before.slug;
   if (wanted && wanted !== before.slug) {
     if (await projectRepository.existsBySlug(wanted)) {
-      return { fieldErrors: { slug: ["This URL is already used by another project."] } };
+      throw new AppError("PROJECT_SLUG_TAKEN", { field: "slug" });
     }
     slug = wanted;
   }

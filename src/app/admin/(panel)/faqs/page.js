@@ -5,6 +5,7 @@ import { deleteFaq, saveFaq } from "@/server/modules/faqs/faq.controller";
 import ActionForm from "@/components/admin/ActionForm";
 import SubmitButton from "@/components/admin/SubmitButton";
 import FaqFields from "@/components/admin/FaqFields";
+import EmptyState from "@/components/shared/EmptyState";
 
 export const metadata = { title: "FAQs" };
 
@@ -33,6 +34,9 @@ export default async function FaqsPage() {
 
       <div className="admin-card">
         <h2>All FAQs ({faqs.length})</h2>
+        {faqs.length === 0 && (
+          <EmptyState>No FAQs yet — the FAQ sections are hidden on the website.</EmptyState>
+        )}
         {faqs.map((f) => (
           <div key={f.id} className="border-top pt-3 mt-3">
             <div className="small text-secondary mb-2">

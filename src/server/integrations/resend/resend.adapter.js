@@ -1,5 +1,6 @@
 // Enquiry notification email (Resend). Optional until keys are configured.
 import "server-only";
+import { getEnv } from "@/server/config/env";
 
 const escapeHtml = (s) =>
   String(s ?? "").replace(
@@ -8,13 +9,15 @@ const escapeHtml = (s) =>
   );
 
 export function isEmailConfigured() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.ENQUIRY_NOTIFY_EMAILS);
+  const env = getEnv();
+  return Boolean(env.RESEND_API_KEY && env.ENQUIRY_NOTIFY_EMAILS);
 }
 
 export async function sendEnquiryNotification(enquiry) {
   const { Resend } = await import("resend");
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const to = process.env.ENQUIRY_NOTIFY_EMAILS.split(",")
+  const env = getEnv();
+  const resend = new Resend(env.RESEND_API_KEY);
+  const to = env.ENQUIRY_NOTIFY_EMAILS.split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
@@ -45,7 +48,7 @@ export async function sendEnquiryNotification(enquiry) {
     </table>`;
 
   const { error } = await resend.emails.send({
-    from: process.env.ENQUIRY_FROM_EMAIL || "Insta Mark Website <onboarding@resend.dev>",
+    from: env.ENQUIRY_FROM_EMAIL || "Insta Mark Website <onboarding@resend.dev>",
     to,
     replyTo: enquiry.email,
     subject: `New enquiry: ${enquiry.name}${enquiry.company ? ` (${enquiry.company})` : ""}`,

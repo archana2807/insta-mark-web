@@ -10,6 +10,7 @@ import ActionForm from "@/components/admin/ActionForm";
 import SubmitButton from "@/components/admin/SubmitButton";
 import LogoUploader from "@/components/admin/LogoUploader";
 import Icon from "@/components/ui/Icon";
+import EmptyState from "@/components/shared/EmptyState";
 
 export const metadata = { title: "Client logos" };
 
@@ -73,7 +74,7 @@ export default async function ClientsPage() {
       <div className="admin-card">
         <h2>Logos ({logos.length})</h2>
         {logos.length === 0 && (
-          <p className="text-secondary mb-0">No logos yet — the strip is hidden on the website.</p>
+          <EmptyState>No logos yet — the strip is hidden on the website.</EmptyState>
         )}
         <ul className="list-unstyled mb-0">
           {logos.map((l) => (

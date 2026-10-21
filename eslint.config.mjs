@@ -67,6 +67,21 @@ const config = [
   ...compat.extends("next/core-web-vitals"),
   { files: ["src/**/*.{js,jsx,mjs}"], rules: restrict(PRISMA, ANY_REPOSITORY) },
   { files: ["src/server/db.js"], rules: restrict(ANY_REPOSITORY) },
+  // Server code reads the environment only through src/server/config/env.js (R-11.8).
+  {
+    files: ["src/server/**/*.js", "src/middleware.js", "src/app/api/**/*.js"],
+    ignores: ["src/server/config/env.js"],
+    rules: {
+      "no-restricted-properties": [
+        "error",
+        {
+          object: "process",
+          property: "env",
+          message: "Use getEnv() from src/server/config/env.js.",
+        },
+      ],
+    },
+  },
   ...modules.flatMap((m) => [
     { files: [`src/server/modules/${m}/**/*.js`], rules: restrict(PRISMA, otherRepositories(m)) },
     { files: [`src/server/modules/${m}/*.repository.js`], rules: restrict(otherRepositories(m)) },

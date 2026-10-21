@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, firstIssue } from "@/server/errors/app-error";
 import { requireAuth } from "@/server/auth/session";
 import {
   galleryKindSchema,
@@ -17,7 +18,7 @@ import * as mediaService from "./media.service";
 export async function getUploadSignature({ kind, ownerId, type }) {
   await requireAuth("media:upload");
   const k = galleryKindSchema.parse(kind);
-  return mediaService.getGalleryUploadSignature({ kind: k, ownerId, type });
+  return attempt(() => mediaService.getGalleryUploadSignature({ kind: k, ownerId, type }));
 }
 
 /**
@@ -28,8 +29,10 @@ export async function attachUploadedImage({ kind, ownerId, type, alt, upload }) 
   const me = await requireAuth("media:upload");
   const k = galleryKindSchema.parse(kind);
   const parsed = galleryUploadSchema.safeParse(upload);
-  if (!parsed.success) return { error: "Upload could not be verified." };
-  return mediaService.attachUploadedImage({ kind: k, ownerId, type, alt, upload: parsed.data }, me);
+  if (!parsed.success) return { ok: false, code: "UPLOAD_NOT_VERIFIED" };
+  return attempt(() =>
+    mediaService.attachUploadedImage({ kind: k, ownerId, type, alt, upload: parsed.data }, me),
+  );
 }
 
 /**
@@ -39,8 +42,8 @@ export async function attachUploadedImage({ kind, ownerId, type, alt, upload }) 
 export async function updateImage(_prev, formData) {
   const me = await requireAuth("content:write");
   const parsed = imageUpdateSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0].message };
-  return mediaService.updateImage(parsed.data, me);
+  if (!parsed.success) return firstIssue(parsed.error);
+  return attempt(() => mediaService.updateImage(parsed.data, me));
 }
 
 /**

@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "test": "node --test",
+    "test": "node --import ./tests/unit/setup/register.mjs --test",
     "test:e2e": "node tests/e2e/run.js",
     "test:e2e:fast": "node tests/e2e/run.js --no-build",
     "postinstall": "prisma generate",

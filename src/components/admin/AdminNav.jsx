@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ClientIcon from "@/components/ui/ClientIcon";
+import { NavPending } from "./AdminMain";
 
 const SECTIONS = [
   {
@@ -62,6 +63,7 @@ export default function AdminNav({ permissions }) {
             >
               <ClientIcon name={item.icon} />
               {item.label}
+              <NavPending />
             </Link>
           ))}
         </div>

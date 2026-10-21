@@ -6,12 +6,13 @@
 // with a warning — losing a real B2B lead costs more than one spam message,
 // and honeypot + rate limiting still apply.
 import "server-only";
+import { getEnv } from "@/server/config/env";
 
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const TIMEOUT_MS = 5000;
 
 export function isTurnstileEnabled() {
-  return Boolean(process.env.TURNSTILE_SECRET_KEY);
+  return Boolean(getEnv().TURNSTILE_SECRET_KEY);
 }
 
 async function callSiteverify(body) {
@@ -28,7 +29,7 @@ async function callSiteverify(body) {
 /** @returns {Promise<"valid" | "invalid" | "unavailable">} */
 export async function verifyTurnstile(token, remoteIp) {
   if (!token) return "invalid";
-  const body = new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: token });
+  const body = new URLSearchParams({ secret: getEnv().TURNSTILE_SECRET_KEY, response: token });
   if (remoteIp) body.set("remoteip", remoteIp);
 
   for (let attempt = 1; attempt <= 2; attempt++) {

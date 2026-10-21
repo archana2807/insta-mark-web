@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, validationFailed } from "@/server/errors/app-error";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/server/auth/session";
 import { projectSchema } from "@/shared/schemas/project.schema";
@@ -19,9 +20,12 @@ function parse(formData) {
 export async function createProject(_prev, formData) {
   const me = await requireAuth("content:write");
   const { parsed, categoryIds } = parse(formData);
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  const id = await projectService.createProject(parsed.data, categoryIds, me);
-  redirect(`/admin/projects/${id}?created=1`);
+  if (!parsed.success) return validationFailed(parsed.error);
+  const result = await attempt(async () => ({
+    id: await projectService.createProject(parsed.data, categoryIds, me),
+  }));
+  if (!("id" in result)) return result;
+  redirect(`/admin/projects/${result.id}?created=1`);
 }
 
 /**
@@ -32,8 +36,8 @@ export async function updateProject(_prev, formData) {
   const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const { parsed, categoryIds } = parse(formData);
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  return projectService.updateProject(id, parsed.data, categoryIds, me);
+  if (!parsed.success) return validationFailed(parsed.error);
+  return attempt(() => projectService.updateProject(id, parsed.data, categoryIds, me));
 }
 
 /**

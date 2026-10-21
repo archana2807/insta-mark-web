@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { login } from "@/server/modules/auth/auth.controller";
+import { resultMessage } from "@/shared/errors";
 import SubmitButton from "./SubmitButton";
 
 export default function LoginForm({ next }) {
@@ -10,9 +11,9 @@ export default function LoginForm({ next }) {
   return (
     <form action={action} className="enquiry-form">
       <div aria-live="polite">
-        {state.error && (
+        {state.ok === false && (
           <div className="alert alert-danger" role="alert">
-            {state.error}
+            {resultMessage(state)}
           </div>
         )}
       </div>

@@ -1,10 +1,11 @@
 // Enquiries: the public form (validate → store → email), the admin follow-up,
 // the CSV export, dashboard numbers and the daily maintenance job.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { ENQUIRY_PAGE_SIZE } from "@/shared/constants";
 import { MIN_FILL_MS, cleanField, validateField } from "@/shared/schemas/enquiry-rules";
 import { revalidatePage } from "@/server/cache";
-import { isDatabaseConfigured } from "@/server/config/env";
+import { getEnv, isDatabaseConfigured } from "@/server/config/env";
 import {
   isEmailConfigured,
   sendEnquiryNotification,
@@ -32,12 +33,25 @@ const RETENTION = {
 const EXPORT_MAX_ROWS = 10000;
 
 /**
+ * Counts this submission; a failing limiter never blocks a lead (as before).
+ * @param {string} ipHash
+ * @returns {Promise<boolean>}
+ */
+async function isRateLimited(ipHash) {
+  try {
+    return await rateLimitService.isRateLimited(`enquiry:${ipHash}`, RATE_LIMIT);
+  } catch (err) {
+    console.error("[enquiry] rate limit check failed", err);
+    return false;
+  }
+}
+
+/**
  * @typedef {object} EnquirySubmission
  * @property {string} honeypot hidden "website" field (bots fill it)
  * @property {string | null} fillMs ms the form was open (null without JS)
  * @property {Record<string, string>} raw string fields as submitted
  * @property {import("zod").SafeParseReturnType<unknown, import("@/shared/schemas/enquiry.schema").EnquiryInput>} parsed
- * @property {Record<string, string>} values visible fields echoed back on error
  * @property {string | null} turnstileToken
  * @property {{ ip: string | null, ipHash: string | undefined, userAgent: string | undefined }} meta
  */
@@ -47,30 +61,17 @@ const EXPORT_MAX_ROWS = 10000;
  * lost: validate → save to DB → then email. Email failure leaves `notified_at` NULL for
  * the retry job.
  * @param {EnquirySubmission} s
- * @returns {Promise<{ redirectTo: string } | { status: "error", message: string, fieldErrors?: object, values: Record<string, string> }>}
+ * @returns {Promise<{ redirectTo: string }>}
+ * @throws {AppError} ENQUIRY_TOO_FAST, VALIDATION_FAILED, CAPTCHA_FAILED, ENQUIRY_RATE_LIMITED, ENQUIRY_NOT_SAVED
  */
-export async function submitEnquiry({
-  honeypot,
-  fillMs,
-  raw,
-  parsed,
-  values,
-  turnstileToken,
-  meta,
-}) {
+export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileToken, meta }) {
   // Honeypot: real users never see this field. Pretend success for bots.
   if (honeypot) return { redirectTo: "/thank-you" };
 
   // Time trap: with JS the form sends how long it was open (measured in the
   // browser, so clock skew doesn't matter). Faster than a human can type → ask
   // to resubmit; never a fake success. Without JS the field is absent.
-  if (fillMs !== null && !(Number(fillMs) >= MIN_FILL_MS)) {
-    return {
-      status: "error",
-      message: "That was very quick! Please check your details and submit again.",
-      values,
-    };
-  }
+  if (fillMs !== null && !(Number(fillMs) >= MIN_FILL_MS)) throw new AppError("ENQUIRY_TOO_FAST");
 
   const fieldErrors = parsed.success ? {} : parsed.error.flatten().fieldErrors;
 
@@ -82,14 +83,7 @@ export async function submitEnquiry({
     if (message) fieldErrors.requirement = [message];
   }
 
-  if (Object.keys(fieldErrors).length > 0) {
-    return {
-      status: "error",
-      message: "Please correct the highlighted fields.",
-      fieldErrors,
-      values,
-    };
-  }
+  if (Object.keys(fieldErrors).length > 0) throw new AppError("VALIDATION_FAILED", { fieldErrors });
 
   const { category: categorySlug, ...data } = parsed.data;
   const { ip, ipHash, userAgent } = meta;
@@ -99,26 +93,14 @@ export async function submitEnquiry({
     if (verdict === "unavailable") {
       console.warn("[enquiry] accepted without Turnstile check (Cloudflare unreachable)");
     }
-    if (verdict === "invalid") {
-      return {
-        status: "error",
-        message: "We couldn't verify you're human. Please wait a moment and submit again.",
-        values,
-      };
-    }
+    if (verdict === "invalid") throw new AppError("CAPTCHA_FAILED");
   }
 
   let saved = null;
 
   if (isDatabaseConfigured()) {
+    if (ipHash && (await isRateLimited(ipHash))) throw new AppError("ENQUIRY_RATE_LIMITED");
     try {
-      if (ipHash && (await rateLimitService.isRateLimited(`enquiry:${ipHash}`, RATE_LIMIT))) {
-        return {
-          status: "error",
-          message: "Too many enquiries from your network. Please try again in a few minutes.",
-          values,
-        };
-      }
       const categoryId = categorySlug ? await categoryService.findIdBySlug(categorySlug) : null;
       saved = await enquiryRepository.create({
         ...data,
@@ -143,15 +125,8 @@ export async function submitEnquiry({
   }
 
   if (!saved && !emailed) {
-    if (process.env.NODE_ENV === "production") {
-      // Never pretend success in production if the lead went nowhere.
-      return {
-        status: "error",
-        message:
-          "Sorry, we couldn't submit your enquiry right now. Please try again shortly or contact us directly.",
-        values,
-      };
-    }
+    // Never pretend success in production if the lead went nowhere.
+    if (getEnv().NODE_ENV === "production") throw new AppError("ENQUIRY_NOT_SAVED");
     console.warn(
       "[enquiry] DATABASE_URL and RESEND_API_KEY are not configured — enquiry logged only (dev):",
       { ...data, category: categorySlug },
@@ -188,7 +163,7 @@ export async function getEnquiry(id) {
  */
 export async function updateEnquiry({ id, ...data }, actor) {
   const before = await enquiryRepository.findFollowUp(id);
-  if (!before) return { error: "Enquiry not found." };
+  if (!before) throw new AppError("ENQUIRY_NOT_FOUND");
 
   await enquiryRepository.update(id, data);
   await auditService.log(actor, "UPDATE", "Enquiry", id, auditService.diff(before, data));

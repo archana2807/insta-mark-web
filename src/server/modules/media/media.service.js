@@ -1,6 +1,7 @@
 // Media: Cloudinary signed uploads, gallery actions for categories and projects
 // (each owner module keeps its own gallery table), and unused-asset cleanup.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import {
   createUploadParams,
   destroyAsset,
@@ -42,16 +43,16 @@ const kinds = () => ({
  * @param {{ kind: "category" | "project", ownerId: string, type?: string }} input
  */
 export async function getGalleryUploadSignature({ kind, ownerId, type }) {
-  if (!isCloudinaryConfigured()) return { error: "Cloudinary is not configured." };
+  if (!isCloudinaryConfigured()) throw new AppError("UPLOAD_NOT_CONFIGURED");
   const cfg = kinds()[kind];
   const owner = await cfg.gallery.findOwner(ownerId);
-  if (!owner) return { error: "Not found." };
+  if (!owner) throw new AppError("NOT_FOUND");
   return createUploadParams(cfg.folder(owner.slug, type));
 }
 
 /** Signed params for a client-logo upload. */
 export async function getLogoUploadSignature() {
-  if (!isCloudinaryConfigured()) return { error: "Cloudinary is not configured." };
+  if (!isCloudinaryConfigured()) throw new AppError("UPLOAD_NOT_CONFIGURED");
   return createUploadParams("insta-mark/clients");
 }
 
@@ -96,10 +97,10 @@ export async function updateAlt(assetId, alt) {
  * @param {{ id: string }} actor
  */
 export async function attachUploadedImage({ kind, ownerId, type, alt, upload }, actor) {
-  if (!verifyUploadResponse(upload)) return { error: "Upload could not be verified." };
+  if (!verifyUploadResponse(upload)) throw new AppError("UPLOAD_NOT_VERIFIED");
   const cfg = kinds()[kind];
   const owner = await cfg.gallery.findOwner(ownerId);
-  if (!owner) return { error: "Not found." };
+  if (!owner) throw new AppError("NOT_FOUND");
 
   const asset = await saveAsset(
     upload,
@@ -130,7 +131,7 @@ export async function attachUploadedImage({ kind, ownerId, type, alt, upload }, 
 export async function updateImage({ kind, id, alt, type }, actor) {
   const cfg = kinds()[kind];
   const img = await cfg.gallery.findImage(id);
-  if (!img) return { error: "Image not found." };
+  if (!img) throw new AppError("IMAGE_NOT_FOUND");
 
   await mediaRepository.updateAlt(img.assetId, alt);
   if (kind === "category" && type) await cfg.gallery.updateImageType(id, type);

@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, validationFailed } from "@/server/errors/app-error";
 import { requireAuth } from "@/server/auth/session";
 import { faqSchema } from "@/shared/schemas/faq.schema";
 import * as faqService from "./faq.service";
@@ -13,8 +14,8 @@ export async function saveFaq(_prev, formData) {
   const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const parsed = faqSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  return faqService.saveFaq(id, parsed.data, me);
+  if (!parsed.success) return validationFailed(parsed.error);
+  return attempt(() => faqService.saveFaq(id, parsed.data, me));
 }
 
 /**

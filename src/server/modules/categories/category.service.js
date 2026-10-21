@@ -1,6 +1,7 @@
 // Solution categories: public pages, admin edits, and the category gallery table
 // (driven by media.service). Without a database, /content is used.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { categories as contentCategories, categoryGroups, enumToGroup } from "@/content/categories";
 import { gallery as contentGallery } from "@/content/gallery";
 import { toImage } from "@/lib/image";
@@ -129,7 +130,7 @@ export async function getNamesById() {
  */
 export async function updateCategory(id, data, actor) {
   const before = await categoryRepository.findById(id);
-  if (!before) return { error: "Category not found." };
+  if (!before) throw new AppError("CATEGORY_NOT_FOUND");
 
   await categoryRepository.update(id, data);
   await auditService.log(actor, "UPDATE", "Category", id, auditService.diff(before, data));

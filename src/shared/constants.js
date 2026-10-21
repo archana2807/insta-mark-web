@@ -7,6 +7,9 @@ export const ENQUIRY_STATUSES = ["NEW", "CONTACTED", "QUOTED", "WON", "LOST", "S
 /** Rows per page in the admin enquiry list. */
 export const ENQUIRY_PAGE_SIZE = 25;
 
+/** Rows per page in the admin projects list. */
+export const PROJECT_PAGE_SIZE = 25;
+
 /** Rows per page in the admin audit log. */
 export const AUDIT_PAGE_SIZE = 50;
 

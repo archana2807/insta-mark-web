@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, validationFailed } from "@/server/errors/app-error";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/server/auth/session";
 import { requestMeta } from "@/server/request";
@@ -14,12 +15,13 @@ import * as authService from "./auth.service";
 export async function login(_prev, formData) {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   const { ipHash } = await requestMeta();
-  const result = await authService.login(parsed.success ? parsed.data : null, {
-    email: String(formData.get("email") ?? ""),
-    ipHash,
-  });
+  const result = await attempt(() =>
+    authService.login(parsed.success ? parsed.data : null, ipHash),
+  );
   if ("redirectTo" in result) redirect(result.redirectTo);
-  return result;
+  // Keep the email in the form (never the password).
+  const email = parsed.success ? parsed.data.email : String(formData.get("email") ?? "");
+  return { ...result, email };
 }
 
 /** @returns {Promise<void>} */
@@ -45,6 +47,6 @@ export async function logoutEverywhere() {
 export async function changeOwnPassword(_prev, formData) {
   const me = await requireAuth();
   const parsed = passwordChangeSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
-  return authService.changeOwnPassword(me, parsed.data);
+  if (!parsed.success) return validationFailed(parsed.error);
+  return attempt(() => authService.changeOwnPassword(me, parsed.data));
 }

@@ -1,11 +1,12 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { getEnv } from "@/server/config/env";
 import * as enquiryService from "@/server/modules/enquiries/enquiry.service";
 
 export const dynamic = "force-dynamic";
 
 function authorised(request) {
-  const secret = process.env.CRON_SECRET;
+  const secret = getEnv().CRON_SECRET;
   if (!secret) return false;
   const expected = Buffer.from(`Bearer ${secret}`);
   const actual = Buffer.from(request.headers.get("authorization") ?? "");
@@ -14,7 +15,7 @@ function authorised(request) {
 
 /** Daily job (vercel.json → crons). Vercel sends `Authorization: Bearer $CRON_SECRET`. */
 export async function GET(request) {
-  if (!process.env.CRON_SECRET) {
+  if (!getEnv().CRON_SECRET) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 503 });
   }
   if (!authorised(request)) {

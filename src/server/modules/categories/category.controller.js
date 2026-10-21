@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, validationFailed } from "@/server/errors/app-error";
 import { requireAuth } from "@/server/auth/session";
 import { categorySchema } from "@/shared/schemas/category.schema";
 import * as categoryService from "./category.service";
@@ -12,7 +13,7 @@ import * as categoryService from "./category.service";
 export async function updateCategory(_prev, formData) {
   const me = await requireAuth("content:write");
   const parsed = categorySchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
+  if (!parsed.success) return validationFailed(parsed.error);
   const { id, ...data } = parsed.data;
-  return categoryService.updateCategory(id, data, me);
+  return attempt(() => categoryService.updateCategory(id, data, me));
 }

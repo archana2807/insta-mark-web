@@ -10,6 +10,7 @@ import {
   suggestEmail,
   validateField,
 } from "@/shared/schemas/enquiry-rules";
+import { resultMessage } from "@/shared/errors";
 import Turnstile from "./Turnstile";
 import ClientIcon from "@/components/ui/ClientIcon";
 import BtnText from "@/components/ui/BtnText";
@@ -163,7 +164,7 @@ export default function EnquiryForm({
 
   const invalid = FIELDS.filter(([name]) => err(name));
   // Non-field server problems (rate limit, captcha, outage, too fast).
-  const serverNotice = state.status === "error" && !state.fieldErrors ? state.message : null;
+  const serverNotice = state.status === "error" && !state.fieldErrors ? resultMessage(state) : null;
   const summaryVisible =
     (showSummary || state.status === "error") && (invalid.length > 0 || serverNotice);
   const summaryTitle = invalid.length

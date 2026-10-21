@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getLogoUploadSignature } from "@/server/modules/client-logos/client-logo.controller";
+import { resultMessage } from "@/shared/errors";
 
 /**
  * Uploads one logo straight to Cloudinary and puts the (server-verifiable)
@@ -34,7 +35,7 @@ export default function LogoUploader() {
     setStatus("Uploading…");
     try {
       const sig = await getLogoUploadSignature();
-      if (sig.error) throw new Error(sig.error);
+      if (sig.ok === false) throw new Error(resultMessage(sig));
       const form = new FormData();
       form.append("file", file);
       for (const k of ["timestamp", "folder", "allowed_formats", "signature"])

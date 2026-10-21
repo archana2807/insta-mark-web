@@ -3,20 +3,21 @@
 // Edge-safe (the middleware imports it), so no `server-only` marker.
 import { SignJWT } from "jose/jwt/sign";
 import { jwtVerify } from "jose/jwt/verify";
+import { getEnv } from "../config/env.js";
 import { ACCESS_TOKEN_TTL } from "./cookies.js";
 
 const ALG = "HS256";
 
 /** @returns {boolean} whether AUTH_SECRET is long enough to sign tokens */
 export function isAuthSecretConfigured() {
-  return (process.env.AUTH_SECRET ?? "").length >= 32;
+  return Boolean(getEnv().AUTH_SECRET); // env.js enforces 32+ characters
 }
 
 function secretKey() {
   if (!isAuthSecretConfigured()) {
     throw new Error("AUTH_SECRET must be set to at least 32 characters");
   }
-  return new TextEncoder().encode(process.env.AUTH_SECRET);
+  return new TextEncoder().encode(getEnv().AUTH_SECRET);
 }
 
 /**

@@ -40,7 +40,7 @@
   - Done when: e2e tests cover login, expiry, logout, role blocks and a deactivated user being kicked out.
   - Not in this task: refresh tokens (D3).
 
-- [ ] **06 `06-errors-env`** (M) — Website looks different: **no**
+- [x] **06 `06-errors-env`** (M) — Website looks different: **no**
   - Done when: one error catalog (`src/shared/errors.js`) holds every code and user message (2-ARCHITECTURE §9); users see safe messages, full details only in server logs (R-11.7).
   - Done when: `src/server/config/env.js` validates all env variables with Zod at start-up; required ones missing → the app refuses to start; optional integrations stay optional (R-11.8).
   - Done when: admin sections have loading and error screens; empty lists show an empty state.

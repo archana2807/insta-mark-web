@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
+import AdminMain from "@/components/admin/AdminMain";
 import AdminNav from "@/components/admin/AdminNav";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { permissionsFor } from "@/server/auth/permissions";
@@ -40,7 +41,7 @@ export default async function PanelLayout({ children }) {
             </form>
           </div>
         </header>
-        <main className="admin-content">{children}</main>
+        <AdminMain>{children}</AdminMain>
       </div>
     </div>
   );

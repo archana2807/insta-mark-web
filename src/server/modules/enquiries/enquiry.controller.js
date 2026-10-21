@@ -1,5 +1,6 @@
 "use server";
 
+import { attempt, firstIssue, validationFailed } from "@/server/errors/app-error";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/server/auth/session";
 import { requestMeta } from "@/server/request";
@@ -18,17 +19,21 @@ import * as enquiryService from "./enquiry.service";
  */
 export async function submitEnquiry(_prevState, formData) {
   const raw = Object.fromEntries([...formData.entries()].filter(([, v]) => typeof v === "string"));
-  const result = await enquiryService.submitEnquiry({
-    honeypot: String(formData.get("website") ?? ""),
-    fillMs: formData.get("fillMs") === null ? null : String(formData.get("fillMs")),
-    raw,
-    parsed: enquirySchema.safeParse(raw),
-    values: Object.fromEntries(enquiryFields.map((f) => [f, String(formData.get(f) ?? "")])),
-    turnstileToken: formData.get("cf-turnstile-response"),
-    meta: await requestMeta(),
-  });
+  const meta = await requestMeta();
+  const result = await attempt(() =>
+    enquiryService.submitEnquiry({
+      honeypot: String(formData.get("website") ?? ""),
+      fillMs: formData.get("fillMs") === null ? null : String(formData.get("fillMs")),
+      raw,
+      parsed: enquirySchema.safeParse(raw),
+      turnstileToken: formData.get("cf-turnstile-response"),
+      meta,
+    }),
+  );
   if ("redirectTo" in result) redirect(result.redirectTo);
-  return result;
+  // Echo the visible fields back so nothing the visitor typed is lost.
+  const values = Object.fromEntries(enquiryFields.map((f) => [f, String(formData.get(f) ?? "")]));
+  return { status: "error", ...result, values };
 }
 
 /**
@@ -39,8 +44,8 @@ export async function submitEnquiry(_prevState, formData) {
 export async function updateEnquiry(_prev, formData) {
   const me = await requireAuth("enquiry:update");
   const parsed = enquiryUpdateSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: "Invalid input." };
-  return enquiryService.updateEnquiry(parsed.data, me);
+  if (!parsed.success) return { ok: false, code: "INVALID_INPUT" };
+  return attempt(() => enquiryService.updateEnquiry(parsed.data, me));
 }
 
 /**
@@ -51,6 +56,6 @@ export async function updateEnquiry(_prev, formData) {
 export async function addEnquiryNote(_prev, formData) {
   const me = await requireAuth("enquiry:update");
   const parsed = enquiryNoteSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0].message };
-  return enquiryService.addNote(parsed.data, me);
+  if (!parsed.success) return firstIssue(parsed.error);
+  return attempt(() => enquiryService.addNote(parsed.data, me));
 }

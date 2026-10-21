@@ -1,6 +1,7 @@
 // Admin login, logout and own-password change. Keeps the login rules: IP rate limit,
 // lockout after 5 failures, equal timing for unknown accounts, no open redirects, audit.
 import "server-only";
+import { AppError } from "@/server/errors/app-error";
 import { verifyAgainstDummy, verifyPassword } from "@/server/auth/password";
 import { isAuthSecretConfigured } from "@/server/auth/jwt";
 import { createSession, destroySession, getCurrentUser } from "@/server/auth/session";
@@ -12,7 +13,6 @@ import * as userService from "@/server/modules/users/user.service";
 const LOGIN_IP_LIMIT = { max: 10, windowMs: 10 * 60 * 1000 };
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
-const GENERIC_ERROR = "Invalid email or password.";
 
 /**
  * Only allow redirects inside the admin area (no open redirects).
@@ -27,31 +27,27 @@ export function safeNext(next) {
 
 /**
  * @param {import("@/shared/schemas/auth.schema").LoginInput | null} input null when the form was invalid
- * @param {{ email: string, ipHash: string | undefined }} request raw email (echoed back) and IP hash
- * @returns {Promise<{ error: string, email?: string } | { redirectTo: string }>}
+ * @param {string | undefined} ipHash
+ * @returns {Promise<{ redirectTo: string }>} where to go after a successful login
+ * @throws {AppError} AUTH_* codes (same message for unknown and wrong: no enumeration)
  */
-export async function login(input, request) {
-  if (!isDatabaseConfigured()) {
-    return { error: "The admin panel needs a database (DATABASE_URL)." };
-  }
-  if (!isAuthSecretConfigured()) {
-    return { error: "AUTH_SECRET is not configured on the server." };
-  }
-  if (!input) return { error: GENERIC_ERROR, email: request.email };
+export async function login(input, ipHash) {
+  if (!isDatabaseConfigured()) throw new AppError("ADMIN_DB_NOT_CONFIGURED");
+  if (!isAuthSecretConfigured()) throw new AppError("AUTH_SECRET_NOT_CONFIGURED");
+  if (!input) throw new AppError("AUTH_INVALID_CREDENTIALS");
   const { email, password, next } = input;
 
-  const { ipHash } = request;
   if (ipHash && (await rateLimitService.isRateLimited(`login:${ipHash}`, LOGIN_IP_LIMIT))) {
-    return { error: "Too many attempts. Please wait a few minutes and try again.", email };
+    throw new AppError("AUTH_RATE_LIMITED");
   }
 
   const user = await userService.findByEmail(email);
   if (!user || !user.isActive) {
     await verifyAgainstDummy(password); // equal timing for unknown accounts
-    return { error: GENERIC_ERROR, email };
+    throw new AppError("AUTH_INVALID_CREDENTIALS");
   }
   if (user.lockedUntil && user.lockedUntil > new Date()) {
-    return { error: "This account is temporarily locked. Try again in 15 minutes.", email };
+    throw new AppError("AUTH_LOCKED");
   }
 
   if (!(await verifyPassword(password, user.passwordHash))) {
@@ -62,7 +58,7 @@ export async function login(input, request) {
       lockedUntil: lock ? new Date(Date.now() + LOCK_MS) : null,
     });
     if (lock) await auditService.log(null, "LOCKOUT", "AdminUser", user.id);
-    return { error: GENERIC_ERROR, email };
+    throw new AppError("AUTH_INVALID_CREDENTIALS");
   }
 
   await userService.updateLoginState(user.id, {
@@ -101,7 +97,7 @@ export async function logoutEverywhere(me) {
 export async function changeOwnPassword(me, { current, password }) {
   const user = await userService.findById(me.id);
   if (!(await verifyPassword(current, user.passwordHash))) {
-    return { fieldErrors: { current: ["Current password is incorrect."] } };
+    throw new AppError("AUTH_CURRENT_PASSWORD_WRONG", { field: "current" });
   }
   const updated = await userService.setPassword(me.id, password);
   await createSession(updated);

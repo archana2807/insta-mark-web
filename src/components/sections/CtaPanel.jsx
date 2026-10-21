@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
 import BtnText from "@/components/ui/BtnText";
@@ -11,7 +10,6 @@ export default function CtaPanel({ cta }) {
         <Reveal className="cta-panel">
           <div className="row align-items-end g-4">
             <div className="col-lg-8">
-              <Eyebrow light>Start your project</Eyebrow>
               <h2 className="mb-4">{cta.title}</h2>
               <p className="mb-0" style={{ maxWidth: "40rem" }}>
                 {cta.text}

@@ -94,10 +94,7 @@ export default async function CategoryPage({ params }) {
         <div className="container">
           <div className="row g-4 g-lg-5">
             <Reveal className="col-lg-5">
-              <SectionHeading
-                eyebrow="Key features"
-                title={<span id="features-title">What you get</span>}
-              />
+              <SectionHeading title={<span id="features-title">What you get</span>} />
               <Reveal as="ul" effect="flip-y" stagger={150} className="check-list mt-4">
                 {category.features.map((f) => (
                   <li key={f}>{f}</li>
@@ -105,7 +102,7 @@ export default async function CategoryPage({ params }) {
               </Reveal>
             </Reveal>
             <Reveal className="col-lg-6 offset-lg-1" delay={120}>
-              <SectionHeading eyebrow="Applications" title="Where it is used" />
+              <SectionHeading title="Where it is used" />
               <p className="mt-4 mb-4">{category.applications}</p>
               <Reveal as="ul" effect="flip-y" stagger={80} className="tag-list">
                 {toList(category.applications).map((a) => (
@@ -123,7 +120,6 @@ export default async function CategoryPage({ params }) {
           <div className="container">
             <SectionHeading
               className="mb-6"
-              eyebrow="Product range"
               title={<span id="catalogue-title">Our {category.name.toLowerCase()} range</span>}
             />
             <Gallery images={category.catalogueImages} label={`${category.name} product range`} />
@@ -137,7 +133,6 @@ export default async function CategoryPage({ params }) {
           <div className="container">
             <SectionHeading
               className="mb-6"
-              eyebrow="Executed projects"
               title={<span id="work-title">Our work on site</span>}
               text={`Real ${category.name.toLowerCase()} projects designed, manufactured and installed by Insta Mark.`}
             />
@@ -165,7 +160,6 @@ export default async function CategoryPage({ params }) {
           <div className="container">
             <SectionHeading
               className="mb-6"
-              eyebrow="Explore more"
               title={<span id="related-title">Related solutions</span>}
             />
             <CategoryGrid

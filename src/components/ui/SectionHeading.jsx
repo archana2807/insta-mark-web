@@ -1,9 +1,7 @@
-import Eyebrow from "./Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 
-/** Eyebrow + large heading + optional intro paragraph (theme pattern). */
+/** Large heading + optional intro paragraph (theme pattern; no small label above). */
 export default function SectionHeading({
-  eyebrow,
   title,
   text,
   as: Tag = "h2",
@@ -15,7 +13,6 @@ export default function SectionHeading({
       stagger={150}
       className={`section-heading ${center ? "text-center" : ""} ${className}`.trim()}
     >
-      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
       <Tag className="h2">{title}</Tag>
       {text && <p className={`lead-text ${center ? "mx-auto" : ""}`.trim()}>{text}</p>}
     </Reveal>

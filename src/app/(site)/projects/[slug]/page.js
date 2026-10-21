@@ -51,7 +51,6 @@ export default async function ProjectPage({ params }) {
   return (
     <>
       <PageHero
-        eyebrow="Project"
         title={p.title}
         breadcrumbs={[
           { label: "Projects", href: "/projects" },

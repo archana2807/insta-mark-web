@@ -12,7 +12,6 @@ export const home = {
     secondaryCta: { label: "Request a Consultation", href: "/contact" },
   },
   about: {
-    eyebrow: "About Insta Mark",
     title: "Creating Signage That Makes Every Space Smarter",
     // Home page shows only 1–2 lines (meeting: "one, two liners about the company").
     short:

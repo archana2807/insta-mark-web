@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 import BtnText from "@/components/ui/BtnText";
@@ -13,13 +12,7 @@ import Icon from "@/components/ui/Icon";
  * (8/4 split) that drift in opposite directions while scrolling and are
  * uncovered by left→right / right→left wipes. Alternate rows swap the photos.
  */
-export default function ShowcaseRow({
-  category,
-  images = [],
-  number,
-  groupLabel,
-  reverse = false,
-}) {
+export default function ShowcaseRow({ category, images = [], number, reverse = false }) {
   const features = category.features ?? [];
   const half = Math.ceil(features.length / 2);
   const lists = [features.slice(0, half), features.slice(half)].filter((l) => l.length);
@@ -57,7 +50,6 @@ export default function ShowcaseRow({
           <span className="service-block__number" data-num={pad2(number)} aria-hidden="true" />
         </div>
         <Reveal stagger={300} className="col-xl-3 col-lg-4 col-md-10 mt-3 mt-md-0">
-          <Eyebrow>{groupLabel}</Eyebrow>
           <h2 id={`svc-${category.slug}`} className="service-block__title">
             <Link href={href}>{category.name}</Link>
           </h2>

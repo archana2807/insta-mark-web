@@ -1,9 +1,8 @@
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
 /** Inner-page header with breadcrumb (+ BreadcrumbList JSON-LD). */
-export default function PageHero({ eyebrow, title, lead, breadcrumbs = [], children }) {
+export default function PageHero({ title, lead, breadcrumbs = [], children }) {
   const trail = [{ label: "Home", href: "/" }, ...breadcrumbs];
 
   return (
@@ -24,7 +23,6 @@ export default function PageHero({ eyebrow, title, lead, breadcrumbs = [], child
             )}
           </ol>
         </nav>
-        {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
         <h1>{title}</h1>
         {lead && <p className="page-hero__lead mb-0">{lead}</p>}
         {children}

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import TrackLead from "@/components/analytics/TrackLead";
 import { pageMetadata } from "@/lib/seo";
 import Icon from "@/components/ui/Icon";
@@ -18,7 +17,6 @@ export default function ThankYouPage() {
       <TrackLead />
       <div className="container text-center" style={{ maxWidth: "46rem" }}>
         <Icon name="check2-circle" className="display-3 text-primary" />
-        <Eyebrow className="mt-4">Enquiry received</Eyebrow>
         <h1 className="mb-4">Thank you for contacting Insta Mark.</h1>
         <p className="lead-text mx-auto mb-5">
           Our team will review your requirement and get back to you shortly.

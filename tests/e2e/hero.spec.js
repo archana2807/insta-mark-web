@@ -133,6 +133,42 @@ test("no small label above a headline on any public page (10b)", async ({ page }
   }
 });
 
+test("the Solutions dropdown opens at the right side of the page, like the theme", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Solutions" }).click();
+  const menu = page.locator(".mega-menu");
+  await expect(menu).toBeVisible();
+  const box = await menu.boundingBox();
+  const viewport = page.viewportSize();
+  // Flush with the nav's right gutter (3 rem = 48 px), and in the right half of the page.
+  expect(Math.abs(viewport.width - (box.x + box.width) - 48)).toBeLessThan(24);
+  expect(box.x).toBeGreaterThan(viewport.width / 4);
+  // Under the header, not on top of it.
+  const header = await page.locator(".site-header").boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(header.y + header.height - 2);
+});
+
+test("the footer carries the call to action on every page; no separate CTA panel (10d)", async ({
+  page,
+}) => {
+  for (const route of ["/", "/about", "/projects", "/solutions"]) {
+    await page.goto(route);
+    await expect(page.locator(".cta-panel"), `${route} still has a CTA panel`).toHaveCount(0);
+    const footer = page.locator(".site-footer");
+    await expect(footer.getByRole("heading", { level: 2 })).toContainText(
+      /Build Smarter Spaces Together/,
+    );
+    await expect(footer.getByRole("link", { name: /Get a Free Consultation/ })).toBeVisible();
+    await expect(footer.getByRole("link", { name: /Contact Our Team/ })).toBeVisible();
+    // Solutions and company links stay on the right.
+    await expect(footer.getByText("Company", { exact: true })).toBeVisible();
+    // Social icons are shown only for links the client has set (none yet: hidden, not fake).
+    await expect(footer.locator(".site-footer__social")).toHaveCount(0);
+  }
+});
+
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
   page,
 }) => {

@@ -10,12 +10,12 @@ import { organizationJsonLd } from "@/lib/seo";
 
 /** Public website shell: header, footer, floating contact buttons. */
 export default async function SiteLayout({ children }) {
-  const [site, nav, groups, categories, projectsPage] = await Promise.all([
+  const [site, nav, groups, categories, footerCta] = await Promise.all([
     settingService.getSite(),
     pageSectionService.getNavigation(),
     categoryService.listCategoriesByGroup(),
     categoryService.listCategories(),
-    pageSectionService.getProjectsPageContent(),
+    pageSectionService.getFooterCta(),
   ]);
 
   return (
@@ -33,7 +33,7 @@ export default async function SiteLayout({ children }) {
         }))}
       />
       <main id="main">{children}</main>
-      <Footer site={site} categories={categories} ctaTitle={projectsPage.cta} />
+      <Footer site={site} categories={categories} cta={footerCta} />
       <FloatingActions contact={site.contact} />
       <GoogleAnalytics id={process.env.NEXT_PUBLIC_GA_ID} />
       <script

@@ -460,33 +460,6 @@
   }
 }
 
-.cta-panel {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-  color: rgba(#fff, 0.75);
-  background: $ink;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: auto -10% -60% auto;
-    width: 60%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba($brand-teal, 0.45), transparent 65%);
-  }
-
-  h2 {
-    color: #fff;
-    max-width: 22ch;
-  }
-
-  > * {
-    position: relative;
-  }
-}
-
 // ── Client logo strip ──────────────────────────────────
 .logo-strip {
   display: grid;

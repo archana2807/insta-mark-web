@@ -18,6 +18,14 @@ import * as clientLogoService from "@/server/modules/client-logos/client-logo.se
 import * as faqService from "@/server/modules/faqs/faq.service";
 import * as industryService from "@/server/modules/industries/industry.service";
 
+/**
+ * The call to action in the site footer (the same text on every page).
+ * @returns {Promise<typeof home.cta>}
+ */
+export async function getFooterCta() {
+  return home.cta;
+}
+
 export async function getNavigation() {
   return mainNav;
 }

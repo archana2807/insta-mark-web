@@ -383,20 +383,3 @@
   background: #fff;
   box-shadow: 0 30px 70px rgba($ink, 0.08);
 }
-
-// ── CTA panel buttons: equal width, stacked on desktop ──
-.cta-panel__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-
-  .btn {
-    justify-content: center;
-  }
-
-  @include media-breakpoint-up(lg) {
-    flex-direction: column;
-    max-width: 20rem;
-    margin-left: auto;
-  }
-}

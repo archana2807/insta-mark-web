@@ -99,11 +99,20 @@ $header-h-scrolled: 72px;
   }
 }
 
-// Solutions mega menu (desktop)
+// Solutions mega menu (desktop). As in the theme it opens under the navigation bar at the
+// right side of the page (same gutter as the nav), not under the Solutions link. The
+// positioning script sets inline styles, hence the !important overrides.
+.navbar .nav-item.dropdown {
+  position: static;
+}
+
 .mega-menu {
+  position: absolute !important;
+  inset: 100% 3rem auto auto !important;
+  transform: none !important;
   min-width: 640px;
   padding: 1.75rem;
-  margin-top: 0.25rem !important;
+  margin-top: 0 !important;
   border: 0;
   box-shadow: 0 25px 60px rgba($ink, 0.12);
 
@@ -197,10 +206,39 @@ $header-h-scrolled: 72px;
     }
   }
 
-  h2 {
-    color: #fff;
+  &__title {
+    max-width: 24ch;
     font-weight: 500;
-    max-width: 28rem;
+    color: #fff;
+  }
+
+  &__text {
+    max-width: 40rem;
+  }
+
+  &__social {
+    display: flex;
+    gap: 0.6rem;
+
+    a:not(.btn):not(.brand-logo) {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(#fff, 0.3);
+      border-radius: 50%;
+      font-size: 1.1rem;
+      color: #fff;
+      transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        color: $ink;
+        background: #fff;
+      }
+    }
   }
 
   &__label {

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
-import CtaPanel from "@/components/sections/CtaPanel";
 import ProjectCard from "@/components/sections/ProjectCard";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
@@ -89,7 +88,6 @@ export default async function ProjectsPage() {
         </section>
       ))}
 
-      <CtaPanel cta={home.cta} />
     </>
   );
 }

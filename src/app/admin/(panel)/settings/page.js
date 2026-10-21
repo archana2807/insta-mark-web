@@ -86,7 +86,7 @@ export default async function SettingsPage() {
                 label="Founded (year)"
                 type="number"
                 defaultValue={site.establishedYear ?? ""}
-                hint="Drives the “years of expertise” badge."
+                hint="Only used in search-engine data. Leave empty until the client confirms it."
               />
             </div>
             {["linkedin", "instagram", "facebook", "youtube"].map((k) => (

@@ -244,7 +244,7 @@ Messages are the ones the app shows today; `FORBIDDEN` and `NOT_FOUND` use the w
 | D11 | Never run the app, tests or seeds against the production DB; tests use PGlite on 127.0.0.1:5433 | Test leads reached production on 13 Oct | 13 Oct |
 | D12 | No OpenAPI file; §5 lists every server action and route handler and is updated before any change | No public REST API | 21 Oct |
 | D13 | JSDoc (`@param`, `@returns`) required on new and moved code only | No `checkJs` yet (D4) | 21 Oct |
-| D14 | Vercel previews must never use the live database: a separate Neon branch for Preview (task 02) | Previews are public links and run real writes | 21 Oct |
+| D14 | Vercel previews never use a database: `DATABASE_URL` / `DIRECT_URL` are set for Production only; previews run on `/content`. No Neon preview branch for now | Previews are public links and must not touch live data | 21 Oct |
 | D15 | Backups: Neon's built-in restore + a daily `pg_dump` saved as a GitHub Actions artifact (private repo, kept 30 days), set up in task 08 | No extra storage service needed | 21 Oct |
 
 ## 11. Rules kept from `docs/OLD-CLAUDE.md`
@@ -262,4 +262,4 @@ Messages are the ones the app shows today; `FORBIDDEN` and `NOT_FOUND` use the w
 ## 12. Conflicts and questions
 - **Home order:** OLD-CLAUDE.md fixes the product grid right after About; the client's 15 Oct doc removes it. The old rule stays until the client answers (1-PROJECT §11, question 1).
 - **AGENTS.md rule 4** (Prisma only in repositories) applies to new and moved code now, and to all code after task 04.
-- **Resolved 21 Oct:** OpenAPI → D12; JSDoc → D13; `FORBIDDEN` / `NOT_FOUND` wording → §9; preview database → D14; backups → D15.
+- **Resolved 21 Oct:** OpenAPI → D12; JSDoc → D13; `FORBIDDEN` / `NOT_FOUND` wording → §9; preview database → D14 (no database on previews); backups → D15.

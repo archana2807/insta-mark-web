@@ -22,3 +22,8 @@ npm-debug.log*
 Thumbs.db
 *.pem
 .vercel
+
+# test output
+/test-results/
+/playwright-report/
+/blob-report/

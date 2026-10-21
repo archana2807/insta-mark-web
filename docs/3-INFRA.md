@@ -4,8 +4,10 @@
 | Env | URL | Database | Deployed when |
 |---|---|---|---|
 | Local | http://localhost:3000 | PGlite test DB on 127.0.0.1:5433 (never production) | — |
-| Preview (= staging) | Vercel preview link per branch / PR | Separate Neon branch — **never** the live DB (D14, set up in task 02) | Every push to a branch |
+| Preview (= staging) | Vercel preview link per branch / PR | **None** — previews run on `/content` and never get a database (D14) | Every push to a branch |
 | Production | https://insta-mark-web.vercel.app today → client domain at go-live | Neon production | Merge to `main` |
+
+**Rule (D14):** in Vercel, `DATABASE_URL` and `DIRECT_URL` are set for **Production only**. Never add them to Preview or Development. Previews then show `/content` and cannot store enquiries (the form shows its "couldn't submit" message there) — that is expected and safe.
 
 ## 2. Hosting
 - **Chosen:** Vercel (web, server actions, cron) + Neon PostgreSQL (Singapore). Vercel region `sin1`, close to Mumbai.
@@ -28,7 +30,7 @@
 - It retries failed sales emails and applies data retention (rate limits 1 day, SPAM 90 days, audit 1 year, anonymise enquiries after 3 years).
 
 ## 5. CI/CD
-- **CI (task 02):** GitHub Actions on every push and PR: install → lint → `check:content` → build → e2e tests against PGlite.
+- **CI (task 02):** GitHub Actions (`.github/workflows/ci.yml`) on every push and PR: install → lint → `check:content` → unit tests → build + e2e against a throwaway PGlite database. No secrets in CI.
 - **CD:** Vercel deploys previews on every push and production on merge to `main`. Rollback: "Promote" the previous deployment in Vercel.
 
 ## 6. Secrets
@@ -55,4 +57,3 @@
 - [ ] Client facts confirmed (contact details, founding year); test data removed
 - [ ] Lighthouse mobile ≥ 90 and LCP ≤ 2.5 s on production; axe 0 violations; no sideways scroll at 390 px
 
-**To check in task 02:** whether Vercel's `DATABASE_URL` is currently set for Production only or also for Preview; if Preview uses the live DB today, fix it first.

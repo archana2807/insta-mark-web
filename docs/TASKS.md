@@ -5,15 +5,15 @@
 > Every task also ends with: `npm run check:content`, a clean `npm run build`, browser check at
 > desktop and 390 px (no sideways scroll, no console errors), tests green (from task 02 on).
 
-- [~] **01 `01-kit-setup`** — kit docs and rules (no code)
+- [x] **01 `01-kit-setup`** — kit docs and rules (no code)
 
-- [ ] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
+- [~] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
   - Done when: the Playwright suites (enquiry form, admin, a11y/links/SEO crawl, 390 px overflow) live in `tests/e2e/` and run with one npm command.
   - Done when: the test runner starts PGlite on 127.0.0.1:5433 and **refuses to run** if `DATABASE_URL` points anywhere else (R-13.4).
   - Done when: ESLint is set up (`eslint.config.mjs`, `next/core-web-vitals`) and `npm run lint` passes without disabling rules.
   - Done when: a GitHub Action runs install → lint → `check:content` → build → e2e on every push and PR, and it is green.
-  - Done when: Vercel Preview deployments use a **separate Neon branch**, never the live database; the Preview `DATABASE_URL` / `DIRECT_URL` point to that branch and a preview enquiry does not appear in production (D14).
-  - Done when: all existing checks still pass (form 16/16, admin 43/43, axe 0 violations, no overflow).
+  - Done when: `docs/3-INFRA.md` states the rule: Vercel `DATABASE_URL` / `DIRECT_URL` are set for Production only; previews never get a database (D14). No Neon preview branch.
+  - Done when: all existing checks still pass (form 16/16, admin 42/42, axe 0 violations, no overflow).
   - Not in this task: Husky, lint-staged, commitlint, `checkJs` (D4, D7).
 
 - [ ] **03 `03-quick-client-fixes`** (S) — Website looks different: **yes** (show the client)

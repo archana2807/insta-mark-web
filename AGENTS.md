@@ -53,7 +53,10 @@ npm run db:deploy                    # apply migrations
 npm run db:seed                      # seed from /content (create-missing)
 npm run admin:create                 # create/reset an admin (password from env)
 npm run icons                        # regenerate SVG icons after editing scripts/build-icons.js
-# npm run lint and npm test do not exist yet — added in task 02.
+npm run lint                         # ESLint (next/core-web-vitals); next build lints too
+npm test                             # unit tests (node --test, tests/unit)
+npm run test:e2e                     # build + Playwright e2e against a throwaway PGlite DB (never live)
+npm run test:e2e:fast                # same, skipping the build
 ```
 
 ## Project-specific rules (0–5, added per project after Prompt 1)

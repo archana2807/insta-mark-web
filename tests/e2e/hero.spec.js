@@ -73,6 +73,17 @@ test("project logos sit right under the banner: 4–5 logos that load (R-3.10)",
     await expect(imgs.nth(i)).toHaveAttribute("alt", /\S+ logo$/);
     expect(await imgs.nth(i).evaluate((el) => el.naturalWidth)).toBeGreaterThan(0);
   }
+  // Theme look: equal columns across the page, each logo centred in its column.
+  const centres = await imgs.evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return r.left + r.width / 2;
+    }),
+  );
+  const steps = centres.slice(1).map((c, i) => c - centres[i]);
+  for (const step of steps) expect(Math.abs(step - steps[0])).toBeLessThan(4);
+  expect(steps[0]).toBeGreaterThan(200);
+
   // Directly after the banner, before the About intro.
   const hero = await page.locator(".hero-split").boundingBox();
   const band = await logos.boundingBox();

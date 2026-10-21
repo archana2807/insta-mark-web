@@ -31,6 +31,8 @@ const schema = z.object({
   RESEND_API_KEY: optional(z.string()),
   ENQUIRY_FROM_EMAIL: optional(z.string()),
   ENQUIRY_NOTIFY_EMAILS: optional(z.string()),
+  /** Tests only: the Resend SDK sends to this URL (a local mock) instead of api.resend.com. */
+  RESEND_BASE_URL: optional(z.string().url()),
 
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: optional(z.string()),
   TURNSTILE_SECRET_KEY: optional(z.string()),
@@ -79,8 +81,10 @@ export function parseEnv(raw) {
   const missing = (names, why) => {
     for (const name of names) if (!env[name]) errors.push(`${name} is required ${why}`);
   };
-  if (env.VERCEL_ENV === "production") missing(REQUIRED_IN_PRODUCTION, "in production");
-  else if (env.DATABASE_URL) missing(REQUIRED_WITH_DATABASE, "when DATABASE_URL is set");
+  if (env.VERCEL_ENV === "production") {
+    missing(REQUIRED_IN_PRODUCTION, "in production");
+    if (env.RESEND_BASE_URL) errors.push("RESEND_BASE_URL must not be set in production");
+  } else if (env.DATABASE_URL) missing(REQUIRED_WITH_DATABASE, "when DATABASE_URL is set");
 
   const warnings = [];
   for (const [label, names] of Object.entries(INTEGRATIONS)) {

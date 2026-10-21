@@ -12,6 +12,7 @@ import {
   projectsPage,
   contactPage,
 } from "@/content/company";
+import * as bannerService from "@/server/modules/banner/banner.service";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as clientLogoService from "@/server/modules/client-logos/client-logo.service";
 import * as faqService from "@/server/modules/faqs/faq.service";
@@ -50,12 +51,22 @@ export async function getCategoryPage(slug) {
 }
 
 export async function getHomeContent() {
-  const [industries, faqs, clientLogos] = await Promise.all([
+  const [industries, faqs, clientLogos, banner] = await Promise.all([
     industryService.listIndustries(),
     faqService.listFaqs("home"),
     clientLogoService.listClientLogos(),
+    bannerService.getBanner(),
   ]);
-  return { ...home, featured, whyChooseUs, workingProcess, industries, faqs, clientLogos };
+  return {
+    ...home,
+    featured,
+    whyChooseUs,
+    workingProcess,
+    industries,
+    faqs,
+    clientLogos,
+    banner, // null until an admin uploads one (fallback: featured.hero)
+  };
 }
 
 export async function getAboutContent() {

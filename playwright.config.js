@@ -9,7 +9,16 @@ const chromium = { ...devices["Desktop Chrome"], launchOptions: { executablePath
 
 // Suites run one after another, in this order: the crawl sees pristine data, and the
 // admin suite (which edits content) runs last.
-const order = ["crawl", "overflow", "form", "admin", "auth", "errors", "client-fixes"];
+const order = [
+  "crawl",
+  "overflow",
+  "form",
+  "admin",
+  "auth",
+  "errors",
+  "client-fixes",
+  "client-changes",
+];
 
 export default defineConfig({
   testDir: "tests/e2e",

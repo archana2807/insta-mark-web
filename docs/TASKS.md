@@ -48,7 +48,7 @@
   - Done when: e2e tests cover one error message, one empty state and pagination.
   - Not in this task: pino and Sentry (D6, task 08).
 
-- [ ] **07 `07-client-changes`** (L — split into 07a banner, 07b home order + content, 07c auto-reply) — Website looks different: **yes**
+- [~] **07 `07-client-changes`** (L — split into 07a banner, 07b home order + content, 07c auto-reply) — Website looks different: **yes**
   - Done when: Editors and Admins upload a desktop and a mobile banner in `/admin/banner`; the site shows the right one per screen width, with the old photo as fallback (R-3.1, R-8.1).
   - Done when: the banner sizes are sent to the client: desktop 1920 × 1720 px, mobile 1080 × 1080 px (R-3.2).
   - Done when: the home page follows the order the client confirms (R-3.0, question 1), with the agreed About text (R-3.5), the quote (R-3.9) and the FAQs (R-3.13).

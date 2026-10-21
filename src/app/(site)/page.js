@@ -52,6 +52,7 @@ export default async function HomePage() {
       <HomeHero
         hero={home.hero}
         image={home.featured.hero}
+        banner={home.banner}
         establishedYear={site.establishedYear}
       />
 

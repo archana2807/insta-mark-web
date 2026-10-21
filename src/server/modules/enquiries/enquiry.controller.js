@@ -1,6 +1,8 @@
 "use server";
 
 import { attempt, firstIssue, validationFailed } from "@/server/errors/app-error";
+import { LEAD_COOKIE } from "@/shared/constants";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/server/auth/session";
 import { requestMeta } from "@/server/request";
@@ -30,7 +32,20 @@ export async function submitEnquiry(_prevState, formData) {
       meta,
     }),
   );
-  if ("redirectTo" in result) redirect(result.redirectTo);
+  if ("redirectTo" in result) {
+    // Only a real lead may count as a GA4 conversion on the thank-you page.
+    if (result.lead) {
+      (await cookies()).set(LEAD_COOKIE.name, "1", {
+        path: LEAD_COOKIE.path,
+        maxAge: LEAD_COOKIE.maxAgeSeconds,
+        sameSite: "lax",
+        // Holds no secret (just "1"); not Secure / HttpOnly so TrackLead can read it.
+        secure: false,
+        httpOnly: false,
+      });
+    }
+    redirect(result.redirectTo);
+  }
   // Echo the visible fields back so nothing the visitor typed is lost.
   const values = Object.fromEntries(enquiryFields.map((f) => [f, String(formData.get(f) ?? "")]));
   return { status: "error", ...result, values };

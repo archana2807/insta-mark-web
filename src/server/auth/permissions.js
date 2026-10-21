@@ -44,6 +44,7 @@ const ROUTE_PERMISSIONS = [
   ["/admin/projects", "content:write"],
   ["/admin/clients", "content:write"],
   ["/admin/faqs", "content:write"],
+  ["/admin/banner", "content:write"],
   ["/admin/settings", "settings:write"],
   ["/admin/users", "user:manage"],
   ["/admin/audit", "audit:read"],

@@ -132,10 +132,15 @@ test("no small label above a headline on any public page (10b)", async ({ page }
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("h1").first()).toBeVisible();
-    // The only small label left is the one in the home About block, as in the theme.
+    // The only small labels left are on the home page: About and Our products, as in the theme.
     const labels = await page
       .locator(".eyebrow")
-      .evaluateAll((els) => els.filter((el) => !el.closest(".about-short")).length);
+      .evaluateAll(
+        (els) =>
+          els.filter(
+            (el) => !el.closest(".about-short, section[aria-labelledby='solutions-title']"),
+          ).length,
+      );
     expect(labels, `${route} still has a small label`).toBe(0);
   }
 });
@@ -176,6 +181,11 @@ test("home sections follow the client's order and look (10c)", async ({ page }) 
   const wall = page.locator(".logo-wall img");
   expect(await wall.count()).toBeGreaterThanOrEqual(8);
   await expect(page.locator("#trusted-title")).toHaveText("Trusted by Leading Brands");
+
+  // Small label above the products heading, like the About block.
+  await expect(page.locator("section[aria-labelledby='solutions-title'] .eyebrow")).toHaveText(
+    "Our products",
+  );
 });
 
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({

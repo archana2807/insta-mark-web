@@ -191,7 +191,7 @@ vercel.json            build command + cron schedule
 
 **Waiting on the client**
 
-- Official logo (SVG) and brand colours → `styles/_variables.scss`, `components/ui/BrandLogo.jsx`
+- Official logo (SVG) and brand colours → `src/styles/_variables.scss`, `src/components/ui/BrandLogo.jsx`
 - Phone, WhatsApp, email, address, map → `content/site.js` (hidden on the site until set)
 - Photos for Braille Signs and Emergency Lights; catalogue product images; client logos
 - Confirm: founding year (2016?), “Manufacturing” vs “Industrial Facilities”, Fire & Safety overview text

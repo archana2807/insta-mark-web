@@ -8,7 +8,7 @@ import sharp from "sharp";
 import { gallery } from "../content/gallery.js";
 import { categories } from "../content/categories.js";
 import { industries, whyChooseUs } from "../content/company.js";
-import { ICONS } from "../components/ui/icons.generated.js";
+import { ICONS } from "../src/components/ui/icons.generated.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];

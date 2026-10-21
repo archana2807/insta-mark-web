@@ -7,7 +7,7 @@
 // does not end up in shell history or process listings).
 
 import { PrismaClient } from "@prisma/client";
-import { hashPassword, PASSWORD_MIN_LENGTH } from "../lib/auth/password.js";
+import { hashPassword, PASSWORD_MIN_LENGTH } from "../src/server/auth/password.js";
 
 function arg(name) {
   const i = process.argv.indexOf(`--${name}`);

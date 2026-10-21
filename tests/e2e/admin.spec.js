@@ -119,7 +119,7 @@ test("open redirect blocked", async () => {
   await p.fill("#password", USERS.admin.password);
   await Promise.all([p.waitForURL("**/admin"), p.click("button[type=submit]")]);
   check("login succeeds; external next= ignored → /admin", new URL(p.url()).pathname === "/admin");
-  const sc = (await admin.cookies()).find((c) => c.name === "im_admin_session");
+  const sc = (await admin.cookies()).find((c) => c.name === "im_admin_token");
   check(
     "session cookie is HttpOnly + SameSite=Lax",
     sc?.httpOnly === true && sc?.sameSite === "Lax",
@@ -382,7 +382,7 @@ test("users safety rules", async () => {
 });
 
 test("password change invalidates other sessions", async ({ browser }) => {
-  const old = (await admin.cookies()).find((c) => c.name === "im_admin_session");
+  const old = (await admin.cookies()).find((c) => c.name === "im_admin_token");
   const other = await browser.newContext();
   await other.addCookies([{ ...old }]);
   const o = await other.newPage();
@@ -419,7 +419,7 @@ test("audit log + logout", async () => {
 test("forged cookie", async ({ browser }) => {
   const c = await browser.newContext();
   await c.addCookies([
-    { name: "im_admin_session", value: "eyJ1aWQiOiJ4Iiwicm9sZSI6IkFETUlOIn0.forged", url: base },
+    { name: "im_admin_token", value: "eyJ1aWQiOiJ4Iiwicm9sZSI6IkFETUlOIn0.forged", url: base },
   ]);
   const q = await c.newPage();
   const res = await q.goto("/admin/users");

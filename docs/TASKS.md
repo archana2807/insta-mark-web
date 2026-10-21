@@ -7,7 +7,7 @@
 
 - [x] **01 `01-kit-setup`** — kit docs and rules (no code)
 
-- [~] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
+- [x] **02 `02-tests-ci`** (M) — safety net before any refactor. Website looks different: **no**
   - Done when: the Playwright suites (enquiry form, admin, a11y/links/SEO crawl, 390 px overflow) live in `tests/e2e/` and run with one npm command.
   - Done when: the test runner starts PGlite on 127.0.0.1:5433 and **refuses to run** if `DATABASE_URL` points anywhere else (R-13.4).
   - Done when: ESLint is set up (`eslint.config.mjs`, `next/core-web-vitals`) and `npm run lint` passes without disabling rules.
@@ -23,7 +23,7 @@
   - Done when: the category cover chosen in admin is the photo shown on the category hero, product grid and Solutions page (R-8.2).
   - Done when: the e2e tests cover these four changes.
 
-- [ ] **04 `04-mvc-structure`** (L — split into 04a enquiries, 04b content, 04c admin if too big) — Website looks different: **no**
+- [x] **04 `04-mvc-structure`** (L — split into 04a enquiries, 04b content, 04c admin if too big) — Website looks different: **no**
   - Done when: code lives in `src/` module folders with `<module>.controller.js`, `.service.js`, `.repository.js` (2-ARCHITECTURE §3).
   - Done when: Prisma is imported only in `*.repository.js` and `src/server/db.js`, and an ESLint rule fails the build otherwise (R-11.2).
   - Done when: controllers do parse → auth → ONE service call; services call other modules only through their services (R-11.1, R-11.4).
@@ -31,7 +31,7 @@
   - Done when: every page, form and admin action behaves exactly as before: all e2e tests green, screenshots unchanged at desktop and 390 px.
   - Not in this task: new features, visual changes, removing `/content` (D5).
 
-- [ ] **05 `05-jwt-login-roles`** (M) — Website looks different: **no** (admins log in once again)
+- [x] **05 `05-jwt-login-roles`** (M) — Website looks different: **no** (admins log in once again)
   - Done when: login issues ONE `jose` JWT in an HttpOnly, Secure, SameSite=Lax cookie, valid 8 hours; no token in localStorage (R-12.1, D3).
   - Done when: `admin_users.token_version` exists (migration); password change, role change, deactivation and "log out everywhere" make old tokens fail at once (R-12.5).
   - Done when: `src/server/auth/permissions.js` is the only role map; middleware checks the route, every controller calls `requireAuth(permission)`, the UI hides what the user can't use (R-12.3, R-12.4).
@@ -40,7 +40,7 @@
   - Done when: e2e tests cover login, expiry, logout, role blocks and a deactivated user being kicked out.
   - Not in this task: refresh tokens (D3).
 
-- [ ] **06 `06-errors-env`** (M) — Website looks different: **no**
+- [x] **06 `06-errors-env`** (M) — Website looks different: **no**
   - Done when: one error catalog (`src/shared/errors.js`) holds every code and user message (2-ARCHITECTURE §9); users see safe messages, full details only in server logs (R-11.7).
   - Done when: `src/server/config/env.js` validates all env variables with Zod at start-up; required ones missing → the app refuses to start; optional integrations stay optional (R-11.8).
   - Done when: admin sections have loading and error screens; empty lists show an empty state.

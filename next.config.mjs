@@ -1,4 +1,8 @@
 import { fileURLToPath } from "node:url";
+import { getEnv } from "./src/server/config/env.js";
+
+// Refuse to build or start with a missing or invalid environment (R-11.8).
+getEnv();
 
 const isDev = process.env.NODE_ENV !== "production";
 // Pin the workspace root: a stray lockfile in a parent folder otherwise makes

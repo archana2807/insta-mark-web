@@ -1,5 +1,4 @@
-import { requireAdmin } from "@/server/auth/session";
-import { ROLES } from "@/shared/constants";
+import { requireAuth } from "@/server/auth/session";
 import * as settingService from "@/server/modules/settings/setting.service";
 import { saveSettings } from "@/server/modules/settings/setting.controller";
 import ActionForm from "@/components/admin/ActionForm";
@@ -20,7 +19,7 @@ function Input({ name, label, hint, ...rest }) {
 }
 
 export default async function SettingsPage() {
-  await requireAdmin({ role: ROLES.ADMIN });
+  await requireAuth("settings:write");
   const site = await settingService.getSite();
   const { contact, social } = site;
 

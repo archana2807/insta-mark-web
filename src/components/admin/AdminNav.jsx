@@ -23,22 +23,34 @@ const SECTIONS = [
   },
   {
     title: "Administration",
-    adminOnly: true,
     items: [
-      { href: "/admin/settings", label: "Site settings", icon: "gear" },
-      { href: "/admin/users", label: "Users", icon: "people" },
-      { href: "/admin/audit", label: "Audit log", icon: "journal-text" },
+      {
+        href: "/admin/settings",
+        label: "Site settings",
+        icon: "gear",
+        permission: "settings:write",
+      },
+      { href: "/admin/users", label: "Users", icon: "people", permission: "user:manage" },
+      { href: "/admin/audit", label: "Audit log", icon: "journal-text", permission: "audit:read" },
     ],
   },
 ];
 
-export default function AdminNav({ role }) {
+/**
+ * Admin sidebar. Shows only the items the user's permissions allow.
+ * @param {{ permissions: readonly string[] }} props
+ */
+export default function AdminNav({ permissions }) {
   const pathname = usePathname();
   const isActive = (item) => (item.exact ? pathname === item.href : pathname.startsWith(item.href));
+  const sections = SECTIONS.map((s) => ({
+    ...s,
+    items: s.items.filter((item) => !item.permission || permissions.includes(item.permission)),
+  })).filter((s) => s.items.length > 0);
 
   return (
     <nav aria-label="Admin">
-      {SECTIONS.filter((s) => !s.adminOnly || role === "ADMIN").map((section, i) => (
+      {sections.map((section, i) => (
         <div key={section.title ?? i}>
           {section.title && <div className="admin-sidebar__section">{section.title}</div>}
           {section.items.map((item) => (

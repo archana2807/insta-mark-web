@@ -1,6 +1,6 @@
 import * as faqService from "@/server/modules/faqs/faq.service";
 import * as categoryService from "@/server/modules/categories/category.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { deleteFaq, saveFaq } from "@/server/modules/faqs/faq.controller";
 import ActionForm from "@/components/admin/ActionForm";
 import SubmitButton from "@/components/admin/SubmitButton";
@@ -9,7 +9,7 @@ import FaqFields from "@/components/admin/FaqFields";
 export const metadata = { title: "FAQs" };
 
 export default async function FaqsPage() {
-  await requireAdmin();
+  await requireAuth("content:write");
   const [faqs, categories] = await Promise.all([
     faqService.listForAdmin(),
     categoryService.listIdOptions(),

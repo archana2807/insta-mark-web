@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { requestMeta } from "@/server/request";
 import {
   enquiryFields,
@@ -37,7 +37,7 @@ export async function submitEnquiry(_prevState, formData) {
  * @param {FormData} formData
  */
 export async function updateEnquiry(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("enquiry:update");
   const parsed = enquiryUpdateSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Invalid input." };
   return enquiryService.updateEnquiry(parsed.data, me);
@@ -49,7 +49,7 @@ export async function updateEnquiry(_prev, formData) {
  * @param {FormData} formData
  */
 export async function addEnquiryNote(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("enquiry:update");
   const parsed = enquiryNoteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   return enquiryService.addNote(parsed.data, me);

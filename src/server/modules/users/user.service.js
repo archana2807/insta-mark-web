@@ -39,12 +39,24 @@ export async function updateLoginState(id, data) {
 }
 
 /**
+ * New password; every existing token of this user stops working.
  * @param {string} id
  * @param {string} password new plain password
- * @returns {Promise<object>} the updated user
+ * @returns {Promise<object>} the updated user (new tokenVersion)
  */
 export async function setPassword(id, password) {
-  return userRepository.update(id, { passwordHash: await hashPassword(password) });
+  return userRepository.update(id, {
+    passwordHash: await hashPassword(password),
+    tokenVersion: { increment: 1 },
+  });
+}
+
+/**
+ * "Log out everywhere": every existing token of this user stops working.
+ * @param {string} id
+ */
+export async function revokeTokens(id) {
+  return userRepository.update(id, { tokenVersion: { increment: 1 } });
 }
 
 /**
@@ -88,7 +100,9 @@ export async function updateUser(input, actor) {
     return { error: "At least one active administrator is required." };
   }
 
-  await userRepository.update(id, data);
+  // A role or active change logs the user out everywhere at once.
+  const revoke = data.role !== before.role || data.isActive !== before.isActive;
+  await userRepository.update(id, revoke ? { ...data, tokenVersion: { increment: 1 } } : data);
   await auditService.log(actor, "UPDATE", "AdminUser", id, auditService.diff(before, data));
   revalidatePage("/admin/users");
   return { ok: true, message: "Saved." };
@@ -105,6 +119,7 @@ export async function resetPassword(id, password, actor) {
     passwordHash: await hashPassword(password),
     failedLoginCount: 0,
     lockedUntil: null,
+    tokenVersion: { increment: 1 },
   });
   await auditService.log(actor, "PASSWORD_RESET", "AdminUser", id);
   return {

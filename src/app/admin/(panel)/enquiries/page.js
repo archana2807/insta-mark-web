@@ -1,7 +1,7 @@
 import Link from "next/link";
 import * as enquiryService from "@/server/modules/enquiries/enquiry.service";
 import * as categoryService from "@/server/modules/categories/category.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { ENQUIRY_STATUSES } from "@/shared/constants";
 import { formatDateTime } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
@@ -9,7 +9,7 @@ import Icon from "@/components/ui/Icon";
 export const metadata = { title: "Enquiries" };
 
 export default async function EnquiriesPage({ searchParams }) {
-  await requireAdmin();
+  await requireAuth("enquiry:read");
   const params = await searchParams;
   const [{ rows, total, page, pages }, categories] = await Promise.all([
     enquiryService.listEnquiries(params),

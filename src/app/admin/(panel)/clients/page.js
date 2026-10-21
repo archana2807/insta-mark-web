@@ -1,6 +1,6 @@
 import Image from "next/image";
 import * as clientLogoService from "@/server/modules/client-logos/client-logo.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import {
   createClientLogo,
   deleteClientLogo,
@@ -14,7 +14,7 @@ import Icon from "@/components/ui/Icon";
 export const metadata = { title: "Client logos" };
 
 export default async function ClientsPage() {
-  await requireAdmin();
+  await requireAuth("content:write");
   const logos = await clientLogoService.listForAdmin();
   const uploads = clientLogoService.isUploadEnabled();
 

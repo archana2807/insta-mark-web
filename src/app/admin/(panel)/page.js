@@ -1,6 +1,6 @@
 import Link from "next/link";
 import * as enquiryService from "@/server/modules/enquiries/enquiry.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { ENQUIRY_STATUSES } from "@/shared/constants";
 import { formatDateTime } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
@@ -8,7 +8,7 @@ import Icon from "@/components/ui/Icon";
 export const metadata = { title: "Dashboard" };
 
 export default async function DashboardPage({ searchParams }) {
-  await requireAdmin();
+  await requireAuth("dashboard:read");
   const { denied } = await searchParams;
   const { thisWeek, thisMonth, recent, byCategory, unnotified, counts, categoryNames } =
     await enquiryService.getDashboard();

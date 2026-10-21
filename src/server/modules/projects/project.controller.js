@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { projectSchema } from "@/shared/schemas/project.schema";
 import * as projectService from "./project.service";
 
@@ -17,7 +17,7 @@ function parse(formData) {
  * @param {FormData} formData
  */
 export async function createProject(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const { parsed, categoryIds } = parse(formData);
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   const id = await projectService.createProject(parsed.data, categoryIds, me);
@@ -29,7 +29,7 @@ export async function createProject(_prev, formData) {
  * @param {FormData} formData
  */
 export async function updateProject(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const { parsed, categoryIds } = parse(formData);
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
@@ -41,7 +41,7 @@ export async function updateProject(_prev, formData) {
  * @returns {Promise<void>}
  */
 export async function deleteProject(formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const deleted = await projectService.deleteProject(id, me);
   redirect(deleted ? "/admin/projects?deleted=1" : "/admin/projects");

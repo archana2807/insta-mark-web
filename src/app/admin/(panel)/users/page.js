@@ -1,6 +1,5 @@
 import * as userService from "@/server/modules/users/user.service";
-import { requireAdmin } from "@/server/auth/session";
-import { ROLES } from "@/shared/constants";
+import { requireAuth } from "@/server/auth/session";
 import { createUser, resetUserPassword, updateUser } from "@/server/modules/users/user.controller";
 import { formatDateTime } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
@@ -9,7 +8,7 @@ import SubmitButton from "@/components/admin/SubmitButton";
 export const metadata = { title: "Users" };
 
 export default async function UsersPage() {
-  const me = await requireAdmin({ role: ROLES.ADMIN });
+  const me = await requireAuth("user:manage");
   const users = await userService.listForAdmin();
 
   return (

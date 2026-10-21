@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { faqSchema } from "@/shared/schemas/faq.schema";
 import * as faqService from "./faq.service";
 
@@ -10,7 +10,7 @@ import * as faqService from "./faq.service";
  * @param {FormData} formData
  */
 export async function saveFaq(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const parsed = faqSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
@@ -22,7 +22,7 @@ export async function saveFaq(_prev, formData) {
  * @returns {Promise<void>}
  */
 export async function deleteFaq(formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   await faqService.deleteFaq(id, me);
 }

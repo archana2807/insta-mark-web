@@ -2,6 +2,7 @@
 // lockout after 5 failures, equal timing for unknown accounts, no open redirects, audit.
 import "server-only";
 import { verifyAgainstDummy, verifyPassword } from "@/server/auth/password";
+import { isAuthSecretConfigured } from "@/server/auth/jwt";
 import { createSession, destroySession, getCurrentUser } from "@/server/auth/session";
 import { isDatabaseConfigured } from "@/server/config/env";
 import * as auditService from "@/server/modules/audit/audit.service";
@@ -33,7 +34,7 @@ export async function login(input, request) {
   if (!isDatabaseConfigured()) {
     return { error: "The admin panel needs a database (DATABASE_URL)." };
   }
-  if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET.length < 32) {
+  if (!isAuthSecretConfigured()) {
     return { error: "AUTH_SECRET is not configured on the server." };
   }
   if (!input) return { error: GENERIC_ERROR, email: request.email };
@@ -79,6 +80,17 @@ export async function logout() {
   const user = await getCurrentUser();
   await destroySession();
   if (user) await auditService.log(user, "LOGOUT", "AdminUser", user.id);
+}
+
+/**
+ * Signs the user out on every device: their token version goes up, so every
+ * token issued so far fails, and this browser's cookie is cleared.
+ * @param {{ id: string }} me
+ */
+export async function logoutEverywhere(me) {
+  await userService.revokeTokens(me.id);
+  await destroySession();
+  await auditService.log(me, "LOGOUT_ALL", "AdminUser", me.id);
 }
 
 /**

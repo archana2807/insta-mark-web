@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import * as categoryService from "@/server/modules/categories/category.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import * as mediaService from "@/server/modules/media/media.service";
 import { updateCategory } from "@/server/modules/categories/category.controller";
 import ActionForm from "@/components/admin/ActionForm";
@@ -25,7 +25,7 @@ function Field({ label, hint, children, id }) {
 }
 
 export default async function EditCategoryPage({ params }) {
-  await requireAdmin();
+  await requireAuth("content:write");
   const { id } = await params;
   const c = await categoryService.getForEdit(id);
   if (!c) notFound();

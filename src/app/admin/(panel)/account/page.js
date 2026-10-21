@@ -1,12 +1,12 @@
-import { requireAdmin } from "@/server/auth/session";
-import { changeOwnPassword } from "@/server/modules/auth/auth.controller";
+import { requireAuth } from "@/server/auth/session";
+import { changeOwnPassword, logoutEverywhere } from "@/server/modules/auth/auth.controller";
 import ActionForm from "@/components/admin/ActionForm";
 import SubmitButton from "@/components/admin/SubmitButton";
 
 export const metadata = { title: "My account" };
 
 export default async function AccountPage() {
-  const me = await requireAdmin();
+  const me = await requireAuth();
   return (
     <>
       <h1 className="mb-4">My account</h1>
@@ -40,6 +40,20 @@ export default async function AccountPage() {
           ))}
           <SubmitButton>Update password</SubmitButton>
         </ActionForm>
+      </div>
+      <div className="admin-card" style={{ maxWidth: 520 }}>
+        <h2>Sessions</h2>
+        <p className="text-secondary">
+          Signs you out on every computer and phone, including this one.
+        </p>
+        <form action={logoutEverywhere}>
+          <SubmitButton
+            className="btn btn-outline-ink btn-sm"
+            confirm="Sign out on every device, including this one?"
+          >
+            Log out everywhere
+          </SubmitButton>
+        </form>
       </div>
     </>
   );

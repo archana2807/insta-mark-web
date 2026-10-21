@@ -1,12 +1,12 @@
 "use server";
 
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { clientLogoSchema, clientLogoUploadSchema } from "@/shared/schemas/client-logo.schema";
 import * as clientLogoService from "./client-logo.service";
 
 /** Signed Cloudinary params for a logo upload. */
 export async function getLogoUploadSignature() {
-  await requireAdmin();
+  await requireAuth("media:upload");
   return clientLogoService.getUploadSignature();
 }
 
@@ -15,7 +15,7 @@ export async function getLogoUploadSignature() {
  * @param {FormData} formData
  */
 export async function createClientLogo(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const fields = clientLogoSchema.safeParse(Object.fromEntries(formData));
   if (!fields.success) return { fieldErrors: fields.error.flatten().fieldErrors };
 
@@ -33,7 +33,7 @@ export async function createClientLogo(_prev, formData) {
  * @param {FormData} formData
  */
 export async function updateClientLogo(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const id = String(formData.get("id") ?? "");
   const fields = clientLogoSchema.safeParse(Object.fromEntries(formData));
   if (!fields.success) return { fieldErrors: fields.error.flatten().fieldErrors };
@@ -45,6 +45,6 @@ export async function updateClientLogo(_prev, formData) {
  * @returns {Promise<void>}
  */
 export async function deleteClientLogo(formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   await clientLogoService.deleteClientLogo(String(formData.get("id") ?? ""), me);
 }

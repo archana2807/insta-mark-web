@@ -1,13 +1,12 @@
 import Link from "next/link";
 import * as auditService from "@/server/modules/audit/audit.service";
-import { requireAdmin } from "@/server/auth/session";
-import { ROLES } from "@/shared/constants";
+import { requireAuth } from "@/server/auth/session";
 import { formatDateTime } from "@/lib/format";
 
 export const metadata = { title: "Audit log" };
 
 export default async function AuditPage({ searchParams }) {
-  await requireAdmin({ role: ROLES.ADMIN });
+  await requireAuth("audit:read");
   const { rows, page, pages } = await auditService.listPage((await searchParams).page);
 
   return (

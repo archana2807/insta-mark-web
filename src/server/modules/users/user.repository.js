@@ -19,7 +19,15 @@ export async function findForSession(id) {
   const prisma = await getPrisma();
   return prisma.adminUser.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, role: true, isActive: true, passwordHash: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      isActive: true,
+      lockedUntil: true,
+      tokenVersion: true,
+    },
   });
 }
 

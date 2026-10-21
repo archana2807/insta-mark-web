@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import * as enquiryService from "@/server/modules/enquiries/enquiry.service";
 import * as userService from "@/server/modules/users/user.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { ENQUIRY_STATUSES } from "@/shared/constants";
 import { addEnquiryNote, updateEnquiry } from "@/server/modules/enquiries/enquiry.controller";
 import ActionForm from "@/components/admin/ActionForm";
@@ -13,7 +13,7 @@ import Icon from "@/components/ui/Icon";
 export const metadata = { title: "Enquiry" };
 
 export default async function EnquiryDetailPage({ params }) {
-  await requireAdmin();
+  await requireAuth("enquiry:read");
   const { id } = await params;
   const [e, users] = await Promise.all([
     enquiryService.getEnquiry(id),

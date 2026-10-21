@@ -31,7 +31,7 @@
   - Done when: every page, form and admin action behaves exactly as before: all e2e tests green, screenshots unchanged at desktop and 390 px.
   - Not in this task: new features, visual changes, removing `/content` (D5).
 
-- [ ] **05 `05-jwt-login-roles`** (M) — Website looks different: **no** (admins log in once again)
+- [x] **05 `05-jwt-login-roles`** (M) — Website looks different: **no** (admins log in once again)
   - Done when: login issues ONE `jose` JWT in an HttpOnly, Secure, SameSite=Lax cookie, valid 8 hours; no token in localStorage (R-12.1, D3).
   - Done when: `admin_users.token_version` exists (migration); password change, role change, deactivation and "log out everywhere" make old tokens fail at once (R-12.5).
   - Done when: `src/server/auth/permissions.js` is the only role map; middleware checks the route, every controller calls `requireAuth(permission)`, the UI hides what the user can't use (R-12.3, R-12.4).

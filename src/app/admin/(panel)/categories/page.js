@@ -1,12 +1,12 @@
 import Link from "next/link";
 import * as categoryService from "@/server/modules/categories/category.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import Icon from "@/components/ui/Icon";
 
 export const metadata = { title: "Categories" };
 
 export default async function CategoriesPage() {
-  await requireAdmin();
+  await requireAuth("content:write");
   const categories = await categoryService.listForAdmin();
 
   return (

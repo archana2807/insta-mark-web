@@ -150,6 +150,7 @@ Since task 04 every action lives in `src/server/modules/<module>/<singular>.cont
 | `login` | `auth/auth.controller.js` | Public | Admin login (rate limit, lockout, audit) | F6 |
 | `logout` | `auth/auth.controller.js` | Editor, Admin | Log out (audit) | F6 |
 | `changeOwnPassword` | `auth/auth.controller.js` | Editor, Admin | Change own password; signs out other sessions | F6 |
+| `logoutEverywhere` | `auth/auth.controller.js` | Editor, Admin | Sign out on every device (`token_version` + 1, audit `LOGOUT_ALL`) | F6 |
 | `updateCategory` | `categories/category.controller.js` | Editor, Admin | Edit category text, group, icon, SEO, order, active | F7 |
 | `getUploadSignature` | `media/media.controller.js` | Editor, Admin | Signed Cloudinary params for a gallery upload | F7 |
 | `attachUploadedImage` | `media/media.controller.js` | Editor, Admin | Verify upload, save asset, add to category/project gallery | F7 |

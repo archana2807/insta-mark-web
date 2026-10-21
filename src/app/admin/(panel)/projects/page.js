@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import * as projectService from "@/server/modules/projects/project.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import Icon from "@/components/ui/Icon";
 
 export const metadata = { title: "Projects" };
 
 export default async function ProjectsAdminPage({ searchParams }) {
-  await requireAdmin();
+  await requireAuth("content:write");
   const { deleted } = await searchParams;
   const projects = await projectService.listForAdmin();
 

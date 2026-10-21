@@ -1,7 +1,7 @@
 import Link from "next/link";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as industryService from "@/server/modules/industries/industry.service";
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { createProject } from "@/server/modules/projects/project.controller";
 import ActionForm from "@/components/admin/ActionForm";
 import SubmitButton from "@/components/admin/SubmitButton";
@@ -11,7 +11,7 @@ import Icon from "@/components/ui/Icon";
 export const metadata = { title: "New project" };
 
 export default async function NewProjectPage() {
-  await requireAdmin();
+  await requireAuth("content:write");
   const [categories, industries] = await Promise.all([
     categoryService.listIdOptions(),
     industryService.listOptions(),

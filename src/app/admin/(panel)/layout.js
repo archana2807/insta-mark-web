@@ -2,26 +2,28 @@ import Link from "next/link";
 import BrandLogo from "@/components/ui/BrandLogo";
 import AdminNav from "@/components/admin/AdminNav";
 import SubmitButton from "@/components/admin/SubmitButton";
-import { requireAdmin } from "@/server/auth/session";
+import { permissionsFor } from "@/server/auth/permissions";
+import { requireAuth } from "@/server/auth/session";
 import { logout } from "@/server/modules/auth/auth.controller";
 import Icon from "@/components/ui/Icon";
 
 /** Authenticated admin shell: sidebar + top bar. */
 export default async function PanelLayout({ children }) {
-  const user = await requireAdmin();
+  const user = await requireAuth();
+  const permissions = permissionsFor(user.role);
 
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <BrandLogo light />
-        <AdminNav role={user.role} />
+        <AdminNav permissions={permissions} />
       </aside>
       <div className="admin-main">
         <header className="admin-topbar">
           <details className="d-lg-none">
             <summary className="btn btn-outline-ink btn-sm">Menu</summary>
             <div className="admin-sidebar d-block position-absolute mt-2" style={{ zIndex: 20 }}>
-              <AdminNav role={user.role} />
+              <AdminNav permissions={permissions} />
             </div>
           </details>
           <Link href="/" className="small text-secondary" target="_blank">

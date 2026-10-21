@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import {
   galleryKindSchema,
   galleryUploadSchema,
@@ -15,7 +15,7 @@ import * as mediaService from "./media.service";
  * @param {{ kind: string, ownerId: string, type?: string }} input
  */
 export async function getUploadSignature({ kind, ownerId, type }) {
-  await requireAdmin();
+  await requireAuth("media:upload");
   const k = galleryKindSchema.parse(kind);
   return mediaService.getGalleryUploadSignature({ kind: k, ownerId, type });
 }
@@ -25,7 +25,7 @@ export async function getUploadSignature({ kind, ownerId, type }) {
  * @param {{ kind: string, ownerId: string, type?: string, alt?: string, upload: unknown }} input
  */
 export async function attachUploadedImage({ kind, ownerId, type, alt, upload }) {
-  const me = await requireAdmin();
+  const me = await requireAuth("media:upload");
   const k = galleryKindSchema.parse(kind);
   const parsed = galleryUploadSchema.safeParse(upload);
   if (!parsed.success) return { error: "Upload could not be verified." };
@@ -37,7 +37,7 @@ export async function attachUploadedImage({ kind, ownerId, type, alt, upload }) 
  * @param {FormData} formData
  */
 export async function updateImage(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const parsed = imageUpdateSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   return mediaService.updateImage(parsed.data, me);
@@ -48,7 +48,7 @@ export async function updateImage(_prev, formData) {
  * @returns {Promise<void>}
  */
 export async function moveImage(formData) {
-  await requireAdmin();
+  await requireAuth("content:write");
   await mediaService.moveImage(imageMoveSchema.parse(Object.fromEntries(formData)));
 }
 
@@ -57,7 +57,7 @@ export async function moveImage(formData) {
  * @returns {Promise<void>}
  */
 export async function setCoverImage(formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   await mediaService.setCoverImage(imageRefSchema.parse(Object.fromEntries(formData)), me);
 }
 
@@ -66,6 +66,6 @@ export async function setCoverImage(formData) {
  * @returns {Promise<void>}
  */
 export async function removeImage(formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   await mediaService.removeImage(imageRefSchema.parse(Object.fromEntries(formData)), me);
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/server/auth/session";
+import { requireAuth } from "@/server/auth/session";
 import { categorySchema } from "@/shared/schemas/category.schema";
 import * as categoryService from "./category.service";
 
@@ -10,7 +10,7 @@ import * as categoryService from "./category.service";
  * @param {FormData} formData
  */
 export async function updateCategory(_prev, formData) {
-  const me = await requireAdmin();
+  const me = await requireAuth("content:write");
   const parsed = categorySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   const { id, ...data } = parsed.data;

@@ -197,6 +197,8 @@ model AdminUser {
   failedLoginCount Int       @default(0) @map("failed_login_count")
   lockedUntil      DateTime? @map("locked_until")
   lastLoginAt      DateTime? @map("last_login_at")
+  /// Raised on password / role / active change and "log out everywhere"; JWTs carry it as `tv`.
+  tokenVersion     Int       @default(0) @map("token_version")
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
@@ -656,6 +658,7 @@ PDF के FAQ section से: manufacture types, custom signage, industries, in
 |---|---|---|
 | 1 | `20261013000000_init` | सभी 15 tables, 3 enums, 26 indexes |
 | 2 | `20261013120000_category_group_icon` | `CategoryGroup` enum, `categories.category_group` (default `ARCHITECTURAL`), `categories.icon`। Additive है, मौजूदा data सुरक्षित रहता है। |
+| 3 | `20261021120000_admin_token_version` | `admin_users.token_version` (int, default 0)। Password / role / active change और "log out everywhere" पर बढ़ता है; पुराने JWT (`tv`) तुरंत reject होते हैं (task 05)। Additive है। |
 
 | Rule | Detail |
 |---|---|

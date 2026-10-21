@@ -1,7 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/server/auth/session";
-import { ROLES } from "@/shared/constants";
+import { requireAuth } from "@/server/auth/session";
 import { settingsSchema } from "@/shared/schemas/setting.schema";
 import * as settingService from "./setting.service";
 
@@ -11,7 +10,7 @@ import * as settingService from "./setting.service";
  * @param {FormData} formData
  */
 export async function saveSettings(_prev, formData) {
-  const me = await requireAdmin({ role: ROLES.ADMIN });
+  const me = await requireAuth("settings:write");
   const parsed = settingsSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { fieldErrors: parsed.error.flatten().fieldErrors };
   return settingService.saveSettings(parsed.data, me);

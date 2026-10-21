@@ -1,9 +1,10 @@
-# Checks on every push and pull request. No secrets are used: the end-to-end tests run
+# Checks on every pull request and on every push to main. No secrets are used: the end-to-end tests run
 # against a throwaway PGlite database (tests/e2e/run.js refuses any other database).
 name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 concurrency:

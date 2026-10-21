@@ -58,6 +58,7 @@ export default async function HomePage() {
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading
+              eyebrow="Our products"
               title={<span id="solutions-title">Signage & road safety solutions</span>}
               text="Click a category to see the products, real projects we have executed, and to request a quote."
             />

@@ -18,6 +18,7 @@ const order = [
   "errors",
   "client-fixes",
   "client-changes",
+  "hero",
 ];
 
 export default defineConfig({

@@ -12,6 +12,7 @@ export const home = {
     secondaryCta: { label: "Request a Consultation", href: "/contact" },
   },
   about: {
+    eyebrow: "About Insta Mark",
     title: "Creating Signage That Makes Every Space Smarter",
     // Home page shows only 1–2 lines (meeting: "one, two liners about the company").
     short:
@@ -46,25 +47,38 @@ export const home = {
     ],
   },
   quote: "We craft ideas into impactful signage experiences.",
-  // Logos of projects we have worked on, from the company profile PDF (client asked for
-  // 4–5 right under the banner, 21 Oct 2026). Adani Realty and Tata Projects are too faint
-  // in the PDF; swap in clean files when they arrive.
+  // Big line that scrolls across the page under the About block (theme "marquee" text).
+  marquee: "Signage and Road Safety Solutions",
+  // Logos of projects we have worked on, from the company profile PDF (client feedback,
+  // 21 Oct 2026). The first five also sit under the banner; all of them are in "Trusted by
+  // Leading Brands". Swap in clean files from the client when they arrive.
   projectLogos: [
     {
       name: "Reliance Industries Limited",
       src: "/images/clients/reliance.png",
-      width: 160,
-      height: 111,
+      width: 159,
+      height: 110,
     },
-    { name: "Nykaa", src: "/images/clients/nykaa.png", width: 155, height: 63 },
-    { name: "Rustomjee", src: "/images/clients/rustomjee.png", width: 179, height: 32 },
-    { name: "Nirlon", src: "/images/clients/nirlon.png", width: 162, height: 34 },
+    { name: "Nykaa", src: "/images/clients/nykaa.png", width: 144, height: 42 },
+    { name: "Rustomjee", src: "/images/clients/rustomjee.png", width: 176, height: 32 },
+    { name: "Nirlon", src: "/images/clients/nirlon.png", width: 162, height: 36 },
     {
       name: "Brookfield Properties",
       src: "/images/clients/brookfield-properties.png",
       width: 158,
-      height: 70,
+      height: 69,
     },
+    { name: "Jusco", src: "/images/clients/jusco.png", width: 97, height: 133 },
+    {
+      name: "Shapoorji Pallonji",
+      src: "/images/clients/shapoorji-pallonji.png",
+      width: 169,
+      height: 95,
+    },
+    { name: "Jaslok Hospital", src: "/images/clients/jaslok-hospital.png", width: 159, height: 80 },
+    { name: "Adani Realty", src: "/images/clients/adani-realty.png", width: 166, height: 84 },
+    { name: "MMRDA", src: "/images/clients/mmrda.png", width: 167, height: 126 },
+    { name: "Tata Projects", src: "/images/clients/tata-projects.png", width: 165, height: 85 },
   ],
   trustedBy: {
     title: "Trusted by Leading Brands",

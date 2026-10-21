@@ -138,10 +138,12 @@
   }
 }
 
-// ── About collage (3 overlapping images) ───────────────
+// ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
+// Three portrait photos of different sizes: a small one top-left, a taller one top-right
+// and the biggest in front at the bottom, with soft wide shadows.
 .about-collage {
   position: relative;
-  min-height: 540px;
+  aspect-ratio: 725 / 740;
 
   // The wipe entrance (_motion.scss, loaded later) sets `position: relative` on the same
   // element; the extra specificity keeps the photos laid out as an overlapping collage.
@@ -150,9 +152,8 @@
   }
 
   &__item {
-    position: absolute;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba($ink, 0.14);
+    box-shadow: 0 40px 80px rgba($ink, 0.14);
 
     img {
       object-fit: cover;
@@ -160,29 +161,25 @@
 
     &:nth-child(1) {
       left: 0;
-      top: 8%;
-      width: 44%;
-      aspect-ratio: 3 / 4;
+      top: 2.7%;
+      width: 38.6%;
+      aspect-ratio: 4 / 5;
     }
 
     &:nth-child(2) {
-      right: 4%;
+      left: 55%;
       top: 0;
-      width: 50%;
-      aspect-ratio: 4 / 3;
+      width: 45%;
+      aspect-ratio: 5 / 6;
     }
 
     &:nth-child(3) {
-      left: 22%;
-      bottom: 0;
-      width: 48%;
-      aspect-ratio: 4 / 5;
+      left: 21.5%;
+      top: 24.3%;
+      width: 52.5%;
+      aspect-ratio: 2 / 3;
       z-index: 2;
     }
-  }
-
-  @include media-breakpoint-down(md) {
-    min-height: 420px;
   }
 }
 
@@ -229,6 +226,228 @@
   p {
     margin: 0;
     font-size: 0.95rem;
+  }
+}
+
+// ── Scrolling line (theme marquee): big text, faded at both edges ──
+.text-marquee {
+  overflow: hidden;
+  padding-block: clamp(2rem, 1rem + 4vw, 5rem);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+
+  &__track {
+    display: flex;
+    width: max-content;
+    animation: text-marquee 45s linear infinite;
+  }
+
+  &__item {
+    flex: none;
+    padding-right: 0.45em;
+    font-family: $headings-font-family;
+    font-size: clamp(3.5rem, 1.5rem + 7vw, 9rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    color: $ink;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__track {
+      animation: none;
+      width: auto;
+      justify-content: center;
+    }
+
+    // One still copy.
+    &__item:not(:first-child) {
+      display: none;
+    }
+  }
+}
+
+@keyframes text-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+// ── Product mosaic (client's grid reference): tiles of different sizes ──
+.product-mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 170px;
+  gap: 4px;
+
+  > li {
+    min-width: 0;
+
+    &:first-child {
+      grid-column: span 2;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    grid-auto-rows: 230px;
+  }
+
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: repeat(24, 32px);
+    grid-auto-rows: auto;
+
+    > li:first-child {
+      grid-column: auto;
+    }
+
+    > li:nth-child(1) {
+      grid-area: 1 / 1 / 10 / 5;
+    }
+
+    > li:nth-child(2) {
+      grid-area: 10 / 1 / 18 / 5;
+    }
+
+    > li:nth-child(3) {
+      grid-area: 18 / 1 / 25 / 5;
+    }
+
+    > li:nth-child(4) {
+      grid-area: 1 / 5 / 15 / 9;
+    }
+
+    > li:nth-child(5) {
+      grid-area: 15 / 5 / 25 / 9;
+    }
+
+    > li:nth-child(6) {
+      grid-area: 1 / 9 / 8 / 13;
+    }
+
+    > li:nth-child(7) {
+      grid-area: 8 / 9 / 17 / 13;
+    }
+
+    > li:nth-child(8) {
+      grid-area: 17 / 9 / 25 / 13;
+    }
+  }
+
+  &__tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 100%;
+    overflow: hidden;
+    padding: 1rem;
+    color: #fff;
+    background: $ink;
+
+    // Grey wash over the photo, lighter on hover.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(#1b2530, 0.55);
+      transition: opacity 0.4s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+
+      &::after {
+        opacity: 0.35;
+      }
+    }
+
+    &:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: -6px;
+    }
+  }
+
+  &__photo {
+    object-fit: cover;
+    filter: grayscale(1);
+    transition:
+      filter 0.5s ease,
+      transform 0.6s ease;
+  }
+
+  &__tile:hover &__photo,
+  &__tile:focus-visible &__photo {
+    filter: grayscale(0);
+    transform: scale(1.04);
+  }
+
+  &__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 3rem;
+    color: rgba(#fff, 0.5);
+    background: linear-gradient(135deg, #2b3641, #4b5a67);
+  }
+
+  &__label {
+    position: relative;
+    z-index: 1;
+    padding-bottom: 0.6rem;
+    border-bottom: 3px solid #f2c200;
+    font-family: $headings-font-family;
+    font-size: clamp(0.95rem, 0.8rem + 0.4vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+// ── "Trusted by Leading Brands": logo wall with hairline borders ──
+.logo-wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid $line;
+  border-left: 1px solid $line;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include media-breakpoint-up(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  > li {
+    display: grid;
+    place-items: center;
+    min-height: 150px;
+    padding: 1.5rem;
+    background: #fff;
+    border-right: 1px solid $line;
+    border-bottom: 1px solid $line;
+  }
+
+  img {
+    display: block;
+    width: auto;
+    max-width: min(100%, 170px);
+    height: auto;
+    max-height: 70px;
+    object-fit: contain;
+    opacity: 0.85;
+    filter: contrast(1.5); // some PDF logos are pale
+    mix-blend-mode: multiply; // the logo files have a white background
+    transition: opacity 0.3s ease;
+  }
+
+  > li:hover img {
+    opacity: 1;
   }
 }
 
@@ -843,4 +1062,10 @@
 // ── Home: short about strip ────────────────────────────
 .about-short {
   border-bottom: 1px solid $line;
+
+  &__title {
+    font-size: clamp(2rem, 1.3rem + 2vw, 3.25rem);
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
 }

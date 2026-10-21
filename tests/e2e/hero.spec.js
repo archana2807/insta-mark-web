@@ -98,6 +98,9 @@ test("home About: three overlapping photos on the left, the company text on the 
   const about = page.locator("#about-title").locator("xpath=ancestor::section[1]");
   const imgs = about.locator(".about-collage__item img");
   await expect(imgs).toHaveCount(3);
+  await expect(about.locator(".eyebrow")).toHaveText("About Insta Mark");
+  await expect(about.getByRole("link", { name: "More about us" })).toBeVisible();
+  await expect(about.getByRole("link", { name: "Our solutions" })).toBeVisible();
   const text = await about.locator("#about-title").boundingBox();
   const first = await about.locator(".about-collage").boundingBox();
   expect(first.x + first.width).toBeLessThanOrEqual(text.x + 1);
@@ -129,7 +132,11 @@ test("no small label above a headline on any public page (10b)", async ({ page }
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("h1").first()).toBeVisible();
-    await expect(page.locator(".eyebrow"), `${route} still has a small label`).toHaveCount(0);
+    // The only small label left is the one in the home About block, as in the theme.
+    const labels = await page
+      .locator(".eyebrow")
+      .evaluateAll((els) => els.filter((el) => !el.closest(".about-short")).length);
+    expect(labels, `${route} still has a small label`).toBe(0);
   }
 });
 
@@ -167,6 +174,44 @@ test("the footer carries the call to action on every page; no separate CTA panel
     // Social icons are shown only for links the client has set (none yet: hidden, not fake).
     await expect(footer.locator(".site-footer__social")).toHaveCount(0);
   }
+});
+
+test("home sections follow the client's order and look (10c)", async ({ page }) => {
+  await page.goto("/");
+  // Order: logos → About → scrolling line → products → industries → process → trusted by.
+  const ids = [
+    ".project-logos",
+    "#about-title",
+    ".text-marquee",
+    "#solutions-title",
+    "#industries-title",
+    "#process-title",
+    "#trusted-title",
+  ];
+  const tops = [];
+  for (const id of ids) tops.push((await page.locator(id).first().boundingBox()).y);
+  expect([...tops].sort((a, b) => a - b)).toEqual(tops);
+
+  // The scrolling line moves (a CSS animation) and is read once by screen readers.
+  const marquee = page.locator(".text-marquee");
+  await expect(marquee.locator("p.visually-hidden")).toHaveText(
+    "Signage and Road Safety Solutions",
+  );
+  expect(
+    await marquee
+      .locator(".text-marquee__track")
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("text-marquee");
+
+  // Products: one photo tile per category, each a link to its solution page.
+  const tiles = page.locator(".product-mosaic__tile");
+  await expect(tiles).toHaveCount(8);
+  expect(await tiles.first().getAttribute("href")).toMatch(/^\/solutions\//);
+
+  // Trusted by: logos, not photos.
+  const wall = page.locator(".logo-wall img");
+  expect(await wall.count()).toBeGreaterThanOrEqual(8);
+  await expect(page.locator("#trusted-title")).toHaveText("Trusted by Leading Brands");
 });
 
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({

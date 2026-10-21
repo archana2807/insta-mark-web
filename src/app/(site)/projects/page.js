@@ -2,7 +2,6 @@ import Link from "next/link";
 import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
 import CtaPanel from "@/components/sections/CtaPanel";
-import Eyebrow from "@/components/ui/Eyebrow";
 import ProjectCard from "@/components/sections/ProjectCard";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
@@ -77,7 +76,6 @@ export default async function ProjectsPage() {
           <div className="container">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-5">
               <div>
-                <Eyebrow>{String(i + 1).padStart(2, "0")}</Eyebrow>
                 <h2 id={`${category.slug}-title`} className="mb-0">
                   {category.name}
                 </h2>

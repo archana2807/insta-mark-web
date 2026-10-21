@@ -61,7 +61,6 @@ export default async function HomePage() {
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading
-              eyebrow="Our products"
               title={<span id="solutions-title">Signage & road safety solutions</span>}
               text="Click a category to see the products, real projects we have executed, and to request a quote."
             />
@@ -78,7 +77,6 @@ export default async function HomePage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            eyebrow="How we work"
             title={<span id="process-title">{home.workingProcess.title}</span>}
             text={home.workingProcess.text}
           />
@@ -91,7 +89,6 @@ export default async function HomePage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            eyebrow="Industries we serve"
             title={<span id="industries-title">Sectors we cater to</span>}
           />
           <IconGrid items={home.industries} />
@@ -103,7 +100,6 @@ export default async function HomePage() {
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading
-              eyebrow={home.trustedBy.title}
               title={<span id="work-title">Executed on site, across India</span>}
               text={home.trustedBy.text}
             />

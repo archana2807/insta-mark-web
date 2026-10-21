@@ -16,7 +16,6 @@ export default async function PrivacyPolicyPage() {
   return (
     <>
       <PageHero
-        eyebrow="Legal"
         title="Privacy Policy"
         lead="Draft — to be reviewed and approved by Insta Mark before launch."
         breadcrumbs={[{ label: "Privacy Policy", href: "/privacy-policy" }]}

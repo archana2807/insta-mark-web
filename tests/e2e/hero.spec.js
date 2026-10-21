@@ -114,6 +114,25 @@ test("home About: three overlapping photos on the left, the company text on the 
   await expect.poll(overlapCount, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
 });
 
+test("no small label above a headline on any public page (10b)", async ({ page }) => {
+  await page.goto("/solutions");
+  const solution = await page.locator('a[href^="/solutions/"]').first().getAttribute("href");
+  const routes = [
+    "/",
+    "/about",
+    "/solutions",
+    solution,
+    "/projects",
+    "/contact",
+    "/privacy-policy",
+  ];
+  for (const route of routes) {
+    await page.goto(route);
+    await expect(page.locator("h1").first()).toBeVisible();
+    await expect(page.locator(".eyebrow"), `${route} still has a small label`).toHaveCount(0);
+  }
+});
+
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
   page,
 }) => {

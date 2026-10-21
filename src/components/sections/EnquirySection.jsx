@@ -1,4 +1,3 @@
-import Eyebrow from "@/components/ui/Eyebrow";
 import EnquiryForm from "@/components/forms/EnquiryForm";
 import { telHref, whatsappHref } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
@@ -23,7 +22,6 @@ export default function EnquirySection({
       <div className="container">
         <div className="row g-4 g-lg-5">
           <div className="col-lg-4">
-            <Eyebrow>Request a quote</Eyebrow>
             <h2 id={`${id}-title`} className="mb-4">
               {title}
             </h2>

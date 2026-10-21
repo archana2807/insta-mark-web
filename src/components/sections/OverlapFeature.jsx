@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
 import ScrollDrift from "@/components/ui/ScrollDrift";
@@ -8,16 +7,7 @@ import ScrollDrift from "@/components/ui/ScrollDrift";
  * Theme "We create highly unique…" block: tall image left, large heading that
  * overlaps the image, then copy, optional tags and a highlight box.
  */
-export default function OverlapFeature({
-  id,
-  eyebrow,
-  title,
-  intro,
-  text,
-  image,
-  tags,
-  highlight,
-}) {
+export default function OverlapFeature({ id, title, intro, text, image, tags, highlight }) {
   return (
     <section className="section overlap-feature" aria-labelledby={id}>
       <div className="container-fluid px-0">
@@ -35,7 +25,6 @@ export default function OverlapFeature({
             </Reveal>
           </div>
           <div className="col-lg-6 px-3 px-sm-4 px-lg-5 pt-5 pt-lg-0">
-            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
             <h2 id={id} className="mb-4">
               {title}
             </h2>

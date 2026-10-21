@@ -1,7 +1,6 @@
 "use client";
 
 import Accordion from "react-bootstrap/Accordion";
-import Eyebrow from "@/components/ui/Eyebrow";
 
 /** Theme services block: heading left, line accordion right. Emits FAQPage JSON-LD. */
 export default function FaqSection({ faqs, title = "Frequently asked questions" }) {
@@ -20,7 +19,6 @@ export default function FaqSection({ faqs, title = "Frequently asked questions" 
       <div className="container">
         <div className="row g-4 g-lg-5">
           <div className="col-lg-5">
-            <Eyebrow>Basic information</Eyebrow>
             <h2 id="faq-title">{title}</h2>
           </div>
           <div className="col-lg-6 offset-lg-1">

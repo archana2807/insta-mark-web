@@ -10,7 +10,6 @@ import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
 import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
@@ -72,7 +71,6 @@ export default async function AboutPage() {
               </div>
             </div>
             <Reveal className="col-lg-5 offset-lg-1">
-              <Eyebrow>Our vision</Eyebrow>
               <h2 id="vision-title" className="h3 mb-4">
                 {about.vision}
               </h2>
@@ -95,7 +93,6 @@ export default async function AboutPage() {
       {/* 5. Manufacturing: image left, heading overlapping */}
       <OverlapFeature
         id="mfg-title"
-        eyebrow="Manufacturing excellence"
         title="Precision-made in our own facility."
         intro={about.manufacturing.title}
         text={about.manufacturing.text}
@@ -107,7 +104,6 @@ export default async function AboutPage() {
       {/* 6. Why choose us: heading left, rows right */}
       <RowList
         id="why-title"
-        eyebrow="Why choose us"
         title="We work with developers and architects to make every space clear and safe."
         rows={about.whyChooseRows}
       />
@@ -116,7 +112,6 @@ export default async function AboutPage() {
       <RowList
         id="solutions-title"
         className="section bg-surface"
-        eyebrow="What we deliver"
         title="Solutions under one roof."
         rows={about.solutions}
       />
@@ -126,7 +121,6 @@ export default async function AboutPage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            eyebrow="Industries we serve"
             title={<span id="industries-title">Built for every sector</span>}
             text={about.industriesApproach}
           />
@@ -139,7 +133,6 @@ export default async function AboutPage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            eyebrow="Our process"
             title={<span id="process-title">From discovery to support</span>}
           />
           <ProcessSteps steps={about.process} />

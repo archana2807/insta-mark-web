@@ -26,7 +26,6 @@ export default function ExpertiseLists({ expertise }) {
         <div className="row g-4 g-lg-5">
           <div className="col-lg-4">
             <SectionHeading
-              eyebrow="Our expertise"
               title={<span id="expertise-title">Everything your project needs, from one team</span>}
               text="Design, manufacturing and installation for interior and exterior signage and on-ground road safety."
             />

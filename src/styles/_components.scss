@@ -1,41 +1,5 @@
 // Reusable UI pieces modelled on the Crafto branding-agency demo.
 
-// ── Eyebrow: short line + gradient uppercase label ─────
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.1rem;
-  font-family: $headings-font-family;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-
-  &::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: $brand-orange;
-  }
-
-  span {
-    background: $brand-gradient;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  &.eyebrow-light::before {
-    background: rgba(#fff, 0.6);
-  }
-
-  &.eyebrow-light span {
-    background: none;
-    color: rgba(#fff, 0.85);
-  }
-}
-
 // ── Buttons ────────────────────────────────────────────
 .btn {
   display: inline-flex;

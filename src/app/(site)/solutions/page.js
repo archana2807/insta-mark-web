@@ -19,7 +19,7 @@ export default async function SolutionsPage() {
     pageSectionService.getHomeContent(),
     pageSectionService.getPageHeroImage("solutions"),
   ]);
-  const rows = groups.flatMap((g) => g.items.map((c) => ({ category: c, groupLabel: g.label })));
+  const rows = groups.flatMap((g) => g.items.map((c) => ({ category: c })));
   // Two photos per solution (big + small, as in the theme's service blocks): the cover
   // chosen in admin first, then executed work (R-8.2).
   const photos = Object.fromEntries(
@@ -46,7 +46,6 @@ export default async function SolutionsPage() {
             <ShowcaseRow
               key={r.category.slug}
               category={r.category}
-              groupLabel={r.groupLabel}
               images={photos[r.category.slug]}
               number={i + 1}
               reverse={i % 2 === 1}

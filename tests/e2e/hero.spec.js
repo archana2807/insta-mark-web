@@ -60,6 +60,26 @@ test("home banner (desktop): the vertical tagline is fully visible without scrol
   expect(label.y + label.height).toBeLessThanOrEqual(800);
 });
 
+test("project logos sit right under the banner: 4–5 logos that load (R-3.10)", async ({ page }) => {
+  await page.goto("/");
+  const logos = page.locator(".project-logos");
+  await expect(logos).toBeVisible();
+  const imgs = logos.locator("img");
+  const count = await imgs.count();
+  expect(count).toBeGreaterThanOrEqual(4);
+  expect(count).toBeLessThanOrEqual(5);
+  for (let i = 0; i < count; i++) {
+    await expect(imgs.nth(i)).toBeVisible();
+    await expect(imgs.nth(i)).toHaveAttribute("alt", /\S+ logo$/);
+    expect(await imgs.nth(i).evaluate((el) => el.naturalWidth)).toBeGreaterThan(0);
+  }
+  // Directly after the banner, before the About intro.
+  const hero = await page.locator(".hero-split").boundingBox();
+  const band = await logos.boundingBox();
+  expect(band.y).toBeGreaterThanOrEqual(hero.y + hero.height - 1);
+  expect(band.y - (hero.y + hero.height)).toBeLessThan(40);
+});
+
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
   page,
 }) => {

@@ -47,6 +47,25 @@ export const home = {
     ],
   },
   quote: "We craft ideas into impactful signage experiences.",
+  // Logos of projects we have worked on, from the company profile PDF (client asked for
+  // 4–5 right under the banner, 21 Oct 2026). Adani Realty and Tata Projects are too faint
+  // in the PDF; add them when clean files arrive.
+  projectLogos: [
+    {
+      name: "Reliance Industries Limited",
+      src: "/images/clients/reliance.png",
+      width: 160,
+      height: 111,
+    },
+    { name: "Nykaa", src: "/images/clients/nykaa.png", width: 155, height: 63 },
+    { name: "Rustomjee", src: "/images/clients/rustomjee.png", width: 179, height: 32 },
+    {
+      name: "Brookfield Properties",
+      src: "/images/clients/brookfield-properties.png",
+      width: 158,
+      height: 70,
+    },
+  ],
   trustedBy: {
     title: "Trusted by Leading Brands",
     text: "Our commitment to quality, innovation, and timely execution has earned the trust of leading developers, architects, contractors, and organizations across India.",

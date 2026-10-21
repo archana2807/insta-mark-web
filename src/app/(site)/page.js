@@ -6,6 +6,7 @@ import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
 import Gallery from "@/components/sections/Gallery";
 import LogoStrip from "@/components/sections/LogoStrip";
+import ProjectLogos from "@/components/sections/ProjectLogos";
 import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
 import * as categoryService from "@/server/modules/categories/category.service";
@@ -48,6 +49,9 @@ export default async function HomePage() {
     <>
       {/* 1. Banner + tagline */}
       <HomeHero hero={home.hero} image={home.featured.hero} banner={home.banner} />
+
+      {/* Project logos — right under the banner (client feedback 21 Oct 2026) */}
+      <ProjectLogos logos={home.projectLogos} />
 
       {/* 2. About — one or two lines */}
       <AboutIntro about={home.about} />

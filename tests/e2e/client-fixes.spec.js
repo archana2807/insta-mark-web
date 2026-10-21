@@ -131,9 +131,9 @@ test("the cover chosen in admin shows on the category hero, home grid and Soluti
     await page.goto(`/solutions/${CATEGORY.slug}`);
     await expect(page.locator(".inner-hero").locator(imageWith(coverUrl))).toHaveCount(1);
 
-    // Home product grid
+    // Home product mosaic
     await page.goto("/");
-    const card = page.locator(`a.category-card[href="/solutions/${CATEGORY.slug}"]`);
+    const card = page.locator(`a.product-mosaic__tile[href="/solutions/${CATEGORY.slug}"]`);
     await expect(card.locator(imageWith(coverUrl))).toHaveCount(1);
 
     // Solutions page: the big photo of that solution's row

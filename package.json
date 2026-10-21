@@ -13,6 +13,10 @@
     "start": "next start",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "node --test",
+    "test:e2e": "node tests/e2e/run.js",
+    "test:e2e:fast": "node tests/e2e/run.js --no-build",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -43,7 +47,14 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@electric-sql/pglite": "0.5.10",
+    "@electric-sql/pglite-socket": "0.2.13",
+    "@eslint/eslintrc": "3.3.7",
+    "@playwright/test": "1.64.1",
     "bootstrap-icons": "1.11.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.27",
     "prettier": "3.3.3",
     "prisma": "6.19.3",
     "sass": "1.80.6"

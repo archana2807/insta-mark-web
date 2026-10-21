@@ -67,6 +67,13 @@ const config = [
   ...compat.extends("next/core-web-vitals"),
   { files: ["src/**/*.{js,jsx,mjs}"], rules: restrict(PRISMA, ANY_REPOSITORY) },
   { files: ["src/server/db.js"], rules: restrict(ANY_REPOSITORY) },
+  // Server code logs through src/server/logger.js only (D6). env.js runs before the
+  // logger exists (next.config.mjs, Edge), so it may warn on the console.
+  {
+    files: ["src/server/**/*.js", "src/middleware.js", "src/app/api/**/*.js"],
+    ignores: ["src/server/config/env.js"],
+    rules: { "no-console": "error" },
+  },
   // Server code reads the environment only through src/server/config/env.js (R-11.8).
   {
     files: ["src/server/**/*.js", "src/middleware.js", "src/app/api/**/*.js"],

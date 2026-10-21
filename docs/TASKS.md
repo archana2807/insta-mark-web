@@ -56,7 +56,7 @@
   - Done when: honeypot hits no longer count as a GA4 conversion.
   - Blocked by: client answers (questions 1–2), Cloudinary and Resend keys.
 
-- [ ] **08 `08-go-live`** (M) — Website looks different: no
+- [~] **08 `08-go-live`** (M) — Website looks different: no
   - Done when: every item in the `docs/3-INFRA.md` go-live checklist is ticked (Vercel Pro, domain, rotated secrets, Resend, backups, Sentry, uptime, privacy policy, client facts, Lighthouse).
   - Done when: pino JSON logs and Sentry are on (D6).
   - Done when: backups run: Neon's built-in restore is on, and a daily GitHub Actions job saves a `pg_dump` as an artifact kept 30 days (private repo) (D15).

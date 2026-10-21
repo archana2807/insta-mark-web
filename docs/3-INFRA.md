@@ -39,12 +39,42 @@
 - Enforced since task 06 by `src/server/config/env.js`: a Production deploy (`VERCEL_ENV=production`) without any required variable **fails to build**. Previews (no database, D14) need none of them. Check before deploying, without showing values: `node --env-file=.env.production.local scripts/check-env.js`.
 
 ## 7. Backups and recovery
-- **Daily backup (task 08, D15):** Neon's built-in restore, plus a nightly GitHub Actions job that runs `pg_dump` against `DIRECT_URL` and saves it as an artifact (private repo, kept 30 days).
-- **Restore test:** restore one dump into a Neon branch before go-live and record the date here.
+- **Neon built-in restore (point-in-time):** Neon console → the project → **Settings → Instant restore / History retention**. Set the longest history the plan allows. To recover: **Restore** the branch to a time, or create a branch from a past time and point `DATABASE_URL` / `DIRECT_URL` at it.
+- **Daily backup (D15):** `.github/workflows/backup.yml`, every night at **21:30 UTC (03:00 IST)**, after the maintenance cron, and on demand (**Actions → Database backup → Run workflow**).
+  1. `pg_dump` (PostgreSQL 16 client, custom format) from the Neon **direct** URL.
+  2. **Restore test on every run:** the dump is decrypted and restored into a throwaway Postgres 16 in the same job. Every table's row count is checked. The job fails if anything is missing.
+  3. The dump is encrypted (gpg, AES-256) and kept as an artifact for **30 days**. It contains personal data, so it is encrypted even though the repo is private.
+  4. The job summary shows table names and row counts only, never URLs or data.
+- **Setup (once, by the repo owner):** GitHub → **Settings → Secrets and variables → Actions → New repository secret**:
+  - `NEON_DIRECT_URL`: the Neon direct (not pooled) connection string. A read-only Neon role is enough and safer.
+  - `BACKUP_PASSPHRASE`: a long random string. **Also store it in the team password manager**; without it the dumps cannot be opened.
 
-## 8. Monitoring (go-live, task 08)
-- Errors: Sentry (decision D6). Logs: pino JSON in Vercel logs.
-- Uptime: a free uptime monitor on the home page, alerts to the team email.
+  Then run the workflow once by hand and check it is green.
+- **Restore a backup (runbook):**
+  1. Actions → the run → download `database-backup-<id>`; unzip.
+  2. `gpg --decrypt --output db.dump insta-mark-<date>.dump.gpg` (asks for `BACKUP_PASSPHRASE`).
+  3. In Neon create a new branch (or an empty database) and copy its direct URL.
+  4. `pg_restore --no-owner --no-privileges --exit-on-error -d "<that direct URL>" db.dump`
+  5. Check the admin panel against it on a preview, then switch Vercel's `DATABASE_URL` / `DIRECT_URL` (Production) if this is a real recovery.
+- **CI:** the same scripts run on every push and PR (`backup-rehearsal` job in `ci.yml`) against throwaway Docker databases with test data, so a broken backup script is caught before it reaches `main`.
+
+**Restore tests**
+
+| Date | What | Result |
+|---|---|---|
+| 21 Oct 2026 | Local rehearsal (`bash scripts/backup/rehearse-local.sh`): test data in Postgres 16 → dump → encrypt → decrypt → restore into an empty database | ✅ 16 tables, all row counts match; a wrong passphrase is refused |
+| _(first green run)_ | Production: first run of `backup.yml` after the secrets are set (restore into a throwaway database in the job) | ⏳ needs the two secrets |
+| _(before go-live)_ | Production: restore one artifact into a **Neon branch** with the runbook above | ⏳ |
+
+## 8. Monitoring (D6)
+- **Logs:** pino JSON lines on stdout (`src/server/logger.js`), read in Vercel → Logs. Level: `LOG_LEVEL` (default `info`). Passwords, tokens, cookies, emails, phones and credentials in error messages are redacted. Server code cannot use `console.*` (ESLint).
+- **Errors:** Sentry (`@sentry/nextjs`), **on only when the DSNs are set**:
+  - in Vercel (Production): `SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN` (the same DSN);
+  - optionally `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` for readable stack traces (source maps).
+
+  It reports unexpected server errors, request errors and browser errors. It does not report expected errors (wrong password, validation…), personal data, session replays or performance traces. The browser SDK loads only when a DSN is set, after the page is idle, so it never slows the first paint.
+- **Sentry setup (once):** create a free Sentry account → new project, platform **Next.js** → copy the DSN into the Vercel variables above → in Sentry, set an alert rule "a new issue is created → email the team".
+- **Uptime:** a free uptime monitor (e.g. UptimeRobot or Better Stack) on the home page URL and `/robots.txt`, every 5 minutes, alerts to the team email.
 
 ## 9. Go-live checklist (task 08)
 - [ ] Vercel **Pro** plan
@@ -52,8 +82,8 @@
 - [ ] **Rotate every secret shared in chat:** Vercel token, Neon password, admin password; new JWT secret (logs everyone out once)
 - [ ] Resend domain verified; test enquiry → sales email + auto-reply
 - [ ] Turnstile, GA4 and Cloudinary keys set and tested
-- [ ] Daily backup running and one restore tested
-- [ ] Sentry and uptime alerts on
+- [ ] Daily backup running and one restore tested — workflow + restore test ready; needs the two GitHub secrets, one green run, and one restore into a Neon branch (§7)
+- [ ] Sentry and uptime alerts on — code ready (off until DSNs are set); needs a Sentry project + DSN in Vercel and an uptime monitor (§8)
 - [ ] Privacy policy approved by the client
 - [ ] Client facts confirmed (contact details, founding year); test data removed
 - [ ] Lighthouse mobile ≥ 90 and LCP ≤ 2.5 s on production; axe 0 violations; no sideways scroll at 390 px

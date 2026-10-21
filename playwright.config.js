@@ -48,5 +48,6 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120_000,
     env: process.env, // already sealed by tests/e2e/run.js
+    stdout: "pipe", // server JSON logs (pino) appear in the test output
   },
 });

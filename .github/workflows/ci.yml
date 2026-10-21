@@ -64,3 +64,28 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  # The nightly backup's dump → encrypt → restore → verify path (scripts/backup), run on
+  # throwaway Docker databases with test data. No secrets, no production data.
+  backup-rehearsal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install PostgreSQL 16 client (Neon runs PostgreSQL 16)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+
+      - name: Backup and restore rehearsal
+        run: bash scripts/backup/rehearse-local.sh

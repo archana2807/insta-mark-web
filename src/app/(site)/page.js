@@ -53,8 +53,8 @@ export default async function HomePage() {
       {/* Project logos — right under the banner (client feedback 21 Oct 2026) */}
       <ProjectLogos logos={home.projectLogos} />
 
-      {/* 2. About — one or two lines */}
-      <AboutIntro about={home.about} />
+      {/* 2. About — photo collage left, company text right */}
+      <AboutIntro about={home.about} images={home.featured.about} />
 
       {/* 3. Products — the most important part */}
       <section className="section pt-4" aria-labelledby="solutions-title">

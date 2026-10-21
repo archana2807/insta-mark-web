@@ -162,7 +162,7 @@ test("the Solutions dropdown opens at the right side of the page, like the theme
   expect(box.y).toBeGreaterThanOrEqual(header.y + header.height - 2);
 });
 
-test("the footer carries the call to action on every page; no separate CTA panel (10d)", async ({
+test("the footer carries the call to action text on every page; no logo, no buttons, no CTA panel (10d)", async ({
   page,
 }) => {
   for (const route of ["/", "/about", "/projects", "/solutions"]) {
@@ -172,8 +172,10 @@ test("the footer carries the call to action on every page; no separate CTA panel
     await expect(footer.getByRole("heading", { level: 2 })).toContainText(
       /Build Smarter Spaces Together/,
     );
-    await expect(footer.getByRole("link", { name: /Get a Free Consultation/ })).toBeVisible();
-    await expect(footer.getByRole("link", { name: /Contact Our Team/ })).toBeVisible();
+    // No brand logo and no call-to-action buttons in the footer (client, 21 Oct 2026).
+    await expect(footer.locator(".brand-logo")).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: /Get a Free Consultation/ })).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: /Contact Our Team/ })).toHaveCount(0);
     // Solutions and company links stay on the right.
     await expect(footer.getByText("Company", { exact: true })).toBeVisible();
     // Social icons are shown only for links the client has set (none yet: hidden, not fake).

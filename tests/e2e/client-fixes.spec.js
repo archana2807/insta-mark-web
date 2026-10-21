@@ -50,14 +50,18 @@ test.beforeAll(async () => {
   await prisma.$disconnect();
 });
 
-test("the home banner has no vertical side label (inner pages keep theirs, question 7)", async ({
+test("the home banner's vertical label is the tagline, not the old services line", async ({
   page,
 }) => {
+  // R-3.4 as revised on 21 Oct 2026: the services line is gone; the vertical label now
+  // carries the tagline (details in hero.spec.js).
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const hero = page.locator(".hero-split");
   await expect(hero).toBeVisible();
-  await expect(hero.locator(".hero-split__vertical")).toHaveCount(0);
+  await expect(hero.locator(".hero-split__vertical .visually-hidden")).toHaveText(
+    "Signage That Guides. Safety That Lasts.",
+  );
   await expect(hero).not.toContainText(/Signage\s*·\s*Wayfinding/i);
 
   await page.goto("/about");

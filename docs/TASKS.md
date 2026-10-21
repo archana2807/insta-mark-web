@@ -65,7 +65,7 @@
 
 - [~] **10 `10-client-feedback`** (L — client feedback doc of 21 Oct 2026; one branch per sub-task, client reviews each PR) — Website looks different: **yes**
   - Blocked by (for 10c–10f): the reference images from the feedback doc, the company profile PDF (project logos + permission to show them), the official Insta Mark logo (SVG), the About text document, confirmed contact details and social links, the 3 featured industries per solution.
-  - [~] **10a `10a-hero-tagline`** — Done when: the home H1 is "Architectural Signage & Road Safety" with the tagline as a smaller line under it and no label above (R-3.3); e2e checks text, order and sizes.
+  - [~] **10a `10a-hero-tagline`** — Done when: the home H1 is "Architectural Signage & Road Safety" and runs onto the photo as in the theme; the tagline is the vertical label on wide screens and a smaller line under the H1 below 1200 px; no label above (R-3.3, R-3.4); e2e checks text, position and sizes at both widths.
   - [ ] **10b `10b-no-eyebrows`** — Done when: the small labels above headlines are removed site-wide; the official logo is in the header top-left (when supplied).
   - [ ] **10c `10c-home-layout`** — Done when: home order is Banner → project logos → photo collage + company text → Products (new grid) → Industries → Working process → Trusted by (logos) → contact block (answers question 1); the animated line is on "Signage and Road Safety Solutions".
   - [ ] **10d `10d-contact-block`** — Done when: one contact block with confirmed contact details and social icons is on every page; unset values stay hidden (R-1.5).

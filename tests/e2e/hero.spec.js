@@ -1,44 +1,73 @@
-// Home banner text (client feedback, 21 Oct 2026): the big H1 "Architectural Signage &
-// Road Safety", then the tagline "Signage That Guides. Safety That Lasts." as a smaller
-// line UNDER it. No small label above the headline.
+// Home banner (client feedback, 21 Oct 2026; Crafto "Branding Agency" hero):
+// - H1 "Architectural Signage & Road Safety", the page's only H1, running onto the photo;
+// - wide screens (≥ 1200 px): the tagline "Signage That Guides. Safety That Lasts." is
+//   the vertical label on the left (with a thin line next to the headline);
+// - narrower screens (no vertical label, as in the theme): the tagline is a smaller line
+//   right under the H1.
+// No small label above the headline at any width.
 import { test, expect } from "@playwright/test";
 
 const HEADLINE = "Architectural Signage & Road Safety";
 const TAGLINE = "Signage That Guides. Safety That Lasts.";
 
-const WIDTHS = [
-  ["desktop", 1440, 900],
-  ["phone", 390, 844],
-];
+/** @param {import("@playwright/test").Locator} locator */
+const fontPx = (locator) =>
+  locator.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize));
 
-for (const [label, width, height] of WIDTHS) {
-  test(`home banner: big H1, smaller tagline under it, no label above (${label})`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height });
-    await page.goto("/");
+test.beforeEach(async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+});
 
-    const hero = page.locator(".hero-split");
-    const headline = hero.locator("h1");
-    const tagline = hero.locator(".hero-split__tagline");
-    await expect(headline).toHaveText(HEADLINE);
-    await expect(tagline).toHaveText(TAGLINE);
-    await expect(page.locator("h1")).toHaveCount(1); // the headline is the page's only H1
-    await expect(hero.locator(".eyebrow")).toHaveCount(0); // no small label above it
+test("home banner (desktop): vertical tagline on the left, headline runs onto the photo", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const hero = page.locator(".hero-split");
+  const headline = hero.locator("h1");
+  const vertical = hero.locator(".hero-split__vertical");
+  await expect(headline).toHaveText(HEADLINE);
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(hero.locator(".eyebrow")).toHaveCount(0);
 
-    // The tagline comes right after the headline, below it on screen.
-    await expect(headline.locator("xpath=following-sibling::*[1]")).toHaveText(TAGLINE);
-    const h = await headline.boundingBox();
-    const t = await tagline.boundingBox();
-    expect(t.y).toBeGreaterThanOrEqual(h.y + h.height - 1);
+  // The vertical label shows the tagline; screen readers read it once, as one line.
+  await expect(vertical).toBeVisible();
+  await expect(vertical.locator(".visually-hidden")).toHaveText(TAGLINE);
+  await expect(vertical.locator("[aria-hidden=true]")).toHaveText(TAGLINE);
+  expect(await vertical.evaluate((el) => getComputedStyle(el).writingMode)).toBe("vertical-rl");
+  await expect(hero.locator(".hero-split__tagline")).toBeHidden(); // shown only below 1200 px
 
-    const px = (locator) =>
-      locator.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize));
-    const headlineSize = await px(headline);
-    const taglineSize = await px(tagline);
-    // Clearly bigger at every width (today ≈ 2–2.8×).
-    expect(headlineSize, `h1 ${headlineSize}px vs tagline ${taglineSize}px`).toBeGreaterThanOrEqual(
-      taglineSize * 1.5,
-    );
-  });
-}
+  // Left of the headline, with the thin line between them.
+  const v = await vertical.boundingBox();
+  const h = await headline.boundingBox();
+  expect(v.x + v.width).toBeLessThanOrEqual(h.x);
+  expect(await vertical.evaluate((el) => getComputedStyle(el).borderLeftWidth)).toBe("1px");
+
+  // Theme effect: the headline runs past its column onto the photo.
+  const media = await hero.locator(".hero-split__media").boundingBox();
+  expect(h.x + h.width).toBeGreaterThan(media.x);
+
+  // Hierarchy: the headline is far bigger than the vertical label.
+  expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(vertical)) * 2);
+});
+
+test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const hero = page.locator(".hero-split");
+  const headline = hero.locator("h1");
+  const tagline = hero.locator(".hero-split__tagline");
+  await expect(headline).toHaveText(HEADLINE);
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(hero.locator(".eyebrow")).toHaveCount(0);
+  await expect(hero.locator(".hero-split__vertical")).toBeHidden();
+
+  await expect(tagline).toBeVisible();
+  await expect(tagline).toHaveText(TAGLINE);
+  await expect(headline.locator("xpath=following-sibling::*[1]")).toHaveText(TAGLINE);
+  const h = await headline.boundingBox();
+  const t = await tagline.boundingBox();
+  expect(t.y).toBeGreaterThanOrEqual(h.y + h.height - 1);
+  expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(tagline)) * 1.5);
+});

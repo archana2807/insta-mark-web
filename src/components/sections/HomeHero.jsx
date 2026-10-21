@@ -3,6 +3,7 @@ import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import BtnText from "@/components/ui/BtnText";
 import ScrollDrift from "@/components/ui/ScrollDrift";
+import FancyText from "@/components/ui/FancyText";
 import { BANNER } from "@/shared/constants";
 
 /**
@@ -19,7 +20,7 @@ function BannerPicture({ banner, fallback }) {
   const common = { alt, fill: true, loading: "eager", fetchPriority: "high" };
   const {
     props: { srcSet: desktopSrcSet, sizes: desktopSizes },
-  } = getImageProps({ ...common, src: desktop.src, sizes: "50vw" });
+  } = getImageProps({ ...common, src: desktop.src, sizes: "58vw" });
   const { props: mobileProps } = getImageProps({ ...common, src: mobile.src, sizes: "100vw" });
   return (
     <picture>
@@ -33,14 +34,24 @@ function BannerPicture({ banner, fallback }) {
   );
 }
 
-/** Theme hero: huge headline left, full-bleed image right (no vertical label, R-3.4). */
+/**
+ * Theme hero (Crafto "Branding Agency"): text left, photo right; the headline runs onto
+ * the photo. On wide screens the tagline is the vertical label on the left; below
+ * 1200 px (where the label is hidden) it is a line under the headline.
+ */
 export default function HomeHero({ hero, image, banner = null }) {
   return (
     <section className="hero-split" aria-labelledby="hero-title">
       <div className="container-fluid px-0">
         <div className="row g-0">
-          <div className="col-lg-6 hero-split__text-col px-3 px-sm-4 px-lg-5">
+          <div className="col-lg-5 hero-split__text-col px-3 px-sm-4 px-lg-5">
             <div className="d-flex w-100 ps-xl-4">
+              <p className="hero-split__vertical">
+                <span className="visually-hidden">{hero.tagline}</span>
+                <span aria-hidden="true">
+                  <FancyText text={hero.tagline} />
+                </span>
+              </p>
               <div className="load-stagger">
                 <h1 id="hero-title">{hero.title}</h1>
                 <p className="hero-split__tagline">{hero.tagline}</p>
@@ -56,7 +67,7 @@ export default function HomeHero({ hero, image, banner = null }) {
               </div>
             </div>
           </div>
-          <div className="col-lg-6">
+          <div className="col-lg-7">
             <div className="hero-split__media load-wipe">
               <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
                 {banner ? (
@@ -67,7 +78,7 @@ export default function HomeHero({ hero, image, banner = null }) {
                     alt={image.alt}
                     fill
                     priority
-                    sizes="(min-width: 992px) 50vw, 100vw"
+                    sizes="(min-width: 992px) 58vw, 100vw"
                   />
                 )}
               </ScrollDrift>

@@ -37,7 +37,7 @@ Follow these rules on every task. If a rule conflicts with a request, stop and a
 - Never disable lint rules, tests or type checks to make something pass.
 - Never use `{any}`/`{*}` JSDoc types, `@ts-ignore` without a reason, `require`, `console.log`, or commented-out code.
 - Never convert the project to TypeScript (or add `.ts` files) unless 2-ARCHITECTURE.md says so.
-- Never `git push`, force-push, `rm -rf`, or drop/reset a database.
+- Never force-push, `rm -rf`, or drop/reset a database. Normal `git push` to a feature branch is allowed after a successful commit; never push directly to `main`.
 - Never edit an applied migration or change the production database by hand.
 
 ## Commands (npm)

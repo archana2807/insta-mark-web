@@ -15,6 +15,9 @@ export const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 export const TEST_DB_HOST = "127.0.0.1";
 export const TEST_DB_PORT = 5433;
 export const TEST_APP_PORT = 3100;
+/** Local mock of the Resend API (tests/e2e/mail-mock.js); emails never leave the machine. */
+export const TEST_MAIL_PORT = 3110;
+export const TEST_RESEND_BASE_URL = `http://127.0.0.1:${TEST_MAIL_PORT}`;
 export const TEST_DATABASE_URL = `postgresql://postgres:postgres@${TEST_DB_HOST}:${TEST_DB_PORT}/postgres?sslmode=disable&connection_limit=1&pgbouncer=true`;
 
 /** Test-only values; everything else from .env.example is blank (integration off). */
@@ -25,6 +28,12 @@ const TEST_VALUES = {
   AUTH_SECRET: "e2e-test-secret-e2e-test-secret-e2e-test-secret",
   IP_HASH_SALT: "e2e-test-salt",
   CRON_SECRET: "e2e-test-cron-secret",
+  // Email is "on", but the Resend SDK talks to the local mock, which only runs during
+  // the client-changes spec. Elsewhere sending fails fast, as with no key at all.
+  RESEND_API_KEY: "re_e2e_fake_key",
+  ENQUIRY_FROM_EMAIL: "Insta Mark Website <website@test.local>",
+  ENQUIRY_NOTIFY_EMAILS: "sales@test.local",
+  RESEND_BASE_URL: TEST_RESEND_BASE_URL,
 };
 
 /**
@@ -76,5 +85,8 @@ export function sealTestEnv(base = process.env, keys = readEnvExampleKeys()) {
   env.NEXT_TELEMETRY_DISABLED = "1";
   assertTestDatabase(env.DATABASE_URL);
   assertTestDatabase(env.DIRECT_URL);
+  if (env.RESEND_BASE_URL !== TEST_RESEND_BASE_URL) {
+    throw new Error("Refusing to run tests: email must go to the local mock only.");
+  }
   return env;
 }

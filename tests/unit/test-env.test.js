@@ -10,7 +10,10 @@ import {
   readEnvExampleKeys,
   sealTestEnv,
   TEST_DATABASE_URL,
+  TEST_RESEND_BASE_URL,
 } from "../e2e/env.js";
+
+const TEST_RESEND_KEY = "re_e2e_fake_key";
 
 const require = createRequire(import.meta.url);
 
@@ -29,12 +32,14 @@ test("guard accepts only the local PGlite database on 127.0.0.1:5433", () => {
   }
 });
 
-test("sealed env blanks every .env.example key and points the database at PGlite", () => {
+test("sealed env replaces every .env.example key; database → PGlite, email → local mock", () => {
   const live = { DATABASE_URL: "postgresql://x@live.neon.tech/db", RESEND_API_KEY: "re_live" };
   const env = sealTestEnv(live);
   assert.equal(env.DATABASE_URL, TEST_DATABASE_URL);
   assert.equal(env.DIRECT_URL, TEST_DATABASE_URL);
-  assert.equal(env.RESEND_API_KEY, "");
+  assert.equal(env.RESEND_API_KEY, TEST_RESEND_KEY);
+  assert.equal(env.RESEND_BASE_URL, TEST_RESEND_BASE_URL);
+  assert.match(env.RESEND_BASE_URL, /^http:\/\/127\.0\.0\.1:/);
   assert.equal(env.__NEXT_PROCESSED_ENV, "true");
   for (const key of readEnvExampleKeys()) {
     assert.ok(key in env, `${key} must be set (even as "") so env files cannot fill it`);
@@ -69,7 +74,7 @@ test("a live .env.production.local cannot leak into a sealed test process", () =
       assert.equal(out.status, 0, out.stderr);
       const seen = JSON.parse(out.stdout);
       assert.equal(seen.DATABASE_URL, TEST_DATABASE_URL, `withFlag=${withFlag}`);
-      assert.equal(seen.RESEND_API_KEY, "", `withFlag=${withFlag}`);
+      assert.equal(seen.RESEND_API_KEY, TEST_RESEND_KEY, `withFlag=${withFlag}`);
       if (withFlag) assert.equal(seen.VERCEL_TOKEN, null, "flag must stop all file loading");
     }
   } finally {

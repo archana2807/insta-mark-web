@@ -114,6 +114,7 @@ const CLIENT_ICONS = [
   "gear",
   "people",
   "journal-text",
+  "card-image",
 ];
 
 // Icons drawn from CSS (::before/::after).

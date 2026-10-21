@@ -105,7 +105,25 @@ Home page की "Trusted by" पट्टी के लिए।
 
 ---
 
-## 7. Site settings (सिर्फ़ Admin)
+## 7. Home banner
+
+Home page पर headline के बगल वाली बड़ी image। Desktop (बड़ी screens) और mobile (phones) के लिए अलग-अलग image upload करें।
+
+**Design team के लिए sizes:**
+
+| Banner | Upload size | Shape | Safe area (text/logo इसके अंदर रखें) | Format |
+|---|---|---|---|---|
+| Desktop | **1920 × 1720 px** | ≈ 10:9 | बीच का 1500 × 1600 px | JPG या WebP, ≤ 600 KB |
+| Mobile | **1080 × 1080 px** | 1:1 (square) | बीच का 960 × 960 px | JPG या WebP, ≤ 300 KB |
+
+1. **Home banner** खोलें, desktop या mobile में **Upload image** से file चुनें। Upload होते ही website पर आ जाती है।
+2. इससे छोटी images (desktop 1600 × 1400, mobile 900 × 900 से कम) नहीं ली जातीं।
+3. **Alt text** में image का छोटा विवरण लिखें (screen readers के लिए) और **Save alt text** दबाएँ।
+4. **Remove** दबाने पर पुरानी photo वापस दिखने लगती है। Mobile image न हो तो phones पर desktop image दिखती है।
+
+> Upload के लिए Cloudinary keys चाहिए (CLOUDINARY_* settings)।
+
+## 8. Site settings (सिर्फ़ Admin)
 
 - **Phone**: footer और mobile के call button में दिखता है।
 - **WhatsApp number**: सिर्फ़ अंक, country code के साथ (जैसे `919876543210`)।
@@ -118,7 +136,7 @@ Home page की "Trusted by" पट्टी के लिए।
 
 ---
 
-## 8. Users और Audit log (सिर्फ़ Admin)
+## 9. Users और Audit log (सिर्फ़ Admin)
 
 - **Users → Add user**: नाम, email, role, शुरुआती password (10+ characters)। Password उस व्यक्ति को सुरक्षित तरीके से दें (एक ही message में email और password न भेजें)।
 - किसी के जाने पर **Active** का tick हटाकर **Save** करें। उनका पुराना काम (notes वगैरह) बना रहता है।
@@ -128,7 +146,7 @@ Home page की "Trusted by" पट्टी के लिए।
 
 ---
 
-## 9. मदद
+## 10. मदद
 
 | समस्या | क्या करें |
 |---|---|

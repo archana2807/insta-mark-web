@@ -1,13 +1,16 @@
 // Enquiries: the public form (validate → store → email), the admin follow-up,
 // the CSV export, dashboard numbers and the daily maintenance job.
 import "server-only";
+import { after } from "next/server";
 import { AppError } from "@/server/errors/app-error";
 import { ENQUIRY_PAGE_SIZE } from "@/shared/constants";
 import { MIN_FILL_MS, cleanField, validateField } from "@/shared/schemas/enquiry-rules";
 import { revalidatePage } from "@/server/cache";
 import { getEnv, isDatabaseConfigured } from "@/server/config/env";
 import {
+  isAutoReplyConfigured,
   isEmailConfigured,
+  sendEnquiryAutoReply,
   sendEnquiryNotification,
 } from "@/server/integrations/resend/resend.adapter";
 import {
@@ -61,12 +64,13 @@ async function isRateLimited(ipHash) {
  * lost: validate → save to DB → then email. Email failure leaves `notified_at` NULL for
  * the retry job.
  * @param {EnquirySubmission} s
- * @returns {Promise<{ redirectTo: string }>}
+ * @returns {Promise<{ redirectTo: string, lead: boolean }>} lead: a real, accepted enquiry
+ *   (false for honeypot hits, so they never count as a GA4 conversion)
  * @throws {AppError} ENQUIRY_TOO_FAST, VALIDATION_FAILED, CAPTCHA_FAILED, ENQUIRY_RATE_LIMITED, ENQUIRY_NOT_SAVED
  */
 export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileToken, meta }) {
   // Honeypot: real users never see this field. Pretend success for bots.
-  if (honeypot) return { redirectTo: "/thank-you" };
+  if (honeypot) return { redirectTo: "/thank-you", lead: false };
 
   // Time trap: with JS the form sends how long it was open (measured in the
   // browser, so clock skew doesn't matter). Faster than a human can type → ask
@@ -133,7 +137,19 @@ export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileTo
     );
   }
 
-  return { redirectTo: "/thank-you" };
+  // Auto-reply to the visitor (R-7.8), sent after the response: a slow or failed email
+  // never delays or blocks the thank-you page.
+  if (isAutoReplyConfigured()) {
+    after(async () => {
+      try {
+        await sendEnquiryAutoReply(data);
+      } catch (err) {
+        console.error("[enquiry] auto-reply email failed", saved?.id ?? "(not saved)", err);
+      }
+    });
+  }
+
+  return { redirectTo: "/thank-you", lead: true };
 }
 
 // ── Admin ─────────────────────────────────────────────────────────────

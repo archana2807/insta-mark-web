@@ -15,25 +15,9 @@ import ActionForm from "./ActionForm";
 import SubmitButton from "./SubmitButton";
 import ClientIcon from "@/components/ui/ClientIcon";
 import { resultMessage } from "@/shared/errors";
+import { uploadToCloudinary } from "@/lib/cloudinary-upload";
 
 const MAX_BYTES = 10 * 1024 * 1024;
-
-async function uploadToCloudinary(file, sig) {
-  const form = new FormData();
-  form.append("file", file);
-  form.append("api_key", sig.apiKey);
-  form.append("timestamp", String(sig.timestamp));
-  form.append("folder", sig.folder);
-  form.append("allowed_formats", sig.allowed_formats);
-  form.append("signature", sig.signature);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
-    method: "POST",
-    body: form,
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data?.error?.message ?? `Upload failed (${res.status})`);
-  return data;
-}
 
 /**
  * Gallery editor for a category or project: upload (direct to Cloudinary,

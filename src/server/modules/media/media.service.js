@@ -54,6 +54,25 @@ export async function getGalleryUploadSignature({ kind, ownerId, type }) {
   return createUploadParams(cfg.folder(owner.slug, type));
 }
 
+/**
+ * Signed params for an upload into one folder (e.g. the home banner).
+ * @param {string} folder must start with "insta-mark/"
+ */
+export async function getFolderUploadSignature(folder) {
+  if (!isCloudinaryConfigured()) throw new AppError("UPLOAD_NOT_CONFIGURED");
+  return createUploadParams(folder);
+}
+
+/**
+ * @param {(string | null | undefined)[]} ids
+ * @returns {Promise<Record<string, { id: string, url: string, width: number, height: number, alt: string }>>}
+ */
+export async function findAssetsByIds(ids) {
+  const wanted = [...new Set(ids.filter(Boolean))];
+  if (wanted.length === 0) return {};
+  return Object.fromEntries((await mediaRepository.findByIds(wanted)).map((a) => [a.id, a]));
+}
+
 /** Signed params for a client-logo upload. */
 export async function getLogoUploadSignature() {
   if (!isCloudinaryConfigured()) throw new AppError("UPLOAD_NOT_CONFIGURED");

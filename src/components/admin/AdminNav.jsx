@@ -20,6 +20,7 @@ const SECTIONS = [
       { href: "/admin/projects", label: "Projects", icon: "buildings" },
       { href: "/admin/clients", label: "Client logos", icon: "award" },
       { href: "/admin/faqs", label: "FAQs", icon: "question-circle" },
+      { href: "/admin/banner", label: "Home banner", icon: "card-image" },
     ],
   },
   {

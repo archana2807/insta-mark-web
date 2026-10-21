@@ -164,6 +164,8 @@ Since task 04 every action lives in `src/server/modules/<module>/<singular>.cont
 | `getLogoUploadSignature` | `client-logos/client-logo.controller.js` | Editor, Admin | Signed Cloudinary params for a logo | F7 |
 | `createClientLogo`, `updateClientLogo`, `deleteClientLogo` | `client-logos/client-logo.controller.js` | Editor, Admin | Client logos | F7 |
 | `saveFaq`, `deleteFaq` | `faqs/faq.controller.js` | Editor, Admin | FAQs | F7 |
+| `getBannerUploadSignature` | `banner/banner.controller.js` | Editor, Admin | Signed Cloudinary params for a desktop / mobile banner | F7 |
+| `saveBannerImage`, `removeBannerImage`, `saveBannerAlt` | `banner/banner.controller.js` | Editor, Admin | Home banner: verify upload + minimum size, store in `site_settings` `home.banner`, remove (fallback photo), alt text | F7 |
 | `updateEnquiry` | `enquiries/enquiry.controller.js` | Editor, Admin | Status and owner | F8 |
 | `addEnquiryNote` | `enquiries/enquiry.controller.js` | Editor, Admin | Internal note | F8 |
 | `saveSettings` | `settings/setting.controller.js` | Admin | Contact, socials, founding year | F9 |

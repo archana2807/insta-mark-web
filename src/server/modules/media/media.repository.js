@@ -40,6 +40,15 @@ export async function findUsage(id) {
   });
 }
 
+/** @param {string[]} ids */
+export async function findByIds(ids) {
+  const prisma = await getPrisma();
+  return prisma.mediaAsset.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, url: true, width: true, height: true, alt: true },
+  });
+}
+
 /** @param {string} id */
 export async function remove(id) {
   const prisma = await getPrisma();

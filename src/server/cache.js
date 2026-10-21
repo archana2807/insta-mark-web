@@ -13,6 +13,7 @@ export const TAGS = {
   projects: "projects",
   project: (slug) => `project:${slug}`,
   clients: "clients",
+  home: "home", // home banner (site_settings home.banner)
 };
 
 /** Safety net: cached DB reads also expire after this many seconds. */
@@ -61,6 +62,10 @@ export function revalidateFaqs(categorySlug) {
 
 export function revalidateClients() {
   revalidateTag(TAGS.clients);
+}
+
+export function revalidateHome() {
+  revalidateTag(TAGS.home);
 }
 
 export function revalidateSettings() {

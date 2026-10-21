@@ -8,7 +8,6 @@ import RowList from "@/components/sections/RowList";
 import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
-import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
@@ -139,7 +138,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <CtaPanel cta={home.cta} />
     </>
   );
 }

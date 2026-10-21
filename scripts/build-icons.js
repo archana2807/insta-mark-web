@@ -37,6 +37,10 @@ const UI_ICONS = [
   "trash",
   "upload",
   "whatsapp",
+  "linkedin",
+  "instagram",
+  "facebook",
+  "youtube",
   "signpost",
   // admin navigation
   "speedometer2",

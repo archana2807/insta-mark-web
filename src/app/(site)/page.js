@@ -8,7 +8,6 @@ import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
 import ProjectLogos from "@/components/sections/ProjectLogos";
-import CtaPanel from "@/components/sections/CtaPanel";
 import SectionHeading from "@/components/ui/SectionHeading";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
@@ -110,7 +109,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <CtaPanel cta={home.cta} />
     </>
   );
 }

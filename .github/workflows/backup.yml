@@ -1,0 +1,76 @@
+# Daily database backup with an automatic restore test (D15, docs/3-INFRA.md §7).
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   NEON_DIRECT_URL    Neon *direct* (not pooled) connection string, read-only role is enough
+#   BACKUP_PASSPHRASE  long random string; the artifact is encrypted with it
+# The dump is restored into a throwaway Postgres 16 on every run and checked table by
+# table, then kept as an encrypted artifact for 30 days. No URL or row data is printed.
+name: Database backup
+
+on:
+  schedule:
+    - cron: "30 21 * * *" # 03:00 IST, after the 02:00 IST maintenance cron
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: database-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      restore-test:
+        image: postgres:16
+        env:
+          # Throwaway, empty, local to this job: not a secret.
+          POSTGRES_USER: restore
+          POSTGRES_PASSWORD: restore
+          POSTGRES_DB: restore
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U restore"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets
+        env:
+          NEON_DIRECT_URL: ${{ secrets.NEON_DIRECT_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          missing=""
+          [ -n "$NEON_DIRECT_URL" ] || missing="$missing NEON_DIRECT_URL"
+          [ -n "$BACKUP_PASSPHRASE" ] || missing="$missing BACKUP_PASSPHRASE"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing (see docs/3-INFRA.md §7)"
+            exit 1
+          fi
+
+      - name: Install PostgreSQL 16 client (Neon runs PostgreSQL 16)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+
+      - name: Back up, encrypt, restore into a throwaway database, verify
+        env:
+          SOURCE_URL: ${{ secrets.NEON_DIRECT_URL }}
+          RESTORE_URL: postgresql://restore:restore@localhost:5432/restore
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          OUT_DIR: backup
+        run: bash scripts/backup/backup-and-verify.sh | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the encrypted dump for 30 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-${{ github.run_id }}
+          path: backup/*.dump.gpg
+          retention-days: 30
+          if-no-files-found: error

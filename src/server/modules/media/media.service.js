@@ -1,6 +1,7 @@
 // Media: Cloudinary signed uploads, gallery actions for categories and projects
 // (each owner module keeps its own gallery table), and unused-asset cleanup.
 import "server-only";
+import { logger } from "@/server/logger";
 import { AppError } from "@/server/errors/app-error";
 import {
   createUploadParams,
@@ -240,7 +241,7 @@ export async function deleteAssetsIfUnused(assetIds) {
     // Local seed images ("/images/…") live in the repo; only Cloudinary files are destroyed.
     if (usage.publicId.startsWith("insta-mark/")) {
       destroyAsset(usage.publicId).catch((err) =>
-        console.error("[media] cloudinary destroy failed", usage.publicId, err),
+        logger.error({ err, publicId: usage.publicId }, "cloudinary destroy failed"),
       );
     }
   }

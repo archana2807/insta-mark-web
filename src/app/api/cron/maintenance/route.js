@@ -2,6 +2,8 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getEnv } from "@/server/config/env";
 import * as enquiryService from "@/server/modules/enquiries/enquiry.service";
+import { logger } from "@/server/logger";
+import { reportError } from "@/server/observability";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +26,10 @@ export async function GET(request) {
   try {
     const result = await enquiryService.runMaintenance();
     if ("skipped" in result) return NextResponse.json(result);
-    console.info("[maintenance]", JSON.stringify(result));
+    logger.info({ result }, "maintenance done");
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
-    console.error("[maintenance] failed", err);
+    reportError(err, "maintenance failed");
     return NextResponse.json({ ok: false, error: "maintenance failed" }, { status: 500 });
   }
 }

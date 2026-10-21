@@ -1,6 +1,7 @@
 // Audit trail for admin actions. log() never throws — a failed audit write must
 // not break the action the admin performed.
 import "server-only";
+import { logger } from "@/server/logger";
 import { AUDIT_PAGE_SIZE } from "@/shared/constants";
 import * as auditRepository from "./audit.repository";
 
@@ -38,7 +39,7 @@ export async function log(actor, action, entity, entityId, changes) {
       changes: changes && Object.keys(changes).length ? changes : undefined,
     });
   } catch (err) {
-    console.error("[audit] write failed", action, entity, entityId, err);
+    logger.error({ err, action, entity, entityId }, "audit write failed");
   }
 }
 

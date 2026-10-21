@@ -7,6 +7,8 @@ import { ERRORS, errorMessage, resultMessage } from "../../src/shared/errors.js"
 import { parseEnv } from "../../src/server/config/env.js";
 
 const { AppError, attempt, toErrorResult } = await import("../../src/server/errors/app-error.js");
+const { logger } = await import("../../src/server/logger.js");
+const { reporters } = await import("../../src/server/observability.js");
 const ROOT = new URL("../..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 
 test("catalog holds every code from 2-ARCHITECTURE §9 with its status and message", () => {
@@ -58,8 +60,11 @@ test("AppError becomes { ok: false, code } (or a field error) for the user", () 
   assert.throws(() => new AppError("MADE_UP_CODE"), /Unknown error code/);
 });
 
-test("an unexpected error is logged in full but the user only gets INTERNAL_ERROR", async () => {
-  const logged = mock.method(console, "error", () => {});
+test("an unexpected error is logged and sent to Sentry; the user only gets INTERNAL_ERROR", async () => {
+  const sent = [];
+  const logged = mock.method(logger, "error", () => {});
+  const original = reporters.sentry;
+  reporters.sentry = (err) => sent.push(err);
   try {
     const secret = new Error("connect ECONNREFUSED db.internal:5432 password=hunter2");
     const result = await attempt(async () => {
@@ -68,8 +73,28 @@ test("an unexpected error is logged in full but the user only gets INTERNAL_ERRO
     assert.deepEqual(result, { ok: false, code: "INTERNAL_ERROR" });
     assert.ok(!JSON.stringify(result).includes("hunter2"));
     assert.equal(logged.mock.callCount(), 1);
-    assert.equal(logged.mock.calls[0].arguments[1], secret);
+    assert.equal(logged.mock.calls[0].arguments[0].err, secret);
+    assert.deepEqual(sent, [secret]);
   } finally {
+    reporters.sentry = original;
+    logged.mock.restore();
+  }
+});
+
+test("expected (catalog) errors are not sent to Sentry or logged as errors", async () => {
+  const sent = [];
+  const logged = mock.method(logger, "error", () => {});
+  const original = reporters.sentry;
+  reporters.sentry = (err) => sent.push(err);
+  try {
+    const result = await attempt(async () => {
+      throw new AppError("FAQ_NOT_FOUND");
+    });
+    assert.deepEqual(result, { ok: false, code: "FAQ_NOT_FOUND" });
+    assert.deepEqual(sent, []);
+    assert.equal(logged.mock.callCount(), 0);
+  } finally {
+    reporters.sentry = original;
     logged.mock.restore();
   }
 });

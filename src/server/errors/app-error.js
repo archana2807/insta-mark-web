@@ -2,6 +2,7 @@
 // attempt(): how controllers turn any error into a safe result. Unexpected errors
 // are logged in full here and never reach the user.
 import "server-only";
+import { reportError } from "@/server/observability";
 import { unstable_rethrow } from "next/navigation";
 import { ERRORS, errorMessage } from "@/shared/errors";
 
@@ -33,7 +34,7 @@ export function toErrorResult(err) {
       ? { ok: false, code: err.code, fieldErrors: err.fieldErrors }
       : { ok: false, code: err.code };
   }
-  console.error("[error] unexpected", err);
+  reportError(err); // logs + Sentry; the user only gets the safe catalog message
   return { ok: false, code: "INTERNAL_ERROR" };
 }
 

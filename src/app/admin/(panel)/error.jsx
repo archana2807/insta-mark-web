@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { reportClientError } from "@/lib/sentry-client";
 import { errorMessage } from "@/shared/errors";
 
 /**
@@ -8,6 +10,11 @@ import { errorMessage } from "@/shared/errors";
  * @param {{ error: Error & { digest?: string }, reset: () => void }} props
  */
 export default function AdminError({ error, reset }) {
+  // Report to Sentry (a no-op unless NEXT_PUBLIC_SENTRY_DSN is set).
+  useEffect(() => {
+    reportClientError(error);
+  }, [error]);
+
   return (
     <div className="admin-card" role="alert">
       <h1 className="h2">This section could not be loaded</h1>

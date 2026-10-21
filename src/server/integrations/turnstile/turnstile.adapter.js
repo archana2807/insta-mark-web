@@ -6,6 +6,7 @@
 // with a warning — losing a real B2B lead costs more than one spam message,
 // and honeypot + rate limiting still apply.
 import "server-only";
+import { logger } from "@/server/logger";
 import { getEnv } from "@/server/config/env";
 
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -36,12 +37,12 @@ export async function verifyTurnstile(token, remoteIp) {
     try {
       const data = await callSiteverify(body);
       if (data.success === true) return "valid";
-      console.warn("[turnstile] token rejected", data["error-codes"]);
+      logger.warn({ codes: data["error-codes"] }, "turnstile token rejected");
       return "invalid";
     } catch (err) {
-      console.error(
-        `[turnstile] siteverify unreachable (attempt ${attempt})`,
-        err?.cause?.code ?? err.message,
+      logger.error(
+        { attempt, reason: err?.cause?.code ?? err.message },
+        "turnstile siteverify unreachable",
       );
     }
   }

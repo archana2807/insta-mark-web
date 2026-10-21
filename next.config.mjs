@@ -1,8 +1,14 @@
 import { fileURLToPath } from "node:url";
+import { withSentryConfig } from "@sentry/nextjs";
 import { getEnv } from "./src/server/config/env.js";
 
 // Refuse to build or start with a missing or invalid environment (R-11.8).
-getEnv();
+const env = getEnv();
+
+// The browser may report errors to Sentry only when the browser DSN is set (D6).
+const sentryIngest = env.NEXT_PUBLIC_SENTRY_DSN
+  ? ` https://${new URL(env.NEXT_PUBLIC_SENTRY_DSN).host}`
+  : "";
 
 const isDev = process.env.NODE_ENV !== "production";
 // Pin the workspace root: a stray lockfile in a parent folder otherwise makes
@@ -18,7 +24,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://www.googletagmanager.com https://*.google-analytics.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://challenges.cloudflare.com https://api.cloudinary.com",
+  `connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://challenges.cloudflare.com https://api.cloudinary.com${sentryIngest}`,
   "frame-src https://www.google.com https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
@@ -38,6 +44,8 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   outputFileTracingRoot: projectRoot,
+  // pino uses worker threads and dynamic requires; load it from node_modules.
+  serverExternalPackages: ["pino"],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
@@ -53,4 +61,18 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Source maps go to Sentry only when the upload is configured (Vercel build); otherwise
+// the build is exactly as before.
+const uploadSourceMaps = Boolean(env.SENTRY_AUTH_TOKEN && env.SENTRY_ORG && env.SENTRY_PROJECT);
+
+export default uploadSourceMaps
+  ? withSentryConfig(nextConfig, {
+      org: env.SENTRY_ORG,
+      project: env.SENTRY_PROJECT,
+      authToken: env.SENTRY_AUTH_TOKEN,
+      silent: true,
+      telemetry: false,
+      widenClientFileUpload: true,
+      sourcemaps: { deleteSourcemapsAfterUpload: true },
+    })
+  : nextConfig;

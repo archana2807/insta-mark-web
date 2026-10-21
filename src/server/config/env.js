@@ -39,6 +39,16 @@ const schema = z.object({
 
   NEXT_PUBLIC_GA_ID: optional(z.string()),
 
+  LOG_LEVEL: optional(z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])),
+
+  // Error tracking (D6): on only when the DSNs are set.
+  SENTRY_DSN: optional(z.string().url()),
+  NEXT_PUBLIC_SENTRY_DSN: optional(z.string().url()),
+  // Source-map upload at build time (optional).
+  SENTRY_AUTH_TOKEN: optional(z.string()),
+  SENTRY_ORG: optional(z.string()),
+  SENTRY_PROJECT: optional(z.string()),
+
   CLOUDINARY_CLOUD_NAME: optional(z.string()),
   CLOUDINARY_API_KEY: optional(z.string()),
   CLOUDINARY_API_SECRET: optional(z.string()),
@@ -63,6 +73,8 @@ const INTEGRATIONS = {
   "Enquiry email (Resend)": ["RESEND_API_KEY", "ENQUIRY_NOTIFY_EMAILS"],
   "Spam check (Turnstile)": ["NEXT_PUBLIC_TURNSTILE_SITE_KEY", "TURNSTILE_SECRET_KEY"],
   "Images (Cloudinary)": ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"],
+  "Error tracking (Sentry)": ["SENTRY_DSN", "NEXT_PUBLIC_SENTRY_DSN"],
+  "Sentry source maps": ["SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"],
 };
 
 /**
@@ -110,6 +122,8 @@ export function getEnv() {
   if (errors.length) {
     throw new Error(`Invalid environment:\n  - ${errors.join("\n  - ")}\nSee .env.example.`);
   }
+  // console, not the logger: this runs in next.config.mjs and Edge code, and the
+  // logger itself reads LOG_LEVEL from here.
   for (const w of warnings) console.warn(`[env] ${w}`);
   cachedEnv = env;
   return env;

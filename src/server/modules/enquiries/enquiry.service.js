@@ -1,6 +1,7 @@
 // Enquiries: the public form (validate → store → email), the admin follow-up,
 // the CSV export, dashboard numbers and the daily maintenance job.
 import "server-only";
+import { logger } from "@/server/logger";
 import { after } from "next/server";
 import { AppError } from "@/server/errors/app-error";
 import { ENQUIRY_PAGE_SIZE } from "@/shared/constants";
@@ -44,7 +45,7 @@ async function isRateLimited(ipHash) {
   try {
     return await rateLimitService.isRateLimited(`enquiry:${ipHash}`, RATE_LIMIT);
   } catch (err) {
-    console.error("[enquiry] rate limit check failed", err);
+    logger.error({ err }, "enquiry rate limit check failed");
     return false;
   }
 }
@@ -95,7 +96,7 @@ export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileTo
   if (isTurnstileEnabled()) {
     const verdict = await verifyTurnstile(turnstileToken, ip);
     if (verdict === "unavailable") {
-      console.warn("[enquiry] accepted without Turnstile check (Cloudflare unreachable)");
+      logger.warn("enquiry accepted without Turnstile check (Cloudflare unreachable)");
     }
     if (verdict === "invalid") throw new AppError("CAPTCHA_FAILED");
   }
@@ -113,7 +114,7 @@ export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileTo
         userAgent,
       });
     } catch (err) {
-      console.error("[enquiry] database save failed", err);
+      logger.error({ err }, "enquiry database save failed");
     }
   }
 
@@ -124,16 +125,16 @@ export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileTo
       emailed = true;
       if (saved) await enquiryRepository.markNotified(saved.id);
     } catch (err) {
-      console.error("[enquiry] notification email failed", saved?.id ?? "(not saved)", err);
+      logger.error({ err, enquiryId: saved?.id ?? null }, "enquiry notification email failed");
     }
   }
 
   if (!saved && !emailed) {
     // Never pretend success in production if the lead went nowhere.
     if (getEnv().NODE_ENV === "production") throw new AppError("ENQUIRY_NOT_SAVED");
-    console.warn(
-      "[enquiry] DATABASE_URL and RESEND_API_KEY are not configured — enquiry logged only (dev):",
-      { ...data, category: categorySlug },
+    logger.warn(
+      { requirement: data.requirement ?? null, category: categorySlug ?? null },
+      "enquiry not stored: DATABASE_URL and RESEND_API_KEY are not configured (dev only)",
     );
   }
 
@@ -144,7 +145,7 @@ export async function submitEnquiry({ honeypot, fillMs, raw, parsed, turnstileTo
       try {
         await sendEnquiryAutoReply(data);
       } catch (err) {
-        console.error("[enquiry] auto-reply email failed", saved?.id ?? "(not saved)", err);
+        logger.error({ err, enquiryId: saved?.id ?? null }, "enquiry auto-reply email failed");
       }
     });
   }
@@ -282,7 +283,7 @@ async function retryNotifications() {
       await enquiryRepository.markNotified(enquiry.id);
       sent++;
     } catch (err) {
-      console.error("[maintenance] retry failed", enquiry.id, err);
+      logger.error({ err, enquiryId: enquiry.id }, "notification retry failed");
     }
   }
   return { pending: pending.length, sent };

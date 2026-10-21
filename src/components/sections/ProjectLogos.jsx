@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Reveal from "@/components/ui/Reveal";
 
 /**
  * Row of project logos right under the home banner (Crafto "Branding Agency" look).
@@ -10,7 +11,7 @@ export default function ProjectLogos({ logos }) {
   return (
     <section className="project-logos" aria-label="Projects we have worked on">
       <div className="container">
-        <ul className="project-logos__list list-unstyled mb-0">
+        <Reveal as="ul" stagger={150} className="project-logos__list list-unstyled mb-0">
           {logos.map((logo) => (
             <li key={logo.name}>
               <Image
@@ -18,11 +19,11 @@ export default function ProjectLogos({ logos }) {
                 alt={`${logo.name} logo`}
                 width={logo.width}
                 height={logo.height}
-                sizes="160px"
+                sizes="190px"
               />
             </li>
           ))}
-        </ul>
+        </Reveal>
       </div>
     </section>
   );

@@ -12,16 +12,46 @@
 
   h1 {
     margin-bottom: 1rem;
+    // Theme: a tight, slightly smaller display size (70 px on wide screens).
+    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.375rem);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
 
     @include media-breakpoint-up(lg) {
-      margin-right: -12%; // theme: headline overlaps toward the image
+      // Theme: the headline runs past its column onto the photo.
+      margin-right: -10vw;
       position: relative;
       z-index: 2;
     }
   }
 
-  // Tagline under the H1 (client feedback 21 Oct 2026): clearly smaller than the H1,
-  // larger than the intro text.
+  // Tagline as the theme's vertical label (wide screens only, like the theme).
+  &__vertical {
+    display: none;
+
+    @include media-breakpoint-up(xl) {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      flex-shrink: 0;
+      margin: 0 3.5rem 0 0;
+      // Left side before the 180° turn = right side on screen: text, gap, then the line
+      // next to the headline, as in the theme.
+      padding-left: 2.75rem;
+      border-left: 1px solid $line;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg); // reads bottom to top
+      font-family: $headings-font-family;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: $ink;
+    }
+  }
+
+  // Below 1200 px the vertical label is hidden, so the tagline is a line under the H1:
+  // clearly smaller than the H1, larger than the intro text.
   &__tagline {
     margin-bottom: 1.5rem;
     font-family: $headings-font-family;
@@ -30,6 +60,10 @@
     line-height: 1.25;
     letter-spacing: -0.02em;
     color: $ink;
+
+    @include media-breakpoint-up(xl) {
+      display: none;
+    }
   }
 
   &__media {

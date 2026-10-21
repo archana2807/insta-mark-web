@@ -138,10 +138,12 @@
   }
 }
 
-// ── About collage (3 overlapping images) ───────────────
+// ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
+// Three portrait photos of different sizes: a small one top-left, a taller one top-right
+// and the biggest in front at the bottom, with soft wide shadows.
 .about-collage {
   position: relative;
-  min-height: 540px;
+  aspect-ratio: 725 / 740;
 
   // The wipe entrance (_motion.scss, loaded later) sets `position: relative` on the same
   // element; the extra specificity keeps the photos laid out as an overlapping collage.
@@ -150,9 +152,8 @@
   }
 
   &__item {
-    position: absolute;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba($ink, 0.14);
+    box-shadow: 0 40px 80px rgba($ink, 0.14);
 
     img {
       object-fit: cover;
@@ -160,29 +161,25 @@
 
     &:nth-child(1) {
       left: 0;
-      top: 8%;
-      width: 44%;
-      aspect-ratio: 3 / 4;
+      top: 2.7%;
+      width: 38.6%;
+      aspect-ratio: 4 / 5;
     }
 
     &:nth-child(2) {
-      right: 4%;
+      left: 55%;
       top: 0;
-      width: 50%;
-      aspect-ratio: 4 / 3;
+      width: 45%;
+      aspect-ratio: 5 / 6;
     }
 
     &:nth-child(3) {
-      left: 22%;
-      bottom: 0;
-      width: 48%;
-      aspect-ratio: 4 / 5;
+      left: 21.5%;
+      top: 24.3%;
+      width: 52.5%;
+      aspect-ratio: 2 / 3;
       z-index: 2;
     }
-  }
-
-  @include media-breakpoint-down(md) {
-    min-height: 420px;
   }
 }
 
@@ -870,4 +867,10 @@
 // ── Home: short about strip ────────────────────────────
 .about-short {
   border-bottom: 1px solid $line;
+
+  &__title {
+    font-size: clamp(2rem, 1.3rem + 2vw, 3.25rem);
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
 }

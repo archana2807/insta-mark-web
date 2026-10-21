@@ -98,6 +98,9 @@ test("home About: three overlapping photos on the left, the company text on the 
   const about = page.locator("#about-title").locator("xpath=ancestor::section[1]");
   const imgs = about.locator(".about-collage__item img");
   await expect(imgs).toHaveCount(3);
+  await expect(about.locator(".eyebrow")).toHaveText("About Insta Mark");
+  await expect(about.getByRole("link", { name: "More about us" })).toBeVisible();
+  await expect(about.getByRole("link", { name: "Our solutions" })).toBeVisible();
   const text = await about.locator("#about-title").boundingBox();
   const first = await about.locator(".about-collage").boundingBox();
   expect(first.x + first.width).toBeLessThanOrEqual(text.x + 1);
@@ -129,7 +132,11 @@ test("no small label above a headline on any public page (10b)", async ({ page }
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("h1").first()).toBeVisible();
-    await expect(page.locator(".eyebrow"), `${route} still has a small label`).toHaveCount(0);
+    // The only small label left is the one in the home About block, as in the theme.
+    const labels = await page
+      .locator(".eyebrow")
+      .evaluateAll((els) => els.filter((el) => !el.closest(".about-short")).length);
+    expect(labels, `${route} still has a small label`).toBe(0);
   }
 });
 

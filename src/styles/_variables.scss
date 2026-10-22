@@ -38,7 +38,7 @@ $headings-font-family: var(--font-grotesk), var(--font-inter), sans-serif;
 $headings-font-weight: 600;
 $headings-line-height: 1.1;
 $font-size-base: 1rem;
-$line-height-base: 1.75;
+$line-height-base: 1.875; // reference body text: 16 px / 30 px
 
 $border-color: $line;
 $border-radius: 0;
@@ -48,12 +48,12 @@ $border-radius-xl: 0;
 $border-radius-pill: 50rem;
 
 $btn-font-family: var(--font-grotesk), sans-serif;
-$btn-font-weight: 500;
+$btn-font-weight: 400; // reference buttons: Space Grotesk 16 px, regular
 $btn-padding-y: 0.85rem;
 $btn-padding-x: 1.75rem;
 $btn-padding-y-lg: 1.05rem;
 $btn-padding-x-lg: 2.25rem;
-$btn-font-size-lg: 1.05rem;
+$btn-font-size-lg: 1rem;
 
 $input-padding-y: 0.85rem;
 $input-padding-x: 1.1rem;

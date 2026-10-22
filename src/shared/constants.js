@@ -24,6 +24,7 @@ export const IMAGE_TYPES = ["CATALOGUE", "EXECUTED"];
  * client's design team; `min*` is the smallest upload we accept.
  */
 export const BANNER = {
+  maxSlides: 3, // the home banner is a slider of 1–3 slides (task 10h)
   breakpoint: 992, // desktop image from this width up (Bootstrap lg)
   desktop: {
     width: 1920,

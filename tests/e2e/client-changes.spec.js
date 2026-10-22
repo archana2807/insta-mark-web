@@ -93,7 +93,7 @@ test.afterAll(async () => {
 
 // ── Banner ────────────────────────────────────────────────────────────
 
-test("editors open /admin/banner: sizes for the client and both upload slots", async ({ page }) => {
+test("editors open /admin/banner: sizes for the client and the add-a-slide button", async ({ page }) => {
   await login(page);
   const nav = page.getByRole("navigation", { name: "Admin" }).first();
   await nav.getByRole("link", { name: "Home banner" }).click();
@@ -101,8 +101,9 @@ test("editors open /admin/banner: sizes for the client and both upload slots", a
   const sizes = page.locator("table.admin-table");
   await expect(sizes).toContainText("1920 × 1720 px");
   await expect(sizes).toContainText("1080 × 1080 px");
-  await expect(page.locator("[data-banner-slot=desktop]")).toContainText("No desktop banner yet");
-  await expect(page.locator("[data-banner-slot=mobile]")).toContainText("No mobile banner yet");
+  // Nothing uploaded yet: the page offers to add the first slide.
+  await expect(page.getByText("No slides yet")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add a slide" })).toBeVisible();
   // No Cloudinary keys in tests: the page says so instead of showing a broken upload.
   await expect(page.getByText("Banner uploads need Cloudinary")).toBeVisible();
 });
@@ -118,7 +119,8 @@ test("the banner shows desktop on wide screens and mobile on phones; remove fall
   browser,
   page,
 }) => {
-  // Two seeded photos stand in for the client's banner files (uploads need Cloudinary).
+  // Two seeded photos stand in for the client's banner files (uploads need Cloudinary). The
+  // older single-banner shape is stored on purpose: it must still work as slide 1.
   const prisma = testPrisma();
   const [desktop, mobile] = await prisma.mediaAsset.findMany({
     where: { url: { not: featured.hero.src } },
@@ -139,12 +141,12 @@ test("the banner shows desktop on wide screens and mobile on phones; remove fall
   await login(page);
   await page.goto("/admin/banner");
   await expect(
-    page.locator(`[data-banner-slot=desktop] img[src*="${enc(desktop.url)}"]`),
+    page.locator(`[data-slide="0"] [data-banner-slot=desktop] img[src*="${enc(desktop.url)}"]`),
   ).toHaveCount(1);
   await expect(
-    page.locator(`[data-banner-slot=mobile] img[src*="${enc(mobile.url)}"]`),
+    page.locator(`[data-slide="0"] [data-banner-slot=mobile] img[src*="${enc(mobile.url)}"]`),
   ).toHaveCount(1);
-  await page.fill("#banner-alt", "Insta Mark wayfinding signage banner");
+  await page.fill("#banner-alt-0", "Insta Mark wayfinding signage banner");
   await page.getByRole("button", { name: "Save alt text", exact: true }).click();
   await expect(page.locator(".alert-success")).toBeVisible();
 
@@ -164,14 +166,14 @@ test("the banner shows desktop on wide screens and mobile on phones; remove fall
 
     // Remove mobile → phones get the desktop banner.
     page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Remove mobile banner" }).click();
-    await expect(page.locator("[data-banner-slot=mobile]")).toContainText("No mobile banner yet");
+    await page.getByRole("button", { name: "Remove mobile photo" }).click();
+    await expect(page.locator("[data-slide=\"0\"] [data-banner-slot=mobile]")).toContainText("No mobile banner yet");
     expect(await bannerSrc(phone)).toContain(enc(desktop.url));
 
     // Remove desktop too → the old photo is back everywhere.
     page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "Remove desktop banner" }).click();
-    await expect(page.locator("[data-banner-slot=desktop]")).toContainText("No desktop banner yet");
+    await page.getByRole("button", { name: "Remove desktop photo" }).click();
+    await expect(page.locator("[data-slide=\"0\"] [data-banner-slot=desktop]")).toContainText("No desktop banner yet");
     await wide.goto("/");
     await expect(wide.locator(".hero-split__media picture")).toHaveCount(0);
     expect(await bannerSrc(wide)).toContain(enc(featured.hero.src));

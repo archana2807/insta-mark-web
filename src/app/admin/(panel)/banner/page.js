@@ -1,10 +1,7 @@
 import { requireAuth } from "@/server/auth/session";
 import * as bannerService from "@/server/modules/banner/banner.service";
-import { saveBannerAlt } from "@/server/modules/banner/banner.controller";
 import { BANNER } from "@/shared/constants";
-import ActionForm from "@/components/admin/ActionForm";
 import BannerManager from "@/components/admin/BannerManager";
-import SubmitButton from "@/components/admin/SubmitButton";
 
 export const metadata = { title: "Home banner" };
 
@@ -15,14 +12,16 @@ const SIZE_ROWS = [
 
 export default async function BannerPage() {
   await requireAuth("content:write");
-  const banner = await bannerService.getForAdmin();
+  const slides = await bannerService.getForAdmin();
 
   return (
     <>
       <h1 className="mb-1">Home banner</h1>
       <p className="text-secondary mb-4">
-        The large image next to the home page headline. Upload one for wide screens and one for
-        phones; until then the website shows the current photo.
+        The large photo next to the home page headline. Add up to three slides, each with a photo
+        for wide screens and one for phones, and put them in the order you want. With one slide the
+        website shows a plain photo; with two or three it becomes a slider with a pause button.
+        Until you add a slide, the website shows its three current photos.
       </p>
 
       <div className="admin-card p-0">
@@ -57,28 +56,8 @@ export default async function BannerPage() {
         </div>
       </div>
 
-      <BannerManager
-        desktop={banner.desktop}
-        mobile={banner.mobile}
-        uploadsEnabled={bannerService.isUploadEnabled()}
-      />
-
-      <div className="admin-card" style={{ maxWidth: 720 }}>
-        <h2>Alt text</h2>
-        <ActionForm action={saveBannerAlt}>
-          <label htmlFor="banner-alt" className="form-label small fw-semibold">
-            Describe the banner image (read out by screen readers)
-          </label>
-          <input
-            id="banner-alt"
-            name="alt"
-            className="form-control mb-2"
-            defaultValue={banner.alt}
-            maxLength={255}
-            required
-          />
-          <SubmitButton className="btn btn-dark btn-sm">Save alt text</SubmitButton>
-        </ActionForm>
+      <div className="mt-4">
+        <BannerManager slides={slides} uploadsEnabled={bannerService.isUploadEnabled()} />
       </div>
     </>
   );

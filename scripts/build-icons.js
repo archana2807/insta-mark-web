@@ -119,6 +119,9 @@ const CLIENT_ICONS = [
   "people",
   "journal-text",
   "card-image",
+  "arrow-left",
+  "pause-fill",
+  "play-fill",
 ];
 
 // Icons drawn from CSS (::before/::after).

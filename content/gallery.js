@@ -571,6 +571,13 @@ export const featured = {
     gallery["modular-signs"][0],
     gallery["tailor-made-signage"][13],
   ],
+  // The home banner slider shows these three photos until the client's final ones are
+  // uploaded in Admin → Banner (task 10h).
+  heroSlides: [
+    gallery["tailor-made-signage"][0],
+    pick("tailor-made-signage", "branding-067.jpg"),
+    pick("tailor-made-signage", "branding-063.jpg"),
+  ],
   // Inner-page hero images (theme "About" layout: big image right of the title).
   pages: {
     about: pick("tailor-made-signage", "branding-071.jpg"),

@@ -108,7 +108,7 @@ ProjectForm (View, client component)
 | faqs | `faqs` | CRUD, home / category FAQs | audit |
 | industries | `industries` | read for pages (admin later) | — |
 | settings | `site_settings` | contact, socials, founding year | audit |
-| banner (new) | `site_settings` key `home.banner` | desktop + mobile banner | media, audit |
+| banner (new) | `site_settings` key `home.banner` | 1–3 slides, each with a desktop + mobile photo (the older single banner is read as slide 1) | media, audit |
 | media | `media_assets` | Cloudinary signing, verify upload, delete unused | cloudinary |
 | audit | `audit_logs` | write and list the log | — |
 | rate-limits | `rate_limits` | fixed-window limiter | — |
@@ -165,7 +165,8 @@ Since task 04 every action lives in `src/server/modules/<module>/<singular>.cont
 | `createClientLogo`, `updateClientLogo`, `deleteClientLogo` | `client-logos/client-logo.controller.js` | Editor, Admin | Client logos | F7 |
 | `saveFaq`, `deleteFaq` | `faqs/faq.controller.js` | Editor, Admin | FAQs | F7 |
 | `getBannerUploadSignature` | `banner/banner.controller.js` | Editor, Admin | Signed Cloudinary params for a desktop / mobile banner | F7 |
-| `saveBannerImage`, `removeBannerImage`, `saveBannerAlt` | `banner/banner.controller.js` | Editor, Admin | Home banner: verify upload + minimum size, store in `site_settings` `home.banner`, remove (fallback photo), alt text | F7 |
+| `saveBannerImage`, `removeBannerImage`, `saveBannerAlt` | `banner/banner.controller.js` | Editor, Admin | Home banner slide (task 10h: 1–3 slides, each with a `slide` index): verify upload + minimum size, store in `site_settings` `home.banner` = `{ slides: [...] }`, remove a photo, alt text | F7 |
+| `addBannerSlide`, `removeBannerSlide`, `moveBannerSlide` | `banner/banner.controller.js` | Editor, Admin | Add an empty slide (max 3), remove a slide and its unused photos, move a slide earlier/later | F7 |
 | `updateEnquiry` | `enquiries/enquiry.controller.js` | Editor, Admin | Status and owner | F8 |
 | `addEnquiryNote` | `enquiries/enquiry.controller.js` | Editor, Admin | Internal note | F8 |
 | `saveSettings` | `settings/setting.controller.js` | Admin | Contact, socials, founding year | F9 |

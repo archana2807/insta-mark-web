@@ -312,3 +312,58 @@ test("inner page heroes show no Home / page breadcrumb, but keep it for search e
     ).toBe(true);
   }
 });
+
+test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 2026 (10g)", async ({
+  page,
+}) => {
+  const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
+  await page.goto("/");
+
+  // Home hero: 70 px headline, 15 px vertical label, 16 px / 30 px text, 18 px menu.
+  const h1 = page.locator(".hero-split h1");
+  expect(await css(h1, "fontSize")).toBe("70px");
+  expect(await css(h1, "fontWeight")).toBe("600");
+  expect(await css(page.locator(".hero-split__vertical"), "fontSize")).toBe("15px");
+  const text = page.locator(".hero-split .lead-text");
+  expect(await css(text, "fontSize")).toBe("16px");
+  expect(await css(text, "lineHeight")).toBe("30px");
+  const nav = page.locator(".site-header .nav-link").first();
+  expect(await css(nav, "fontSize")).toBe("18px");
+  expect(await css(nav, "fontWeight")).toBe("600");
+
+  // Entrance: children rise 300 ms apart, over 600 ms (reference data-anime values).
+  const kids = page.locator(".hero-split .load-stagger > *");
+  expect(await css(kids.nth(1), "animationDelay")).toBe("0.3s");
+  expect(await css(kids.nth(1), "animationDuration")).toBe("0.6s");
+  // The photo zooms in slowly while it is revealed.
+  const zoom = page.locator(".hero-split__media .drift-fill img").first();
+  expect(await css(zoom, "animationName")).toBe("hero-zoom");
+  expect(await css(zoom, "animationDuration")).toBe("2.5s");
+
+  // About hero headline: 55 px / 55 px.
+  await page.goto("/about");
+  const about = page.locator(".inner-hero h1");
+  expect(await css(about, "fontSize")).toBe("55.008px");
+  expect(await css(about, "lineHeight")).toBe("55.008px");
+});
+
+test("the phone headline is 52.5 px like the reference and nothing overflows at 360 and 390 px (10g)", async ({
+  page,
+}) => {
+  for (const width of [360, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/");
+    const size = await page
+      .locator(".hero-split h1")
+      .evaluate((el) => getComputedStyle(el).fontSize);
+    expect(size).toBe("52.48px");
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow, `sideways scroll at ${width} px`).toBeLessThanOrEqual(0);
+  }
+  // As in the reference, the photo comes first on a phone, then the headline.
+  const photo = await page.locator(".hero-split__media").boundingBox();
+  const title = await page.locator(".hero-split h1").boundingBox();
+  expect(photo.y).toBeLessThan(title.y);
+});

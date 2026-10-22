@@ -67,7 +67,7 @@ export default function HomeHero({ hero, image, banner = null }) {
               </div>
             </div>
           </div>
-          <div className="col-lg-7">
+          <div className="col-lg-7 order-first order-lg-last">
             <div className="hero-split__media load-wipe">
               <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
                 {banner ? (

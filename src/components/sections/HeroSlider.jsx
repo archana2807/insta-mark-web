@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import Icon from "@/components/ui/ClientIcon";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 
@@ -13,14 +12,12 @@ const pad = (n) => String(n).padStart(2, "0");
 
 /**
  * Home banner slider (Crafto "Branding Agency"): the photos change by dragging (or swiping)
- * and by themselves; a round "‹ DRAG ›" cursor follows the mouse over the photo, and a
- * "01 ——— 03" counter with a progress line sits in the text column (`#hero-slider-counter`).
- *  - There is no control bar over the photo. Auto-play has a pause/play button next to the
- *    counter (WCAG 2.2.2) and pauses while the pointer is over the photo; it is off for
- *    prefers-reduced-motion.
- *  - Previous/next buttons exist for keyboard and screen-reader users: they appear when
- *    focused.
- *  - With one slide there is no slider and no controls: the photo is simply shown.
+ * and by themselves; a round "‹ DRAG ›" cursor follows the mouse over the photo. Nothing
+ * else is shown (the client asked for no control bar and no counter, 22 Oct 2026).
+ *  - Auto-play pauses while the mouse is over the photo and is off for prefers-reduced-motion.
+ *  - Pause/play, previous and next buttons exist for keyboard and screen-reader users; they
+ *    appear when focused (WCAG 2.1.1, 2.2.2).
+ *  - With one slide there is no slider: the photo is simply shown.
  *  - Only the active slide is exposed to assistive technology.
  * @param {{ slides: import("react").ReactNode[], label?: string }} props
  * @returns {JSX.Element}
@@ -30,14 +27,12 @@ export default function HeroSlider({ slides, label = "Featured work" }) {
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [hovering, setHovering] = useState(false);
-  const [counterTarget, setCounterTarget] = useState(null);
   const cursorRef = useRef(null);
   const dragStart = useRef(null);
 
   // Reduced motion: no automatic change; the visitor can still press play.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPlaying(false);
-    setCounterTarget(document.getElementById("hero-slider-counter"));
   }, []);
 
   useEffect(() => {
@@ -90,96 +85,70 @@ export default function HeroSlider({ slides, label = "Featured work" }) {
 
   if (count < 2) return drift(slides[0]);
 
-  const counter = (
-    <div className="hero-counter">
-      <button
-        type="button"
-        className="hero-counter__button"
-        aria-label={playing ? "Pause the slideshow" : "Play the slideshow"}
-        aria-pressed={!playing}
-        onClick={() => setPlaying((p) => !p)}
-      >
-        <Icon name={playing ? "pause-fill" : "play-fill"} />
-      </button>
-      <span className="hero-counter__count" aria-hidden="true">
-        {pad(active + 1)}
-      </span>
-      <span className="hero-counter__line" aria-hidden="true">
-        <span
-          className={`hero-counter__fill ${playing && !hovering ? "is-running" : ""}`}
-          style={{ "--interval": `${INTERVAL_MS}ms` }}
-          key={`${active}-${playing}-${hovering}`}
-        />
-      </span>
-      <span className="hero-counter__count" aria-hidden="true">
-        {pad(count)}
-      </span>
-      <span className="visually-hidden" aria-live="polite">
-        Slide {active + 1} of {count}
-      </span>
-    </div>
-  );
-
   return (
-    <>
-      <div
-        className="hero-slider"
-        role="group"
-        aria-roledescription="carousel"
-        aria-label={label}
-        onPointerDown={onPointerDown}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerMove={onPointerMove}
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
-      >
-        {drift(
-          <div className="hero-slider__slides" aria-live={playing ? "off" : "polite"}>
-            {slides.map((slide, i) => (
-              <div
-                className={`hero-slider__slide ${i === active ? "is-active" : ""}`}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${i + 1} of ${count}`}
-                inert={i !== active}
-                data-slide={i}
-                key={i}
-              >
-                {slide}
-              </div>
-            ))}
-          </div>,
-        )}
+    <div
+      className="hero-slider"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={label}
+      onPointerDown={onPointerDown}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onPointerMove={onPointerMove}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      {drift(
+        <div className="hero-slider__slides" aria-live={playing ? "off" : "polite"}>
+          {slides.map((slide, i) => (
+            <div
+              className={`hero-slider__slide ${i === active ? "is-active" : ""}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${count}`}
+              inert={i !== active}
+              data-slide={i}
+              key={i}
+            >
+              {slide}
+            </div>
+          ))}
+        </div>,
+      )}
 
-        {/* The round cursor (decorative). */}
-        <div className="hero-slider__cursor" ref={cursorRef} aria-hidden="true">
-          <span>‹ Drag ›</span>
-        </div>
-
-        {/* Keyboard and screen-reader controls: hidden until focused. */}
-        <div className="hero-slider__keys">
-          <button
-            type="button"
-            className="hero-slider__button"
-            aria-label="Previous slide"
-            onClick={() => go(-1)}
-          >
-            <Icon name="arrow-left" />
-          </button>
-          <button
-            type="button"
-            className="hero-slider__button"
-            aria-label="Next slide"
-            onClick={() => go(1)}
-          >
-            <Icon name="arrow-right" />
-          </button>
-        </div>
+      {/* The round cursor (decorative). */}
+      <div className="hero-slider__cursor" ref={cursorRef} aria-hidden="true">
+        <span>‹ Drag ›</span>
       </div>
-      {/* Outside the slider element: React events bubble through portals, and pointer events on
-        the counter must not count as "over the photo". */}
-      {counterTarget ? createPortal(counter, counterTarget) : null}
-    </>
+
+      {/* Keyboard and screen-reader controls: hidden until focused. */}
+      <div className="hero-slider__keys">
+        <button
+          type="button"
+          className="hero-slider__button"
+          aria-label={playing ? "Pause the slideshow" : "Play the slideshow"}
+          aria-pressed={!playing}
+          onClick={() => setPlaying((p) => !p)}
+        >
+          <Icon name={playing ? "pause-fill" : "play-fill"} />
+        </button>
+        <button
+          type="button"
+          className="hero-slider__button"
+          aria-label="Previous slide"
+          onClick={() => go(-1)}
+        >
+          <Icon name="arrow-left" />
+        </button>
+        <button
+          type="button"
+          className="hero-slider__button"
+          aria-label="Next slide"
+          onClick={() => go(1)}
+        >
+          <Icon name="arrow-right" />
+        </button>
+      </div>
+    </div>
   );
 }

@@ -312,3 +312,32 @@ test("inner page heroes show no Home / page breadcrumb, but keep it for search e
     ).toBe(true);
   }
 });
+
+test("the three collage photos have the reference's sizes, and the same size on every page (10c)", async ({
+  page,
+}) => {
+  const measure = async (route, scope) => {
+    await page.goto(route);
+    const items = page.locator(`${scope} .about-collage__item`);
+    await items.first().scrollIntoViewIfNeeded();
+    // offsetWidth/Height ignore the scroll drift movement.
+    return items.evaluateAll((els) => els.map((el) => [el.offsetWidth, el.offsetHeight]));
+  };
+  const home = await measure("/", ".about-short");
+  const about = await measure("/about", "main");
+  const solution = await measure("/solutions/tailor-made-signage", "main");
+
+  // Reference layout sizes: 224×279, 261×313 and 305×375 (within a pixel or two).
+  const reference = [
+    [224, 279],
+    [261, 313],
+    [305, 375],
+  ];
+  for (const [i, [w, h]] of reference.entries()) {
+    expect(Math.abs(home[i][0] - w), `photo ${i + 1} width`).toBeLessThanOrEqual(3);
+    expect(Math.abs(home[i][1] - h), `photo ${i + 1} height`).toBeLessThanOrEqual(3);
+  }
+  // Identical on the other pages.
+  expect(about).toEqual(home);
+  expect(solution).toEqual(home);
+});

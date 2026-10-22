@@ -75,7 +75,10 @@ test.describe.serial("public site crawl", () => {
           continue;
         }
         if (!href.startsWith("/") || href.startsWith("//")) continue;
-        const [clean, hash] = href.split("#");
+        const [withQuery, hash] = href.split("#");
+        // A query string (e.g. /contact?requirement=…) is the same page with its canonical
+        // URL set to the plain path, so it is crawled once, as that path.
+        const clean = withQuery.split("?")[0];
         if (hash && clean === path && !info.ids.includes(hash))
           report.anchors.push(`${path} → ${href}`);
         if (!seen.includes(clean) && !clean.startsWith("/admin") && !clean.startsWith("/_next"))

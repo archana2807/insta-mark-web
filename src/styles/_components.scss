@@ -562,3 +562,15 @@
     }
   }
 }
+
+// ── Call to action band (solution and project pages): heading and text left, button right.
+.cta-band {
+  border-top: 1px solid $line;
+
+  &__title {
+    margin-bottom: 1rem;
+    font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+}

@@ -122,6 +122,10 @@ const CLIENT_ICONS = [
   "arrow-left",
   "pause-fill",
   "play-fill",
+  "person",
+  "telephone",
+  "chat-dots",
+  "geo-alt",
 ];
 
 // Icons drawn from CSS (::before/::after).

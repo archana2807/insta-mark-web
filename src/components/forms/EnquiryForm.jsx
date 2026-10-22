@@ -30,14 +30,21 @@ const FIELDS = [
 ];
 const LABELS = Object.fromEntries(FIELDS);
 
-function Field({ id, label, required, error, hint, extra, children }) {
+function Field({ id, label, required, error, hint, extra, icon, children }) {
   return (
     <div>
       <label htmlFor={id} className={`form-label ${required ? "required" : ""}`}>
         {label}
         {required && <span className="visually-hidden"> (required)</span>}
       </label>
-      {children}
+      {icon ? (
+        <div className="field-icon">
+          {children}
+          <ClientIcon name={icon} />
+        </div>
+      ) : (
+        children
+      )}
       {error && (
         <div id={`${id}-error`} className="invalid-feedback d-block">
           {error}
@@ -65,6 +72,7 @@ export default function EnquiryForm({
   defaultRequirement,
   categorySlug,
   idPrefix = "enq",
+  variant = "box",
 }) {
   const [state, formAction, pending] = useActionState(submitEnquiry, initialState);
   const pathname = usePathname();
@@ -179,7 +187,7 @@ export default function EnquiryForm({
       onBlur={onBlur}
       onChange={onChange}
       noValidate={enhanced}
-      className="enquiry-form"
+      className={`enquiry-form ${variant === "line" ? "enquiry-form--line" : ""}`.trim()}
     >
       <div aria-live="polite">
         {summaryVisible && (
@@ -220,7 +228,7 @@ export default function EnquiryForm({
 
       <div className="row g-4">
         <div className="col-md-6">
-          <Field id={fid("name")} label="Name" required error={err("name")}>
+          <Field id={fid("name")} label="Name" required error={err("name")} icon="person">
             <input
               id={fid("name")}
               name="name"
@@ -237,7 +245,7 @@ export default function EnquiryForm({
           </Field>
         </div>
         <div className="col-md-6">
-          <Field id={fid("company")} label="Company" error={err("company")}>
+          <Field id={fid("company")} label="Company" error={err("company")} icon="buildings">
             <input
               id={fid("company")}
               name="company"
@@ -254,6 +262,7 @@ export default function EnquiryForm({
           <Field
             id={fid("email")}
             label="Email"
+            icon="envelope"
             required
             error={err("email")}
             extra={
@@ -293,6 +302,7 @@ export default function EnquiryForm({
           <Field
             id={fid("phone")}
             label="Phone"
+            icon="telephone"
             required
             error={err("phone")}
             hint="Mobile or landline. Add the country code if outside India."
@@ -317,6 +327,7 @@ export default function EnquiryForm({
           <Field
             id={fid("projectLocation")}
             label="Project location"
+            icon="geo-alt"
             error={err("projectLocation")}
           >
             <input
@@ -356,6 +367,7 @@ export default function EnquiryForm({
           <Field
             id={fid("message")}
             label="Message"
+            icon="chat-dots"
             error={err("message")}
             extra={
               <div

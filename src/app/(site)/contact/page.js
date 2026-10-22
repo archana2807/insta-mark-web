@@ -14,11 +14,12 @@ export const metadata = pageMetadata({
 });
 
 export default async function ContactPage() {
-  const [page, site, categories, heroImage, home] = await Promise.all([
+  const [page, site, categories, heroImage, formPhoto, home] = await Promise.all([
     pageSectionService.getContactPageContent(),
     settingService.getSite(),
     categoryService.listCategories(),
     pageSectionService.getPageHeroImage("contact"),
+    pageSectionService.getPageHeroImage("contactForm"),
     pageSectionService.getHomeContent(),
   ]);
   const { address, mapEmbedUrl } = site.contact;
@@ -38,6 +39,7 @@ export default async function ContactPage() {
         text={`Share your requirement and our team will get back to you. Head office: ${[address.line1, address.city, address.state].filter(Boolean).join(", ")}.`}
         categories={categories}
         contact={site.contact}
+        photo={formPhoto}
       />
       {mapEmbedUrl && (
         <section aria-label="Office location">

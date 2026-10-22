@@ -1,0 +1,67 @@
+// Solution pages (client feedback, 21–22 Oct 2026; Crafto "Branding Agency" counter columns).
+import { test, expect } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+});
+
+test("What you get is shown as numbered columns, like the theme's counters (10e)", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const section = page.locator("#features-title").locator("xpath=ancestor::section[1]");
+  await expect(section.locator("#features-title")).toHaveText("What you get");
+
+  // One column per feature: the feature on top, a big number below, vertical rules between.
+  const columns = section.locator(".counter-cols > div");
+  const count = await columns.count();
+  expect(count).toBeGreaterThanOrEqual(4);
+  await expect(section.locator(".counter-cols dt").first()).toHaveText("Custom Design");
+  await expect(section.locator(".counter-cols dd .visually-hidden").first()).toHaveText("01");
+  await expect(section.locator(".check-list")).toHaveCount(0);
+  expect(await columns.first().evaluate((el) => getComputedStyle(el).borderRightWidth)).toBe("1px");
+
+  // The columns sit side by side on one row.
+  // (offsetTop ignores the entrance animation's movement.)
+  const tops = await columns.evaluateAll((els) => els.map((el) => el.offsetTop));
+  expect(new Set(tops).size).toBe(1);
+
+  // "Where it is used" follows as its own section.
+  const used = page.locator("#used-title");
+  await expect(used).toHaveText("Where it is used");
+  const a = await section.boundingBox();
+  const b = await used.boundingBox();
+  expect(b.y).toBeGreaterThan(a.y + a.height - 1);
+});
+
+test("Where it is used: three industry tiles on the left, every industry with a + icon on the right (10e)", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const section = page.locator("#used-title").locator("xpath=ancestor::section[1]");
+  const tiles = section.locator(".industry-tiles__tile");
+  await expect(tiles).toHaveCount(3);
+  await expect(tiles.first()).toContainText("Corporate offices");
+
+  // All industries from the client's text, each with a + icon.
+  const items = section.locator(".used-list li");
+  expect(await items.count()).toBeGreaterThanOrEqual(8);
+  await expect(items.first()).toContainText("Corporate offices");
+  await expect(items.first().locator("svg, .bi").first()).toBeVisible();
+
+  // Tiles on the left, list on the right.
+  const t = await section.locator(".industry-tiles").boundingBox();
+  const l = await section.locator(".used-list").boundingBox();
+  expect(t.x + t.width).toBeLessThanOrEqual(l.x + 1);
+});
+
+test("What you get stacks in two columns on a phone without sideways scroll (10e)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/solutions/tailor-made-signage");
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});

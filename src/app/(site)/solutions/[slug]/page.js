@@ -5,13 +5,15 @@ import Gallery from "@/components/sections/Gallery";
 import FaqSection from "@/components/sections/FaqSection";
 import EnquirySection from "@/components/sections/EnquirySection";
 import CategoryGrid from "@/components/sections/CategoryGrid";
+import { CounterGrid } from "@/components/sections/CounterColumns";
+import IndustryTiles from "@/components/sections/IndustryTiles";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
 import * as settingService from "@/server/modules/settings/setting.service";
 import { pageMetadata, serviceJsonLd } from "@/lib/seo";
-import { toList } from "@/lib/format";
+import { pad2, toList } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
 import BtnText from "@/components/ui/BtnText";
 
@@ -59,6 +61,17 @@ export default async function CategoryPage({ params }) {
     ),
   );
 
+  // Industries from the client's text; photos for the first three come from this solution's
+  // own work (executed first, then the catalogue, then the cover images).
+  const industries = toList(category.applications);
+  const usedPhotos = [
+    ...new Map(
+      [...category.executedImages, ...category.catalogueImages, ...category.heroImages].map(
+        (img) => [img.src, img],
+      ),
+    ).values(),
+  ].slice(0, 3);
+
   return (
     <>
       {/* 1. Write-up (client's content) with a real project photo */}
@@ -89,24 +102,40 @@ export default async function CategoryPage({ params }) {
         </div>
       </InnerHero>
 
-      {/* Key features + applications */}
-      <section className="section bg-surface" aria-labelledby="features-title">
+      {/* What you get — the theme's counter columns: feature on top, big number below */}
+      <section className="section pb-0" aria-labelledby="features-title">
         <div className="container">
-          <div className="row g-4 g-lg-5">
-            <Reveal className="col-lg-5">
-              <SectionHeading title={<span id="features-title">What you get</span>} />
-              <Reveal as="ul" effect="flip-y" stagger={150} className="check-list mt-4">
-                {category.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </Reveal>
-            </Reveal>
-            <Reveal className="col-lg-6 offset-lg-1" delay={120}>
-              <SectionHeading title="Where it is used" />
-              <p className="mt-4 mb-4">{category.applications}</p>
-              <Reveal as="ul" effect="flip-y" stagger={80} className="tag-list">
-                {toList(category.applications).map((a) => (
-                  <li key={a}>{a}</li>
+          <SectionHeading className="mb-6" title={<span id="features-title">What you get</span>} />
+          <CounterGrid
+            items={category.features.map((f, i) => ({ label: f, value: pad2(i + 1) }))}
+            colClass="col-6 col-lg"
+            arrow={false}
+          />
+        </div>
+      </section>
+
+      {/* Where it is used — photos for the top industries, all industries with + icons */}
+      <section className="section" aria-labelledby="used-title">
+        <div className="container">
+          <div className="row align-items-center g-4 g-lg-5">
+            <div className="col-lg-6">
+              <IndustryTiles
+                industries={industries.slice(0, 3)}
+                photos={usedPhotos}
+                label={`Top industries for ${category.name}`}
+              />
+            </div>
+            <Reveal className="col-lg-6">
+              <SectionHeading
+                title={<span id="used-title">Where it is used</span>}
+                text={category.applications}
+              />
+              <Reveal as="ul" effect="flip-y" stagger={80} className="used-list mt-5">
+                {industries.map((a) => (
+                  <li key={a}>
+                    <Icon name="plus-lg" />
+                    {a}
+                  </li>
                 ))}
               </Reveal>
             </Reveal>

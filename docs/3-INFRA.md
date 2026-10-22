@@ -86,5 +86,6 @@
 - [ ] Sentry and uptime alerts on — code ready (off until DSNs are set); needs a Sentry project + DSN in Vercel and an uptime monitor (§8)
 - [ ] Privacy policy approved by the client
 - [ ] Client facts confirmed (contact details, founding year); test data removed
+- [ ] **Footer sample data replaced:** the footer shows fake sample contact details and social links (`footerPlaceholders` in `content/site.js`) until the real ones are entered in Admin → Settings; enter all of them, then delete the placeholders
 - [ ] Lighthouse mobile ≥ 90 and LCP ≤ 2.5 s on production; axe 0 violations; no sideways scroll at 390 px
 

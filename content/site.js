@@ -43,3 +43,21 @@ export const mainNav = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
+
+// PLACEHOLDERS for the footer only (the developer asked for sample data on 22 Oct 2026, to be
+// replaced later). They are obviously fake (example.com is a reserved domain, the phone
+// number is all zeros) and are used ONLY by the footer when Admin → Settings has no value:
+// real values entered there replace them at once. They never reach the floating call and
+// WhatsApp buttons, the search-engine data or the Contact page, so nobody is sent to a fake
+// number. Replace them in Admin → Settings before launch (see docs/3-INFRA.md checklist).
+export const footerPlaceholders = {
+  phone: "+91 00000 00000",
+  email: "info@example.com",
+  addressLine1: "Plot 00, Sample Industrial Estate",
+  social: {
+    linkedin: "https://www.linkedin.com/",
+    instagram: "https://www.instagram.com/",
+    facebook: "https://www.facebook.com/",
+    youtube: "https://www.youtube.com/",
+  },
+};

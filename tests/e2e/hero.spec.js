@@ -171,8 +171,11 @@ test("the footer carries the call to action text on every page; no logo, no butt
     await expect(footer.getByRole("link", { name: /Contact Our Team/ })).toHaveCount(0);
     // Solutions and company links stay on the right.
     await expect(footer.getByText("Company", { exact: true })).toBeVisible();
-    // Social icons are shown only for links the client has set (none yet: hidden, not fake).
-    await expect(footer.locator(".site-footer__social")).toHaveCount(0);
+    // Contact details and four social icons (sample values until the client's are entered).
+    await expect(footer.getByRole("link", { name: "info@example.com" })).toBeVisible();
+    await expect(footer.getByText("Head office")).toBeVisible();
+    await expect(footer.locator(".site-footer__social a")).toHaveCount(4);
+    await expect(footer.getByRole("link", { name: "Insta Mark on LinkedIn" })).toBeVisible();
   }
 });
 

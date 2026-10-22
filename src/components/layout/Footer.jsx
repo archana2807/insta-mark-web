@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { telHref } from "@/lib/format";
+import { footerPlaceholders as sample } from "@/content/site";
 import Icon from "@/components/ui/Icon";
 
 const companyLinks = [
@@ -20,7 +21,8 @@ const socialNetworks = [
 /**
  * Site footer, the same on every page: the call to action (heading and text), contact
  * details and social icons on the left; solutions and company links on the right.
- * Contact details and social links that are not set stay hidden (R-1.5).
+ * Contact details and social links come from Admin → Settings; until they are set, obviously
+ * fake sample values (content/site.js `footerPlaceholders`) stand in for them in this footer.
  * @param {{ site: object, categories: { slug: string, name: string }[],
  *   cta: { title: string, text: string } }} props
  * @returns {JSX.Element}
@@ -28,10 +30,17 @@ const socialNetworks = [
 export default function Footer({ site, categories, cta }) {
   const { contact } = site;
   const year = new Date().getFullYear();
-  const address = [contact.address.line1, contact.address.city, contact.address.state]
+  const phone = contact.phone || sample.phone;
+  const email = contact.email || sample.email;
+  const address = [
+    contact.address.line1 || sample.addressLine1,
+    contact.address.city,
+    contact.address.state,
+  ]
     .filter(Boolean)
     .join(", ");
-  const socials = socialNetworks.filter((n) => site.social?.[n.key]);
+  const socialUrl = (key) => site.social?.[key] || sample.social[key];
+  const socials = socialNetworks.filter((n) => socialUrl(n.key));
 
   return (
     <footer className="site-footer pt-7 pb-4">
@@ -42,16 +51,16 @@ export default function Footer({ site, categories, cta }) {
             <p className="site-footer__text mb-6">{cta.text}</p>
 
             <div className="row g-4">
-              {contact.phone && (
+              {phone && (
                 <div className="col-sm-6">
                   <span className="site-footer__label">Call our office</span>
-                  <a href={telHref(contact.phone)}>{contact.phone}</a>
+                  <a href={telHref(phone)}>{phone}</a>
                 </div>
               )}
-              {contact.email && (
+              {email && (
                 <div className="col-sm-6">
                   <span className="site-footer__label">Send a message</span>
-                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                  <a href={`mailto:${email}`}>{email}</a>
                 </div>
               )}
               {address && (
@@ -67,7 +76,7 @@ export default function Footer({ site, categories, cta }) {
                     {socials.map((n) => (
                       <li key={n.key}>
                         <a
-                          href={site.social[n.key]}
+                          href={socialUrl(n.key)}
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Insta Mark on ${n.label}`}

@@ -1,6 +1,8 @@
 import InnerHero from "@/components/sections/InnerHero";
 import EnquirySection from "@/components/sections/EnquirySection";
 import FaqSection from "@/components/sections/FaqSection";
+import OfficeColumns from "@/components/sections/OfficeColumns";
+import { officePlaceholders } from "@/content/site";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
 import * as settingService from "@/server/modules/settings/setting.service";
@@ -22,7 +24,22 @@ export default async function ContactPage() {
     pageSectionService.getPageHeroImage("contactForm"),
     pageSectionService.getHomeContent(),
   ]);
-  const { mapEmbedUrl } = site.contact;
+  const { mapEmbedUrl, address, email, phone } = site.contact;
+  // The head office uses the real details from Admin → Settings once they are set; until
+  // then (and for the other offices) the sample data from content/site.js is shown.
+  const realAddress = address.line1
+    ? [address.line1, address.city, address.state].filter(Boolean).join(", ")
+    : null;
+  const [head, ...others] = officePlaceholders;
+  const offices = [
+    {
+      ...head,
+      address: realAddress ?? head.address,
+      email: email || head.email,
+      phone: phone || head.phone,
+    },
+    ...others,
+  ];
 
   return (
     <>
@@ -33,6 +50,7 @@ export default async function ContactPage() {
         lead={page.text}
         breadcrumbs={[{ label: "Contact", href: "/contact" }]}
       />
+      <OfficeColumns offices={offices} />
       <EnquirySection
         id="contact-form"
         title="Request a consultation"

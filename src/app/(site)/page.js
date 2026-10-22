@@ -42,7 +42,12 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. Banner + tagline */}
-      <HomeHero hero={home.hero} image={home.featured.hero} banner={home.banner} />
+      <HomeHero
+        hero={home.hero}
+        image={home.featured.hero}
+        slides={home.featured.heroSlides}
+        banner={home.banner}
+      />
 
       {/* Five project logos right under the banner */}
       <ProjectLogos logos={home.projectLogos.slice(0, 5)} />

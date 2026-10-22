@@ -27,28 +27,43 @@ function RollingNumber({ value }) {
 }
 
 /**
- * Theme counter columns: label on top, big number at the bottom, vertical
- * rules between columns. Only real, verifiable figures belong here.
+ * The theme's counter columns on their own: label on top, big number at the bottom,
+ * vertical rules between columns.
+ * @param {{ items: { label: string, value: string | number }[], colClass?: string,
+ *   arrow?: boolean }} props `colClass` sets the column width (Bootstrap classes);
+ *   `arrow` shows the small up arrow before each number.
+ * @returns {JSX.Element}
+ */
+export function CounterGrid({ items, colClass = "col-6 col-lg-3", arrow = true }) {
+  return (
+    <Reveal as="dl" stagger={200} className="row g-0 counter-cols mb-0">
+      {items.map((item) => (
+        <div className={colClass} key={item.label}>
+          <dt className="fw-medium">
+            <p>{item.label}</p>
+          </dt>
+          <dd className="mb-0">
+            <strong>
+              {arrow && <Icon name="arrow-up" />}
+              <RollingNumber value={item.value} />
+            </strong>
+          </dd>
+        </div>
+      ))}
+    </Reveal>
+  );
+}
+
+/**
+ * Theme counter columns as a page section. Only real, verifiable figures belong here.
+ * @param {{ items: { label: string, value: string | number }[] }} props
+ * @returns {JSX.Element}
  */
 export default function CounterColumns({ items }) {
   return (
     <section className="pb-7" aria-label="Insta Mark in numbers">
       <div className="container">
-        <Reveal as="dl" stagger={200} className="row g-0 counter-cols mb-0">
-          {items.map((item) => (
-            <div className="col-6 col-lg-3" key={item.label}>
-              <dt className="fw-medium">
-                <p>{item.label}</p>
-              </dt>
-              <dd className="mb-0">
-                <strong>
-                  <Icon name="arrow-up" />
-                  <RollingNumber value={item.value} />
-                </strong>
-              </dd>
-            </div>
-          ))}
-        </Reveal>
+        <CounterGrid items={items} />
       </div>
     </section>
   );

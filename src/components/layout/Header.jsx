@@ -35,7 +35,7 @@ export default function Header({ nav, solutionGroups }) {
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <nav className="navbar navbar-expand-lg" aria-label="Main">
-        <div className="container-fluid px-3 px-lg-5">
+        <div className="container-fluid">
           <BrandLogo />
 
           {/* Desktop navigation */}
@@ -92,7 +92,10 @@ export default function Header({ nav, solutionGroups }) {
           </ul>
 
           <div className="d-flex align-items-center gap-2 ms-auto ms-lg-0">
-            <Link href="/contact" className="btn btn-outline-ink d-none d-sm-inline-flex">
+            <Link
+              href="/contact"
+              className="btn btn-outline-ink header-cta d-none d-sm-inline-flex"
+            >
               <ClientIcon name="envelope" />
               <BtnText>Get a Quote</BtnText>
             </Link>

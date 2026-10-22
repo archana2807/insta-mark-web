@@ -13,9 +13,10 @@
   h1 {
     margin-bottom: 1rem;
     // Theme: a tight, slightly smaller display size (70 px on wide screens).
-    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.375rem);
-    line-height: 0.92;
-    letter-spacing: -0.055em;
+    // Reference: 70 px / 64 px / -4 px on wide screens, 52.5 px on phones.
+    font-size: clamp(3.28rem, 2.2rem + 3vw, 4.375rem);
+    line-height: 0.914;
+    letter-spacing: -0.057em;
 
     @include media-breakpoint-up(lg) {
       // Theme: the headline runs past its column onto the photo.
@@ -46,9 +47,9 @@
       writing-mode: vertical-rl;
       transform: rotate(180deg); // reads bottom to top
       font-family: $headings-font-family;
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 1px;
       text-transform: uppercase;
       color: $ink;
     }
@@ -72,7 +73,7 @@
 
   &__media {
     position: relative;
-    min-height: 380px;
+    min-height: 500px; // reference on phones: the photo first, about 500 px tall
     height: 100%;
 
     @include media-breakpoint-up(lg) {
@@ -884,9 +885,9 @@
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     font-family: $headings-font-family;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: 0.9375rem; // reference: 15 px, bold, 1 px letter-spacing
+    font-weight: 700;
+    letter-spacing: 1px;
     text-transform: uppercase;
     color: $ink;
 
@@ -900,10 +901,10 @@
     position: relative;
     z-index: 2;
     margin-bottom: 0;
-    // Theme About hero: about 57 px on a 1440 px screen.
-    font-size: clamp(2.2rem, 1.2rem + 2.6vw, 3.75rem);
-    line-height: 0.95;
-    letter-spacing: -0.05em;
+    // Reference About hero: 55 px / 55 px / -3 px on wide screens.
+    font-size: clamp(2.2rem, 1.4rem + 2.5vw, 3.438rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
 
     @include media-breakpoint-up(lg) {
       // Theme: the title runs past its column and lies on top of the photo. A soft light

@@ -28,8 +28,8 @@ $header-h-scrolled: 72px;
 
   .nav-link {
     font-family: $headings-font-family;
-    font-size: 1.05rem;
-    font-weight: 500;
+    font-size: 1.125rem; // reference menu: Space Grotesk 18 px, semibold
+    font-weight: 600;
     color: $ink;
 
     &:hover,

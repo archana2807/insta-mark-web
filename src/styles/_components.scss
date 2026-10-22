@@ -389,6 +389,9 @@
 // content column starts 63 px after it, the title is about 64 px, the fields are underlined
 // with an icon on the right and the button is black and full width, 68 px high.
 .enquiry-photo {
+  // No space above: on the Contact page the office columns sit between the banner and this
+  // section and carry the reference's 90 px gaps.
+
   &__media {
     position: relative;
     height: 320px;
@@ -397,7 +400,7 @@
 
     @include media-breakpoint-up(lg) {
       height: 100%;
-      min-height: 760px;
+      min-height: 620px; // reference photo height
     }
 
     img {
@@ -480,5 +483,82 @@
     width: 100%;
     min-height: 68px;
     justify-content: center;
+  }
+}
+
+// ── Office columns on the Contact page (Crafto contact page, measured 22 Oct 2026):
+// 90 px above and below (50 px on phones); title 30 px bold (22.5 px on phones); address
+// 16 px / 30 px grey; a hairline; "E:" and "T:" lines; "View on Google Map" in small caps.
+.offices {
+  padding-block: 50px;
+  overflow-x: clip; // the columns slide in from 30 px to the right; never widen the page
+
+  @include media-breakpoint-up(lg) {
+    padding-block: 90px;
+  }
+}
+
+.office {
+  max-width: 265px;
+
+  &__title {
+    margin-bottom: 0.25rem;
+    font-size: 1.40625rem;
+    font-weight: 700;
+    line-height: 1.49;
+    letter-spacing: -0.02em;
+
+    @include media-breakpoint-up(lg) {
+      font-size: 1.875rem;
+    }
+  }
+
+  &__address {
+    margin-bottom: 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid $line;
+  }
+
+  &__lines {
+    margin: 1.5rem 0 0.5rem;
+
+    > div {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    dt {
+      font-weight: 600;
+      color: $ink;
+    }
+
+    dd {
+      margin: 0;
+    }
+
+    a {
+      color: $body-text;
+
+      &:hover,
+      &:focus-visible {
+        color: $ink;
+      }
+    }
+  }
+
+  &__map {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: $headings-font-family;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $ink;
+
+    &:hover,
+    &:focus-visible {
+      color: $brand-teal;
+    }
   }
 }

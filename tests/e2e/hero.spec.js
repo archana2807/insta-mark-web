@@ -519,6 +519,25 @@ test("the contact form section follows the Crafto contact layout: photo left, ti
     parseFloat(await section.locator("h2").evaluate((el) => getComputedStyle(el).fontSize)),
   ).toBeGreaterThan(63);
 
+  // Between the banner and the form: the office columns, with the reference's 90 px gaps.
+  const heroBox = await page.locator(".inner-hero").boundingBox();
+  const offices = page.locator(".offices");
+  const officesBox = await offices.boundingBox();
+  expect(officesBox.y).toBeGreaterThanOrEqual(heroBox.y + heroBox.height - 1);
+  expect(media.y).toBeGreaterThanOrEqual(officesBox.y + officesBox.height - 1);
+  expect(await offices.evaluate((el) => getComputedStyle(el).paddingTop)).toBe("90px");
+  await expect(offices.locator(".office")).toHaveCount(3);
+  const first = offices.locator(".office").first();
+  expect(await first.locator("h2").evaluate((el) => getComputedStyle(el).fontSize)).toBe("30px");
+  await expect(first).toContainText("E:");
+  await expect(first).toContainText("T:");
+  await expect(first.getByRole("link", { name: /View on Google Map/ })).toHaveAttribute(
+    "href",
+    /google\.com\/maps/,
+  );
+  // Only the client's words: no sentence that is not in the content document.
+  await expect(section).not.toContainText("Share your requirement");
+
   // The client's wording is unchanged: every field and the button keep their labels.
   for (const label of [
     "Name",

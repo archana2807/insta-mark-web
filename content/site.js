@@ -61,3 +61,29 @@ export const footerPlaceholders = {
     youtube: "https://www.youtube.com/",
   },
 };
+
+// PLACEHOLDERS for the Contact page office columns (the developer asked for sample data on
+// 22 Oct 2026, like the reference's three offices). Obviously fake: example.com, all-zero
+// phone numbers, "Address line" text. The first column uses the real head-office address,
+// email and phone from Admin → Settings as soon as they are set. Replace or remove before
+// launch (docs/3-INFRA.md checklist).
+export const officePlaceholders = [
+  {
+    title: "Head Office",
+    address: "Address line 1, Area, Mumbai, Maharashtra 400000",
+    email: "info@example.com",
+    phone: "+91 00000 00000",
+  },
+  {
+    title: "Branch Office",
+    address: "Address line 1, Area, City, State 000000",
+    email: "sales@example.com",
+    phone: "+91 00000 00001",
+  },
+  {
+    title: "Factory",
+    address: "Address line 1, Industrial Area, City, State 000000",
+    email: "works@example.com",
+    phone: "+91 00000 00002",
+  },
+];

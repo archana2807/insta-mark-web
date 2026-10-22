@@ -22,7 +22,10 @@ for (const path of PAGES) {
       // The 404 page's own document request is expected to log a 404.
       if (m.type() === "error" && !/status of 404/.test(m.text())) errors.push(m.text());
     });
-    await page.goto(path, { waitUntil: "networkidle" });
+    // "load", not "networkidle": a page full of lazy photos (e.g. /projects on a phone) can
+    // keep image requests open on a slow CI runner, and width does not depend on them (every
+    // image has its width and height set). The scroll below still loads them all.
+    await page.goto(path, { waitUntil: "load" });
 
     let widest = 0;
     const height = await page.evaluate(() => document.body.scrollHeight);

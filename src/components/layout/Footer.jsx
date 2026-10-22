@@ -19,12 +19,12 @@ const socialNetworks = [
 ];
 
 /**
- * Site footer, the same on every page: the call to action (heading and text), contact
+ * Site footer, the same on every page: the call to action (heading only), contact
  * details and social icons on the left; solutions and company links on the right.
  * Contact details and social links come from Admin → Settings; until they are set, obviously
  * fake sample values (content/site.js `footerPlaceholders`) stand in for them in this footer.
  * @param {{ site: object, categories: { slug: string, name: string }[],
- *   cta: { title: string, text: string } }} props
+ *   cta: { title: string } }} props
  * @returns {JSX.Element}
  */
 export default function Footer({ site, categories, cta }) {
@@ -47,8 +47,7 @@ export default function Footer({ site, categories, cta }) {
       <div className="container">
         <div className="row g-4 g-lg-5">
           <div className="col-lg-6">
-            <h2 className="site-footer__title mb-4">{cta.title}</h2>
-            <p className="site-footer__text mb-6">{cta.text}</p>
+            <h2 className="site-footer__title mb-6">{cta.title}</h2>
 
             <div className="row g-4">
               {phone && (

@@ -20,6 +20,7 @@ const order = [
   "client-changes",
   "hero",
   "solution-pages",
+  "hero-slider",
 ];
 
 export default defineConfig({

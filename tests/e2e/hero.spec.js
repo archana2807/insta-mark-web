@@ -98,7 +98,7 @@ test("home About: three overlapping photos on the left, the company text on the 
   const about = page.locator("#about-title").locator("xpath=ancestor::section[1]");
   const imgs = about.locator(".about-collage__item img");
   await expect(imgs).toHaveCount(3);
-  await expect(about.locator(".eyebrow")).toHaveText("About Insta Mark");
+  await expect(about.locator("#about-title")).toHaveText(/Creating Signage/);
   await expect(about.getByRole("link", { name: "More about us" })).toBeVisible();
   await expect(about.getByRole("link", { name: "Our solutions" })).toBeVisible();
   const text = await about.locator("#about-title").boundingBox();
@@ -132,15 +132,8 @@ test("no small label above a headline on any public page (10b)", async ({ page }
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("h1").first()).toBeVisible();
-    // The only small labels left are on the home page: About and Our products, as in the theme.
-    const labels = await page
-      .locator(".eyebrow")
-      .evaluateAll(
-        (els) =>
-          els.filter(
-            (el) => !el.closest(".about-short, section[aria-labelledby='solutions-title']"),
-          ).length,
-      );
+    // No small label above any headline, on the home page too (client, 22 Oct 2026).
+    const labels = await page.locator(".eyebrow").count();
     expect(labels, `${route} still has a small label`).toBe(0);
   }
 });
@@ -220,10 +213,8 @@ test("home sections follow the client's order and look (10c)", async ({ page }) 
   expect(await wall.count()).toBeGreaterThanOrEqual(8);
   await expect(page.locator("#trusted-title")).toHaveText("Trusted by Leading Brands");
 
-  // Small label above the products heading, like the About block.
-  await expect(page.locator("section[aria-labelledby='solutions-title'] .eyebrow")).toHaveText(
-    "Our products",
-  );
+  // Products: the heading is "Our products", with its description and no small label above.
+  await expect(page.locator("#solutions-title")).toHaveText("Our products");
 });
 
 test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({

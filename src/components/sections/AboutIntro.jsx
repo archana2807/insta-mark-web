@@ -1,14 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
-import Eyebrow from "@/components/ui/Eyebrow";
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
+import AboutCollage from "@/components/sections/AboutCollage";
 import BtnText from "@/components/ui/BtnText";
 
 /**
  * Home "about" (Crafto "Branding Agency" layout): three overlapping photos on the left,
- * label, heading, short paragraph and two buttons on the right.
- * @param {{ about: { eyebrow: string, title: string, short: string },
+ * heading, short paragraph and two buttons on the right.
+ * @param {{ about: { title: string, short: string },
  *   images: { src: string, alt: string }[] }} props
  * @returns {JSX.Element}
  */
@@ -18,16 +17,9 @@ export default function AboutIntro({ about, images }) {
       <div className="container">
         <div className="row align-items-center g-4 g-lg-5">
           <div className="col-lg-6">
-            <div className="about-collage">
-              {images.slice(0, 3).map((img, i) => (
-                <Reveal effect="wipe" delay={i * 200} className="about-collage__item" key={img.src}>
-                  <Image src={img.src} alt={img.alt} fill sizes="(min-width: 992px) 25vw, 50vw" />
-                </Reveal>
-              ))}
-            </div>
+            <AboutCollage images={images} />
           </div>
           <Reveal className="col-lg-5 offset-lg-1">
-            <Eyebrow>{about.eyebrow}</Eyebrow>
             <h2 id="about-title" className="about-short__title mb-4">
               {about.title}
             </h2>

@@ -83,8 +83,8 @@ test("by default the banner is a slider of the three current photos with a 01 â€
   const slider = page.locator(".hero-slider");
   await expect(slider).toBeVisible();
   await expect(slider.locator(".hero-slider__slide")).toHaveCount(3);
-  await expect(slider.locator(".hero-slider__count").first()).toHaveText("01");
-  await expect(slider.locator(".hero-slider__count").last()).toHaveText("03");
+  await expect(page.locator(".hero-counter__count").first()).toHaveText("01");
+  await expect(page.locator(".hero-counter__count").last()).toHaveText("03");
   expect(await activeSlide(page)).toBe("0");
 
   // The first photo is the priority image; the others load lazily.
@@ -97,17 +97,23 @@ test("by default the banner is a slider of the three current photos with a 01 â€
   await expect(slider.locator(".hero-slider__slide[inert]")).toHaveCount(2);
 });
 
-test("the arrows change the slide; the headline and tagline stay the same", async ({ page }) => {
+test("the keyboard arrows change the slide; the headline and tagline stay the same", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Next slide" }).click();
+  const press = async (name) => {
+    await page.getByRole("button", { name }).focus();
+    await page.keyboard.press("Enter");
+  };
+  await press("Next slide");
   await expect.poll(() => activeSlide(page)).toBe("1");
-  await expect(page.locator(".hero-slider__count").first()).toHaveText("02");
-  await page.getByRole("button", { name: "Next slide" }).click();
+  await expect(page.locator(".hero-counter__count").first()).toHaveText("02");
+  await press("Next slide");
   await expect.poll(() => activeSlide(page)).toBe("2");
-  await page.getByRole("button", { name: "Next slide" }).click();
+  await press("Next slide");
   await expect.poll(() => activeSlide(page)).toBe("0"); // wraps round
-  await page.getByRole("button", { name: "Previous slide" }).click();
+  await press("Previous slide");
   await expect.poll(() => activeSlide(page)).toBe("2");
 
   await expect(page.locator("h1")).toHaveCount(1);
@@ -157,7 +163,8 @@ test("with one slide there is no slider and no counter, just the photo (10h)", a
   await page.goto("/");
   await expect(page.locator(".hero-split__media picture")).toHaveCount(1);
   await expect(page.locator(".hero-slider")).toHaveCount(0);
-  await expect(page.locator(".hero-slider__controls")).toHaveCount(0);
+  await expect(page.locator(".hero-counter")).toHaveCount(0);
+  await expect(page.locator(".hero-slider__cursor")).toHaveCount(0);
 });
 
 test("admin: two slides make a slider, the order can be changed, an empty slide is skipped", async ({
@@ -174,7 +181,7 @@ test("admin: two slides make a slider, the order can be changed, an empty slide 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator(".hero-slider__slide")).toHaveCount(2);
-  await expect(page.locator(".hero-slider__count").last()).toHaveText("02");
+  await expect(page.locator(".hero-counter__count").last()).toHaveText("02");
   const firstSrc = () =>
     page
       .locator('.hero-slider__slide[data-slide="0"] img')
@@ -202,4 +209,56 @@ test("admin: two slides make a slider, the order can be changed, an empty slide 
   await page.locator('[data-slide="2"]').getByRole("button", { name: "Remove slide" }).click();
   await expect(page.locator('[data-slide="2"]')).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Add a slide" })).toBeVisible();
+});
+
+test("no control bar over the photo; a round DRAG cursor appears on hover and dragging changes the slide", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const media = page.locator(".hero-split__media");
+  const box = await media.boundingBox();
+
+  // Nothing visible over the photo: the keyboard controls are transparent until focused.
+  const keys = page.locator(".hero-slider__keys");
+  expect(await keys.evaluate((el) => getComputedStyle(el).opacity)).toBe("0");
+  const cursor = page.locator(".hero-slider__cursor");
+  expect(await cursor.evaluate((el) => getComputedStyle(el).opacity)).toBe("0");
+
+  // Hover: a round cursor reading DRAG follows the mouse.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await expect.poll(() => cursor.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
+  await expect(cursor).toContainText(/drag/i);
+  const circle = await cursor.boundingBox();
+  expect(Math.round(circle.width)).toBe(175);
+  expect(await cursor.evaluate((el) => getComputedStyle(el).borderRadius)).toBe("50%");
+  expect(Math.abs(circle.x + circle.width / 2 - (box.x + box.width / 2))).toBeLessThanOrEqual(6);
+
+  // Drag left: the next slide; drag right: back to the first.
+  expect(await activeSlide(page)).toBe("0");
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 - 160, box.y + box.height / 2, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(() => activeSlide(page)).toBe("1");
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(() => activeSlide(page)).toBe("0");
+
+  // Leaving the photo hides the circle again.
+  await page.mouse.move(box.x - 50, box.y + 100);
+  await expect.poll(() => cursor.evaluate((el) => getComputedStyle(el).opacity)).toBe("0");
+});
+
+test("the 01 â€” 03 counter and the pause button sit in the text column, not on the photo", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const counter = page.locator(".hero-split__counter .hero-counter");
+  await expect(counter).toBeVisible();
+  const c = await counter.boundingBox();
+  const media = await page.locator(".hero-split__media").boundingBox();
+  expect(c.x + c.width).toBeLessThanOrEqual(media.x + 1); // left of the photo
+  await expect(counter.getByRole("button", { name: "Pause the slideshow" })).toBeVisible();
 });

@@ -131,12 +131,15 @@ test("open redirect blocked", async () => {
 test("public enquiry → admin", async ({ browser }) => {
   const pubCtx = await browser.newContext();
   const pub = await pubCtx.newPage();
+  // The solution page's call to action leads to the Contact form with Road Signs chosen.
   await pub.goto("/solutions/road-signs?utm_source=newsletter");
-  await pub.fill("#enquiry-name", "Csv Tester");
-  await pub.fill("#enquiry-email", "csv@test.local");
-  await pub.fill("#enquiry-phone", "98200 11223");
-  await pub.fill("#enquiry-company", "Zenith Admin Test");
-  await pub.fill("#enquiry-projectLocation", "=SUM(1+1)*cmd");
+  await pub.getByRole("link", { name: /Request a Consultation/ }).click();
+  await pub.waitForURL(/\/contact\?requirement=Road\+Signs&utm_source=newsletter/);
+  await pub.fill("#contact-form-name", "Csv Tester");
+  await pub.fill("#contact-form-email", "csv@test.local");
+  await pub.fill("#contact-form-phone", "98200 11223");
+  await pub.fill("#contact-form-company", "Zenith Admin Test");
+  await pub.fill("#contact-form-projectLocation", "=SUM(1+1)*cmd");
   await pub.waitForTimeout(2600); // the form's time trap
   await Promise.all([
     pub.waitForURL("**/thank-you"),

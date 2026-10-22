@@ -15,7 +15,12 @@ export const metadata = pageMetadata({
   path: "/contact",
 });
 
-export default async function ContactPage() {
+/**
+ * @param {{ searchParams: Promise<{ requirement?: string }> }} props
+ * @returns {Promise<JSX.Element>}
+ */
+export default async function ContactPage({ searchParams }) {
+  const { requirement } = await searchParams;
   const [page, site, categories, heroImage, formPhoto, home] = await Promise.all([
     pageSectionService.getContactPageContent(),
     settingService.getSite(),
@@ -24,6 +29,8 @@ export default async function ContactPage() {
     pageSectionService.getPageHeroImage("contactForm"),
     pageSectionService.getHomeContent(),
   ]);
+  // A Call to Action on a solution or project page links here with ?requirement=<name>.
+  const chosen = categories.find((c) => c.name === requirement);
   const { mapEmbedUrl, address, email, phone } = site.contact;
   // The head office uses the real details from Admin → Settings once they are set; until
   // then (and for the other offices) the sample data from content/site.js is shown.
@@ -57,6 +64,8 @@ export default async function ContactPage() {
         categories={categories}
         contact={site.contact}
         photo={formPhoto}
+        defaultRequirement={chosen?.name}
+        categorySlug={chosen?.slug}
       />
       {mapEmbedUrl && (
         <section aria-label="Office location">

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
 import FaqSection from "@/components/sections/FaqSection";
-import EnquirySection from "@/components/sections/EnquirySection";
+import CtaBand from "@/components/sections/CtaBand";
 import CategoryGrid from "@/components/sections/CategoryGrid";
 import { CounterGrid } from "@/components/sections/CounterColumns";
 import AboutCollage from "@/components/sections/AboutCollage";
@@ -11,7 +11,6 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
-import * as settingService from "@/server/modules/settings/setting.service";
 import { pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { pad2, toList } from "@/lib/format";
 import Icon from "@/components/ui/Icon";
@@ -41,15 +40,11 @@ export async function generateMetadata({ params }) {
 
 /**
  * Category template (meeting): content first → catalogue images → executed
- * site photos → enquiry form on the same page.
+ * site photos → a call to action to the Contact page form.
  */
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
-  const [category, site, categories] = await Promise.all([
-    pageSectionService.getCategoryPage(slug),
-    settingService.getSite(),
-    categoryService.listCategories(),
-  ]);
+  const category = await pageSectionService.getCategoryPage(slug);
   if (!category) notFound();
 
   const relatedCovers = Object.fromEntries(
@@ -177,13 +172,11 @@ export default async function CategoryPage({ params }) {
         </section>
       )}
 
-      <EnquirySection
+      {/* Call to Action from the client's document; the form itself is on the Contact page */}
+      <CtaBand
         title={`Looking for reliable ${category.name} solutions?`}
         text="Contact Insta Mark today for expert consultation and a customized quotation."
-        categories={categories}
-        defaultRequirement={category.name}
-        categorySlug={category.slug}
-        contact={site.contact}
+        requirement={category.name}
       />
 
       <FaqSection faqs={category.faqs} />

@@ -3,10 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHero from "@/components/sections/PageHero";
 import Gallery from "@/components/sections/Gallery";
-import EnquirySection from "@/components/sections/EnquirySection";
-import * as categoryService from "@/server/modules/categories/category.service";
+import CtaBand from "@/components/sections/CtaBand";
 import * as projectService from "@/server/modules/projects/project.service";
-import * as settingService from "@/server/modules/settings/setting.service";
 import { pageMetadata } from "@/lib/seo";
 
 // Projects are created in the admin panel; new slugs render on first request.
@@ -34,11 +32,7 @@ export async function generateMetadata({ params }) {
 
 export default async function ProjectPage({ params }) {
   const { slug } = await params;
-  const [p, site, categories] = await Promise.all([
-    projectService.getProject(slug),
-    settingService.getSite(),
-    categoryService.listCategories(),
-  ]);
+  const p = await projectService.getProject(slug);
   if (!p) notFound();
 
   const facts = [
@@ -120,12 +114,11 @@ export default async function ProjectPage({ params }) {
         </section>
       )}
 
-      <EnquirySection
-        title="Planning a similar project?"
-        text="Tell us about your site and we will recommend the right signage solution."
-        categories={categories}
-        defaultRequirement={p.categories[0]?.name}
-        contact={site.contact}
+      {/* The portfolio Call to Action from the client's document; the form is on Contact */}
+      <CtaBand
+        title="Have a project in mind?"
+        text="Let's create a signage solution tailored to your space."
+        requirement={p.categories[0]?.name}
       />
     </>
   );

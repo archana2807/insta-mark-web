@@ -569,8 +569,37 @@ test("the contact form section follows the Crafto contact layout: photo left, ti
   const phoneTitle = await page.locator("#contact-form h2").boundingBox();
   expect(phoneMedia.y).toBeLessThan(phoneTitle.y);
   expect(Math.round(phoneMedia.width)).toBe(390);
+});
 
-  // The other pages keep their boxed form.
-  await page.goto("/solutions/tailor-made-signage");
-  await expect(page.locator("#enquiry .enquiry-panel")).toHaveCount(1);
+test("solution and project pages show a call to action to the Contact form, not a form (10e)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  // Solution page: the document's Call to Action, no form; the button pre-selects the solution.
+  await page.goto("/solutions/modular-signs?utm_source=mail");
+  await expect(page.locator("form.enquiry-form")).toHaveCount(0);
+  const band = page.locator(".cta-band");
+  await expect(band.locator("h2")).toHaveText("Looking for reliable Modular Signs solutions?");
+  await expect(band).toContainText(
+    "Contact Insta Mark today for expert consultation and a customized quotation.",
+  );
+  await band.getByRole("link", { name: /Request a Consultation/ }).click();
+  await page.waitForURL(/\/contact\?requirement=Modular\+Signs&utm_source=mail#contact-form/);
+  await expect(page.locator("#contact-form-requirement")).toHaveValue("Modular Signs");
+  await expect(page.locator('#contact-form input[name="category"]')).toHaveValue("modular-signs");
+
+  // Project page: the portfolio call to action from the document.
+  await page.goto("/projects");
+  const project = await page.locator('a[href^="/projects/"]').first().getAttribute("href");
+  await page.goto(project);
+  await expect(page.locator("form.enquiry-form")).toHaveCount(0);
+  await expect(page.locator(".cta-band h2")).toHaveText("Have a project in mind?");
+  await expect(page.locator(".cta-band")).toContainText(
+    "Let's create a signage solution tailored to your space.",
+  );
+
+  // Contact without a requirement: nothing pre-selected.
+  await page.goto("/contact");
+  await expect(page.locator("#contact-form-requirement")).toHaveValue("");
 });

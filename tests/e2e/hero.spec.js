@@ -498,3 +498,60 @@ test("header and inner hero follow the Crafto reference's measured sizes (10f)",
   expect(Math.abs(photo.y - 78)).toBeLessThanOrEqual(1);
   expect(parseFloat(await css(page.locator(".inner-hero h1"), "fontSize"))).toBeCloseTo(41.256, 1);
 });
+
+test("the contact form section follows the Crafto contact layout: photo left, title and form right (10f)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/contact");
+  const section = page.locator("#contact-form");
+  await section.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1500);
+
+  // The photo is flush with the left edge and half the width; the content is to its right.
+  const media = await section.locator(".enquiry-photo__media").boundingBox();
+  expect(Math.round(media.x)).toBe(0);
+  expect(Math.abs(media.width - 720)).toBeLessThanOrEqual(2);
+  const title = await section.locator("h2").boundingBox();
+  expect(title.x).toBeGreaterThanOrEqual(media.x + media.width);
+  await expect(section.locator("h2")).toHaveText("Request a consultation");
+  expect(
+    parseFloat(await section.locator("h2").evaluate((el) => getComputedStyle(el).fontSize)),
+  ).toBeGreaterThan(63);
+
+  // The client's wording is unchanged: every field and the button keep their labels.
+  for (const label of [
+    "Name",
+    "Company",
+    "Email",
+    "Phone",
+    "Project location",
+    "Requirement",
+    "Message",
+  ])
+    await expect(section.locator(".form-label", { hasText: label }).first()).toBeVisible();
+  await expect(section.getByRole("button", { name: /Get a Quote/ })).toBeVisible();
+  await expect(section.locator(".enquiry-panel")).toHaveCount(0);
+
+  // Underlined fields with an icon, and a black full-width button 68 px high.
+  const input = section.locator("input[name=name]");
+  expect(await input.evaluate((el) => getComputedStyle(el).borderBottomWidth)).toBe("1px");
+  expect(await input.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("0px");
+  await expect(section.locator(".field-icon").first().locator("svg")).toBeVisible();
+  const button = await section.getByRole("button", { name: /Get a Quote/ }).boundingBox();
+  const form = await section.locator("form").boundingBox();
+  expect(Math.abs(button.width - form.width)).toBeLessThanOrEqual(1);
+  expect(Math.round(button.height)).toBe(68);
+
+  // Phone: the photo comes first, then the title and the form.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/contact");
+  const phoneMedia = await page.locator("#contact-form .enquiry-photo__media").boundingBox();
+  const phoneTitle = await page.locator("#contact-form h2").boundingBox();
+  expect(phoneMedia.y).toBeLessThan(phoneTitle.y);
+  expect(Math.round(phoneMedia.width)).toBe(390);
+
+  // The other pages keep their boxed form.
+  await page.goto("/solutions/tailor-made-signage");
+  await expect(page.locator("#enquiry .enquiry-panel")).toHaveCount(1);
+});

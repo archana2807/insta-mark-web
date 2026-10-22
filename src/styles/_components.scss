@@ -383,3 +383,102 @@
   background: #fff;
   box-shadow: 0 30px 70px rgba($ink, 0.08);
 }
+
+// ── Contact form section (Crafto contact layout): photo left, underlined fields right ──
+// Measured on the reference: the photo is half the width and flush with the left edge, the
+// content column starts 63 px after it, the title is about 64 px, the fields are underlined
+// with an icon on the right and the button is black and full width, 68 px high.
+.enquiry-photo {
+  &__media {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    background: $surface;
+
+    @include media-breakpoint-up(lg) {
+      height: 100%;
+      min-height: 760px;
+    }
+
+    img {
+      object-fit: cover;
+    }
+  }
+
+  &__content {
+    padding: clamp(3rem, 2rem + 3vw, 5rem) 1rem clamp(3rem, 2rem + 3vw, 5rem);
+
+    @include media-breakpoint-up(sm) {
+      padding-inline: 2rem;
+    }
+
+    @include media-breakpoint-up(lg) {
+      padding: 4.5rem 3rem 4.5rem 63px;
+      max-width: 680px;
+    }
+  }
+
+  &__title {
+    margin-bottom: 1.5rem;
+    font-size: clamp(2.5rem, 1.8rem + 2.4vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  &__form {
+    margin-top: 2.5rem;
+  }
+}
+
+.enquiry-form--line {
+  .form-label {
+    margin-bottom: 0;
+    font-weight: 500;
+    color: $muted;
+  }
+
+  .field-icon {
+    position: relative;
+
+    > .bi,
+    > svg {
+      position: absolute;
+      right: 0.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 1.25rem;
+      color: $ink;
+    }
+  }
+
+  .form-control,
+  .form-select {
+    padding: 1rem 2.25rem 1rem 0;
+    border: 0;
+    border-bottom: 1px solid $line;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+
+    &:focus {
+      border-bottom-color: $ink;
+    }
+  }
+
+  textarea.form-control {
+    min-height: 7rem;
+  }
+
+  // The button sits on its own full-width row, with the small note under it.
+  .flex-sm-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .btn-dark {
+    width: 100%;
+    min-height: 68px;
+    justify-content: center;
+  }
+}

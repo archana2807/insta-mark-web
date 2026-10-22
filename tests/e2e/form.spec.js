@@ -146,7 +146,7 @@ test.describe.serial("enquiry form (browser, JavaScript on)", () => {
  */
 async function postWithoutJs(baseURL, fields) {
   const html = await (await fetch(`${baseURL}/contact`)).text();
-  const form = html.match(/<form class="enquiry-form"[\s\S]*?<\/form>/)[0];
+  const form = html.match(/<form class="enquiry-form[^"]*"[\s\S]*?<\/form>/)[0];
   const body = new FormData();
   for (const m of form.matchAll(/<(?:input|select|textarea)([^>]*)>/g)) {
     const name = m[1].match(/name="([^"]+)"/)?.[1];

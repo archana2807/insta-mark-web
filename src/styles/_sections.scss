@@ -134,6 +134,7 @@
     max-height: 64px;
     object-fit: contain;
     opacity: 0.85;
+    filter: grayscale(1); // the strip under the banner stays grey, as in the theme
     mix-blend-mode: multiply; // the logo files have a white background
   }
 }
@@ -145,20 +146,24 @@
   position: relative;
   aspect-ratio: 725 / 740;
 
-  // The wipe entrance (_motion.scss, loaded later) sets `position: relative` on the same
-  // element; the extra specificity keeps the photos laid out as an overlapping collage.
-  > .about-collage__item {
+  // Each item is placed here and drifts while scrolling (ScrollDrift); the photo inside
+  // fades in and carries the shadow, so the shadow fades in with it.
+  &__item {
     position: absolute;
   }
 
-  &__item {
+  &__photo {
+    position: absolute;
+    inset: 0;
     overflow: hidden;
     box-shadow: 0 40px 80px rgba($ink, 0.14);
 
     img {
       object-fit: cover;
     }
+  }
 
+  &__item {
     &:nth-child(1) {
       left: 0;
       top: 2.7%;
@@ -440,14 +445,7 @@
     height: auto;
     max-height: 70px;
     object-fit: contain;
-    opacity: 0.85;
-    filter: contrast(1.5); // some PDF logos are pale
     mix-blend-mode: multiply; // the logo files have a white background
-    transition: opacity 0.3s ease;
-  }
-
-  > li:hover img {
-    opacity: 1;
   }
 }
 

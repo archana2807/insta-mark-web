@@ -58,8 +58,7 @@ export default async function HomePage() {
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading
-              eyebrow="Our products"
-              title={<span id="solutions-title">Signage & road safety solutions</span>}
+              title={<span id="solutions-title">Our products</span>}
               text="Click a category to see the products, real projects we have executed, and to request a quote."
             />
             <Link href="/solutions" className="btn btn-outline-ink btn-lg flex-shrink-0">
@@ -96,20 +95,15 @@ export default async function HomePage() {
       {/* 6. Trusted by leading brands — logos of our projects */}
       <section className="section bg-surface" aria-labelledby="trusted-title">
         <div className="container">
-          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
-            <SectionHeading
-              title={<span id="trusted-title">{home.trustedBy.title}</span>}
-              text={home.trustedBy.text}
-            />
-            <Link href="/projects" className="btn btn-dark btn-lg flex-shrink-0">
-              <BtnText>See all projects</BtnText> <Icon name="arrow-right" />
-            </Link>
-          </div>
+          <SectionHeading
+            className="mb-6"
+            title={<span id="trusted-title">{home.trustedBy.title}</span>}
+            text={home.trustedBy.text}
+          />
           <LogoWall logos={home.projectLogos} />
           <LogoStrip logos={home.clientLogos} />
         </div>
       </section>
-
     </>
   );
 }

@@ -10,6 +10,7 @@ import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
+import AboutCollage from "@/components/sections/AboutCollage";
 import Icon from "@/components/ui/Icon";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
 import { pageMetadata } from "@/lib/seo";
@@ -56,18 +57,7 @@ export default async function AboutPage() {
         <div className="container">
           <div className="row align-items-center g-4 g-lg-5">
             <div className="col-lg-6">
-              <div className="about-collage">
-                {about.featuredImages.map((img, i) => (
-                  <Reveal
-                    effect="wipe"
-                    delay={i * 200}
-                    className="about-collage__item"
-                    key={img.src}
-                  >
-                    <Image src={img.src} alt={img.alt} fill sizes="(min-width: 992px) 25vw, 50vw" />
-                  </Reveal>
-                ))}
-              </div>
+              <AboutCollage images={about.featuredImages} />
             </div>
             <Reveal className="col-lg-5 offset-lg-1">
               <h2 id="vision-title" className="h3 mb-4">
@@ -137,7 +127,6 @@ export default async function AboutPage() {
           <ProcessSteps steps={about.process} />
         </div>
       </section>
-
     </>
   );
 }

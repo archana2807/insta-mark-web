@@ -34,14 +34,24 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
   expect(b.y).toBeGreaterThan(a.y + a.height - 1);
 });
 
-test("Where it is used: three industry tiles on the left, every industry with a + icon on the right (10e)", async ({
+test("Where it is used: three overlapping photos on the left, every industry with a + icon on the right (10e)", async ({
   page,
 }) => {
   await page.goto("/solutions/tailor-made-signage");
   const section = page.locator("#used-title").locator("xpath=ancestor::section[1]");
-  const tiles = section.locator(".industry-tiles__tile");
-  await expect(tiles).toHaveCount(3);
-  await expect(tiles.first()).toContainText("Corporate offices");
+
+  // The theme's photo collage: three photos that overlap each other.
+  const photos = section.locator(".about-collage__item");
+  await expect(photos).toHaveCount(3);
+  await section.locator(".about-collage").scrollIntoViewIfNeeded();
+  const overlaps = () =>
+    photos.evaluateAll((items) => {
+      const r = items.map((el) => el.getBoundingClientRect());
+      const hit = (a, b) =>
+        a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      return [hit(r[0], r[1]), hit(r[0], r[2]), hit(r[1], r[2])].filter(Boolean).length;
+    });
+  await expect.poll(overlaps, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
 
   // All industries from the client's text, each with a + icon.
   const items = section.locator(".used-list li");
@@ -49,10 +59,10 @@ test("Where it is used: three industry tiles on the left, every industry with a 
   await expect(items.first()).toContainText("Corporate offices");
   await expect(items.first().locator("svg, .bi").first()).toBeVisible();
 
-  // Tiles on the left, list on the right.
-  const t = await section.locator(".industry-tiles").boundingBox();
+  // Collage on the left, list on the right.
+  const c = await section.locator(".about-collage").boundingBox();
   const l = await section.locator(".used-list").boundingBox();
-  expect(t.x + t.width).toBeLessThanOrEqual(l.x + 1);
+  expect(c.x + c.width).toBeLessThanOrEqual(l.x + 1);
 });
 
 test("What you get stacks in two columns on a phone without sideways scroll (10e)", async ({

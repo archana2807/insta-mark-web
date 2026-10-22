@@ -6,7 +6,7 @@ import FaqSection from "@/components/sections/FaqSection";
 import EnquirySection from "@/components/sections/EnquirySection";
 import CategoryGrid from "@/components/sections/CategoryGrid";
 import { CounterGrid } from "@/components/sections/CounterColumns";
-import IndustryTiles from "@/components/sections/IndustryTiles";
+import AboutCollage from "@/components/sections/AboutCollage";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import * as categoryService from "@/server/modules/categories/category.service";
@@ -114,18 +114,19 @@ export default async function CategoryPage({ params }) {
         </div>
       </section>
 
-      {/* Where it is used — photos for the top industries, all industries with + icons */}
+      {/* Where it is used — the theme's three overlapping photos (fade in one by one, drift on
+          scroll) on the left, every industry with a + icon on the right */}
       <section className="section" aria-labelledby="used-title">
         <div className="container">
           <div className="row align-items-center g-4 g-lg-5">
-            <div className="col-lg-6">
-              <IndustryTiles
-                industries={industries.slice(0, 3)}
-                photos={usedPhotos}
-                label={`Top industries for ${category.name}`}
-              />
-            </div>
-            <Reveal className="col-lg-6">
+            {usedPhotos.length > 0 && (
+              <div className="col-lg-6">
+                <AboutCollage
+                  images={usedPhotos.map((photo) => ({ src: photo.src, alt: photo.alt ?? "" }))}
+                />
+              </div>
+            )}
+            <Reveal className={usedPhotos.length > 0 ? "col-lg-6" : "col-lg-8"}>
               <SectionHeading
                 title={<span id="used-title">Where it is used</span>}
                 text={category.applications}

@@ -912,9 +912,16 @@
     z-index: 2;
     margin-bottom: 0;
     font-size: clamp(2.4rem, 1.5rem + 3.2vw, 4.4rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
 
     @include media-breakpoint-up(lg) {
-      margin-right: -18%;
+      // Theme: the title runs past its column and lies on top of the photo. A soft light
+      // glow keeps the dark letters readable where the photo is dark (WCAG AA).
+      margin-right: -14vw;
+      text-shadow:
+        0 0 18px rgba(#fff, 0.85),
+        0 0 4px rgba(#fff, 0.6);
     }
   }
 

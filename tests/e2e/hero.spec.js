@@ -238,3 +238,53 @@ test("home banner (phone): no vertical label; the tagline is a smaller line unde
   expect(t.y).toBeGreaterThanOrEqual(h.y + h.height - 1);
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(tagline)) * 1.5);
 });
+
+test("inner page headlines run onto the photo, like the theme (10f)", async ({ page }) => {
+  const routes = [
+    "/about",
+    "/solutions",
+    "/projects",
+    "/contact",
+    "/solutions/tailor-made-signage",
+  ];
+  for (const route of routes) {
+    await page.goto(route);
+    const hero = page.locator(".inner-hero");
+    const media = hero.locator(".inner-hero__media").first();
+    if ((await media.count()) === 0) continue; // a page without a photo has nothing to overlap
+    const m = await media.boundingBox();
+    // The title's block runs past its column into the photo ...
+    const blockRight = await hero.locator("h1").evaluate((h) => h.getBoundingClientRect().right);
+    expect(blockRight, `${route}: the title block should reach the photo`).toBeGreaterThan(
+      m.x + 40,
+    );
+    // ... and where the title is long, its text lines lie on the photo too.
+    if (["/about", "/solutions", "/projects"].includes(route)) {
+      const textRight = await hero.locator("h1").evaluate((h) => {
+        const range = document.createRange();
+        range.selectNodeContents(h);
+        return Math.max(...[...range.getClientRects()].map((r) => r.right));
+      });
+      expect(textRight, `${route}: the title text should reach the photo`).toBeGreaterThan(m.x);
+    }
+    const z = await hero.locator("h1").evaluate((h) => getComputedStyle(h).zIndex);
+    expect(Number(z)).toBeGreaterThan(0);
+  }
+});
+
+test("About wording follows the client's content document (10f)", async ({ page }) => {
+  // Home: the About block shows the document's two paragraphs, word for word.
+  await page.goto("/");
+  const block = page.locator("#about-title").locator("xpath=ancestor::section[1]");
+  await expect(block).toContainText("Insta Mark is one of India’s leading providers");
+  await expect(block).toContainText("From design and manufacturing to installation, we deliver");
+
+  // About page: title and "Who We Are" heading from the document, not invented slogans.
+  await page.goto("/about");
+  await expect(page.locator("h1")).toHaveText("Creating Signage That Makes Every Space Smarter");
+  await expect(page.locator("h2.visually-hidden").first()).toHaveText("Who We Are");
+  await expect(page.locator("body")).not.toContainText("Pan India");
+  await expect(page.locator("body")).toContainText(
+    "Insta Mark is a leading architectural signage and road safety solutions company",
+  );
+});

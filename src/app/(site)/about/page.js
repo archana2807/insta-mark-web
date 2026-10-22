@@ -32,19 +32,19 @@ export default async function AboutPage() {
 
   return (
     <>
-      {/* 1. Hero: vertical label + title over a large photo */}
+      {/* 1. Hero: vertical label + title over a large photo (headings from the client's content document) */}
       <InnerHero
         label="About Insta Mark"
-        title="We design, build and install signage that guides."
+        title={home.about.title}
         image={about.heroImage}
         breadcrumbs={[{ label: "About", href: "/about" }]}
       />
 
       {/* 2. Statement + badge + who we are */}
       <StatementBadge
-        line1="Signage that"
-        line2="guides."
-        badgeText="Design · Manufacture · Install · Pan India · "
+        line1="Who We"
+        line2="Are"
+        badgeText="Design · Manufacturing · Installation · Nationwide · "
         icon="signpost-split"
         text={about.whoWeAre}
       />

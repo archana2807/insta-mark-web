@@ -555,3 +555,36 @@ test("the contact form section follows the Crafto contact layout: photo left, ti
   await page.goto("/solutions/tailor-made-signage");
   await expect(page.locator("#enquiry .enquiry-panel")).toHaveCount(1);
 });
+
+test("the Projects hero follows the reference's portfolio page: big centred title, the client's text, no photo", async ({
+  page,
+}) => {
+  const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/projects");
+  const hero = page.locator(".portfolio-hero");
+  const h1 = hero.locator("h1");
+  await expect(h1).toHaveText("Project Portfolio");
+  expect(await css(h1, "fontSize")).toBe("70px");
+  expect(await css(h1, "textAlign")).toBe("center");
+  expect(await css(hero, "paddingTop")).toBe("90px");
+  await expect(hero.locator("img")).toHaveCount(0);
+  await expect(hero.locator(".portfolio-hero__text")).toContainText(
+    "Our portfolio spans luxury residences, hospitals, airports",
+  );
+  const box = await h1.boundingBox();
+  expect(Math.abs(box.x + box.width / 2 - 720)).toBeLessThanOrEqual(2); // centred
+
+  // The category links still lead to their sections.
+  const first = hero.locator(".portfolio-hero__links a").first();
+  const target = await first.getAttribute("href");
+  await expect(page.locator(target)).toHaveCount(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/projects");
+  expect(await css(page.locator(".portfolio-hero h1"), "fontSize")).toBe("52.48px");
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});

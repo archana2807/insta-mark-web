@@ -1,11 +1,10 @@
 import Link from "next/link";
-import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
 import ProjectCard from "@/components/sections/ProjectCard";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
 import * as projectService from "@/server/modules/projects/project.service";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import Icon from "@/components/ui/Icon";
 
 export const metadata = pageMetadata({
@@ -16,37 +15,49 @@ export const metadata = pageMetadata({
 });
 
 export default async function ProjectsPage() {
-  const [page, work, home, projects, heroImage] = await Promise.all([
+  const [page, work, home, projects] = await Promise.all([
     pageSectionService.getProjectsPageContent(),
     categoryService.listExecutedWork(),
     pageSectionService.getHomeContent(),
     projectService.listProjects(),
-    pageSectionService.getPageHeroImage("projects"),
   ]);
-  const total = work.reduce((n, g) => n + g.images.length, 0);
 
   return (
     <>
-      <InnerHero
-        label="Our work"
-        image={heroImage}
-        title={page.title}
-        lead={page.text}
-        breadcrumbs={[{ label: "Projects", href: "/projects" }]}
-      >
-        <nav aria-label="Jump to category" className="mt-5">
-          <ul className="tag-list">
-            {work.map(({ category, images }) => (
-              <li key={category.slug}>
-                <Link href={`#${category.slug}`}>
-                  {category.name} <span className="text-secondary">({images.length})</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <p className="small text-secondary mt-3 mb-0">{total} photos from executed sites</p>
-        </nav>
-      </InnerHero>
+      {/* Hero like the reference's portfolio page: a big centred title, the client's sentence
+          under it, and (ours) quick links to each category further down. No photo. */}
+      <section className="portfolio-hero" aria-labelledby="page-title">
+        <div className="container">
+          <div className="load-stagger">
+            <h1 id="page-title" className="portfolio-hero__title">
+              {page.title}
+            </h1>
+            <div className="portfolio-hero__body">
+              <p className="portfolio-hero__text">{page.text}</p>
+              <nav aria-label="Jump to category">
+                <ul className="portfolio-hero__links">
+                  {work.map(({ category, images }) => (
+                    <li key={category.slug}>
+                      <Link href={`#${category.slug}`}>
+                        {category.name} <span>({images.length})</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: breadcrumbJsonLd([
+              { label: "Home", href: "/" },
+              { label: "Projects", href: "/projects" },
+            ]),
+          }}
+        />
+      </section>
 
       {projects.length > 0 && (
         <section className="section pt-4" aria-labelledby="featured-projects-title">
@@ -87,7 +98,6 @@ export default async function ProjectsPage() {
           </div>
         </section>
       ))}
-
     </>
   );
 }

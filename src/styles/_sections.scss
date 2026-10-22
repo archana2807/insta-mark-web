@@ -168,7 +168,7 @@
     height: 100%;
 
     @include media-breakpoint-up(lg) {
-      min-height: calc(100vh - 92px);
+      min-height: calc(100vh - 94px);
       max-height: 860px;
     }
 
@@ -921,11 +921,23 @@
 .inner-hero {
   position: relative;
 
+  // Layout measured on the Crafto reference About/Contact hero (22 Oct 2026): 550 px high on
+  // desktop; the text column is 1/3 of the width (5/12 from 992 px) and the photo 2/3; the
+  // vertical label starts 92 px from the left. On phones the photo (390 × 272) comes first,
+  // flush under the header, then a 50 px gap and the label + title, with nothing below.
   &__text {
     display: flex;
     align-items: center;
-    min-height: 100%;
-    padding-block: 2.5rem;
+    padding: 50px 0 0 1px;
+
+    @include media-breakpoint-up(lg) {
+      min-height: 550px;
+      padding: 0 0 0 3rem;
+    }
+
+    @include media-breakpoint-up(xl) {
+      padding-left: 92px;
+    }
   }
 
   // Vertical label left of the title, at every width (the theme keeps it on phones too).
@@ -957,10 +969,10 @@
     position: relative;
     z-index: 2;
     margin-bottom: 0;
-    // Reference About hero: 55 px / 55 px / -3 px on wide screens.
-    font-size: clamp(2.2rem, 1.4rem + 2.5vw, 3.438rem);
+    // Reference: 41.256 px at 390 px growing to 55.008 px at 1440 px; line height 1; -3 px.
+    font-size: clamp(2.259rem, 2.259rem + 1.31vw, 3.438rem);
     line-height: 1;
-    letter-spacing: -0.055em;
+    letter-spacing: -3px;
 
     @include media-breakpoint-up(lg) {
       // Theme: the title runs past its column and lies on top of the photo. A soft light
@@ -975,17 +987,18 @@
   &__lead {
     max-width: 34rem;
     margin: 1.5rem 0 0;
-    font-size: 1.075rem;
+    font-size: 1rem; // reference paragraphs: 16 px / 30 px
   }
 
   &__media {
     position: relative;
-    min-height: 300px;
-    height: 100%;
+    aspect-ratio: 390 / 272; // reference phone photo
+    height: auto;
     background: $surface;
 
     @include media-breakpoint-up(lg) {
-      min-height: 560px;
+      aspect-ratio: auto;
+      height: 550px;
     }
 
     img {

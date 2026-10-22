@@ -75,3 +75,42 @@ test("What you get stacks in two columns on a phone without sideways scroll (10e
   );
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test("every solution hero is only the label, the title and the photo; the client's Overview follows (10f)", async ({
+  page,
+}) => {
+  await page.goto("/solutions");
+  const slugs = await page
+    .locator('a[href^="/solutions/"]')
+    .evaluateAll((els) => [...new Set(els.map((a) => a.getAttribute("href")))]);
+  expect(slugs.length).toBe(8);
+
+  for (const href of slugs) {
+    await page.goto(href);
+    const hero = page.locator(".inner-hero");
+    await expect(hero.locator("h1")).toHaveCount(1);
+    await expect(hero.locator(".inner-hero__vertical")).toHaveCount(1);
+    // No paragraph and no button in the hero.
+    await expect(hero.locator("p")).toHaveCount(0);
+    await expect(hero.locator("a.btn, button")).toHaveCount(0);
+
+    // The Overview section comes right after the hero, before What you get.
+    const overview = page.locator("#overview-title").locator("xpath=ancestor::section[1]");
+    await expect(overview.locator("#overview-title")).toHaveText("Overview");
+    expect((await overview.locator("p").first().innerText()).length, href).toBeGreaterThan(80);
+    const heroBox = await hero.boundingBox();
+    const overviewBox = await overview.boundingBox();
+    const featuresBox = await page.locator("#features-title").boundingBox();
+    expect(overviewBox.y).toBeGreaterThanOrEqual(heroBox.y + heroBox.height - 1);
+    expect(featuresBox.y).toBeGreaterThan(overviewBox.y);
+  }
+});
+
+test("the Tailor-made Overview is the client's paragraph, word for word (10f)", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  await expect(page.locator("#overview-title").locator("xpath=ancestor::section[1]")).toContainText(
+    "Every space has unique communication and branding needs. Insta Mark designs and manufactures tailor-made signage solutions that seamlessly integrate with your architecture, brand identity, and operational requirements. From premium corporate offices and hospitals to retail destinations, airports, and residential developments, our bespoke signage systems are engineered for aesthetics, durability, and functionality.",
+  );
+});

@@ -451,3 +451,50 @@ test("the gaps around the logo row match the reference's 90 px (10c)", async ({ 
   expect(m.padBottom).toBeLessThanOrEqual(100);
   expect(m.aboutPadTop).toBe("0px");
 });
+
+test("header and inner hero follow the Crafto reference's measured sizes (10f)", async ({
+  page,
+}) => {
+  const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  for (const route of ["/about", "/contact"]) {
+    await page.goto(route);
+    // Header: 94 px high, links 18 px / 600 with 20 px padding, CTA 13 px / 600 and 45.5 px high.
+    const header = await page.locator(".site-header").boundingBox();
+    expect(Math.round(header.height)).toBe(94);
+    const link = page.locator(".site-header .nav-link").first();
+    expect(await css(link, "paddingLeft")).toBe("20px");
+    const cta = page.locator(".site-header .header-cta");
+    expect(await css(cta, "fontSize")).toBe("13px");
+    expect(await css(cta, "fontWeight")).toBe("600");
+    expect(Math.round((await cta.boundingBox()).height * 10) / 10).toBeCloseTo(45.5, 0);
+
+    // Hero: 550 px high, text 1/3 and photo 2/3 of the width, label 92 px from the left.
+    const hero = await page.locator(".inner-hero").boundingBox();
+    expect(Math.round(hero.height), `${route} hero height`).toBe(550);
+    const media = await page.locator(".inner-hero__media").boundingBox();
+    expect(Math.abs(media.x - 480), `${route} photo starts at 1/3`).toBeLessThanOrEqual(2);
+    const label = await page.locator(".inner-hero__vertical").boundingBox();
+    expect(Math.abs(label.x - 92), `${route} label position`).toBeLessThanOrEqual(3);
+    expect(await css(page.locator(".inner-hero h1"), "fontSize")).toBe("55.008px");
+    const lead = page.locator(".inner-hero__lead");
+    if ((await lead.count()) > 0) expect(await css(lead, "fontSize")).toBe("16px");
+  }
+
+  // The header does not shrink when scrolled.
+  await page.evaluate(() => window.scrollTo(0, 800));
+  await page.waitForTimeout(500);
+  expect(Math.round((await page.locator(".site-header").boundingBox()).height)).toBe(94);
+
+  // Phone: 78 px header, bare menu icon, photo 390 × 272 right under it, title 41.256 px.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/about");
+  expect(Math.round((await page.locator(".site-header").boundingBox()).height)).toBe(78);
+  expect(await css(page.locator(".menu-toggle"), "borderTopWidth")).toBe("0px");
+  const photo = await page.locator(".inner-hero__media").boundingBox();
+  expect(Math.round(photo.width)).toBe(390);
+  expect(Math.abs(photo.height - 272)).toBeLessThanOrEqual(1);
+  expect(Math.abs(photo.y - 78)).toBeLessThanOrEqual(1);
+  expect(parseFloat(await css(page.locator(".inner-hero h1"), "fontSize"))).toBeCloseTo(41.256, 1);
+});

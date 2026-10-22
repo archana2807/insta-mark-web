@@ -27,20 +27,21 @@
     }
   }
 
-  &__controls {
+  // Keyboard / screen-reader controls: invisible until one of them is focused.
+  &__keys {
     position: absolute;
     left: 0;
     bottom: 0;
     z-index: 4;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem 0.5rem 0.5rem;
     background: #fff;
-    font-family: $headings-font-family;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: $ink;
+    opacity: 0;
+    pointer-events: none;
+
+    &:focus-within {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   &__button {
@@ -60,17 +61,99 @@
     }
   }
 
+  // Round "‹ DRAG ›" cursor that follows the mouse over the photo (reference), mouse only.
+  &__cursor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    display: none;
+    place-items: center;
+    width: 175px;
+    height: 175px;
+    margin: -87px 0 0 -87px;
+    border-radius: 50%;
+    background: rgba(#2b2b2b, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #fff;
+    font-family: $headings-font-family;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(var(--x, 50%), var(--y, 50%), 0) scale(0.4);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+
+    &.is-on {
+      opacity: 1;
+      transform: translate3d(var(--x, 50%), var(--y, 50%), 0) scale(1);
+    }
+
+    &.is-dragging {
+      transform: translate3d(var(--x, 50%), var(--y, 50%), 0) scale(0.88);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    cursor: none;
+    touch-action: pan-y;
+    user-select: none;
+
+    &__cursor {
+      display: grid;
+    }
+  }
+}
+
+// "01 ——— 03" counter in the text column, as in the reference.
+.hero-split__counter {
+  min-height: 44px;
+  margin-top: 2.5rem;
+}
+
+.hero-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: $headings-font-family;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $ink;
+
+  &__button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $ink;
+    font-size: 1rem;
+
+    &:hover,
+    &:focus-visible {
+      color: $brand-teal;
+    }
+  }
+
   &__line {
     position: relative;
     display: block;
-    width: clamp(60px, 8vw, 110px);
-    height: 2px;
+    width: clamp(120px, 18vw, 275px);
+    height: 1px;
     background: $line;
   }
 
-  &__line-fill {
+  &__fill {
     position: absolute;
-    inset: 0;
+    inset: -0.5px 0;
     background: $ink;
     transform: scaleX(1);
     transform-origin: left center;

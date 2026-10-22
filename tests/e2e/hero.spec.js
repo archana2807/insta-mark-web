@@ -45,6 +45,13 @@ test("home banner (desktop): vertical tagline on the left, headline runs onto th
   // Theme effect: the headline runs past its column onto the photo.
   const media = await hero.locator(".hero-split__media").boundingBox();
   expect(h.x + h.width).toBeGreaterThan(media.x);
+  // The text itself lies clearly on the photo (not just one stray letter): 100 px or more.
+  const textRight = await headline.evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return Math.max(...[...range.getClientRects()].map((r) => r.right));
+  });
+  expect(textRight - media.x).toBeGreaterThanOrEqual(100);
 
   // Hierarchy: the headline is far bigger than the vertical label.
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(vertical)) * 2);
@@ -313,6 +320,41 @@ test("inner page heroes show no Home / page breadcrumb, but keep it for search e
   }
 });
 
+test("the three collage photos have the reference's sizes, and the same size on every page (10c)", async ({
+  page,
+}) => {
+  const measure = async (route, scope) => {
+    await page.goto(route);
+    const items = page.locator(`${scope} .about-collage__item`);
+    await items.first().scrollIntoViewIfNeeded();
+    // offsetWidth/Height ignore the scroll drift movement.
+    return items.evaluateAll((els) => els.map((el) => [el.offsetWidth, el.offsetHeight]));
+  };
+  const home = await measure("/", ".about-short");
+  const about = await measure("/about", "main");
+  const solution = await measure("/solutions/tailor-made-signage", "main");
+
+  // Reference layout sizes: 224×279, 261×313 and 305×375 (within a pixel or two).
+  const reference = [
+    [224, 279],
+    [261, 313],
+    [305, 375],
+  ];
+  for (const [i, [w, h]] of reference.entries()) {
+    expect(
+      Math.abs(home[i][0] - w),
+      `photo ${i + 1} width (ours ${home[i][0]}, reference ${w})`,
+    ).toBeLessThanOrEqual(8);
+    expect(
+      Math.abs(home[i][1] - h),
+      `photo ${i + 1} height (ours ${home[i][1]}, reference ${h})`,
+    ).toBeLessThanOrEqual(8);
+  }
+  // Identical on the other pages.
+  expect(about).toEqual(home);
+  expect(solution).toEqual(home);
+});
+
 test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 2026 (10g)", async ({
   page,
 }) => {
@@ -366,4 +408,29 @@ test("the phone headline is 52.5 px like the reference and nothing overflows at 
   const photo = await page.locator(".hero-split__media").boundingBox();
   const title = await page.locator(".hero-split h1").boundingBox();
   expect(photo.y).toBeLessThan(title.y);
+});
+
+test("the gaps around the logo row match the reference's 90 px (10c)", async ({ page }) => {
+  await page.goto("/");
+  // Reference (1440 px): the logo section has 90 px above and below, the About block that
+  // follows has no top padding, so the gap under the logos is exactly the section padding.
+  // Ours is 84 px because our logo files are taller than the reference's 35 px wordmarks.
+  const m = await page.evaluate(() => {
+    const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const logos = document.querySelector(".project-logos");
+    const cs = getComputedStyle(logos);
+    const about = document.querySelector(".about-short");
+    return {
+      padTop: parseFloat(cs.paddingTop),
+      padBottom: parseFloat(cs.paddingBottom),
+      heroToLogos: rect(".project-logos").top - rect(".hero-split").bottom,
+      logosToAbout: rect(".about-short").top - rect(".project-logos").bottom,
+      aboutPadTop: getComputedStyle(about).paddingTop,
+    };
+  });
+  expect(m.padTop).toBeGreaterThanOrEqual(80);
+  expect(m.padTop).toBeLessThanOrEqual(100);
+  expect(m.padBottom).toBeGreaterThanOrEqual(80);
+  expect(m.padBottom).toBeLessThanOrEqual(100);
+  expect(m.aboutPadTop).toBe("0px");
 });

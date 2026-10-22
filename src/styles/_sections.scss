@@ -19,10 +19,15 @@
     letter-spacing: -0.057em;
 
     @include media-breakpoint-up(lg) {
-      // Theme: the headline runs past its column onto the photo.
-      margin-right: -10vw;
+      // Theme: the headline runs past its column and lies on the photo: the first line
+      // ("Architectural Signage") reaches about 150 px into it at 1440 px. A soft light
+      // glow keeps the dark letters readable on the photo (WCAG AA).
+      margin-right: -26vw;
       position: relative;
       z-index: 2;
+      text-shadow:
+        0 0 18px rgba(#fff, 0.85),
+        0 0 4px rgba(#fff, 0.6);
     }
   }
 
@@ -90,11 +95,19 @@
 // ── Project logos right under the home banner ──────────
 // Theme: logos in equal columns across the full width, each centred, muted grey, with
 // generous air above and below.
+// Spacing measured on the reference: the logo section has 90 px above and below on a 1440 px
+// screen (110 px on a 1920 px screen), the logos are about 35 px high, and the About block
+// that follows has no top padding. Our logo files are taller than the reference's wordmarks
+// (up to 48 px), so the padding is a little smaller to keep the gap from the logos the same.
 .project-logos {
   padding-block: 4rem;
 
   @include media-breakpoint-up(lg) {
-    padding-block: 5.5rem;
+    padding-block: 5.25rem;
+  }
+
+  @media (min-width: 1600px) {
+    padding-block: 6.5rem;
   }
 
   // Phones and tablets: rows that wrap and stay centred (no lone logo stuck on the left).
@@ -132,7 +145,7 @@
     width: auto;
     max-width: min(100%, 190px);
     height: auto;
-    max-height: 64px;
+    max-height: 48px;
     object-fit: contain;
     opacity: 0.85;
     filter: grayscale(1); // the strip under the banner stays grey, as in the theme
@@ -143,9 +156,15 @@
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
 // Three portrait photos of different sizes: a small one top-left, a taller one top-right
 // and the biggest in front at the bottom, with soft wide shadows.
+// Sizes measured on the Crafto reference (layout pixels, same at 1440 and 1920 px): box
+// 595 × 513; photos 224×279 at (15, 17), 261×313 at (334, 0) and 305×375 at (140, 138).
+// Kept as percentages of that box, and the box is capped at 595 px, so the three photos
+// have the same size on the home page, the About page and every solution page.
 .about-collage {
   position: relative;
-  aspect-ratio: 725 / 740;
+  width: 100%;
+  max-width: 595px;
+  aspect-ratio: 595 / 513;
 
   // Each item is placed here and drifts while scrolling (ScrollDrift); the photo inside
   // fades in and carries the shadow, so the shadow fades in with it.
@@ -166,24 +185,24 @@
 
   &__item {
     &:nth-child(1) {
-      left: 0;
-      top: 2.7%;
-      width: 38.6%;
-      aspect-ratio: 4 / 5;
+      left: 2.5%;
+      top: 3.3%;
+      width: 37.6%;
+      aspect-ratio: 224 / 279;
     }
 
     &:nth-child(2) {
-      left: 55%;
+      left: 56.1%;
       top: 0;
-      width: 45%;
-      aspect-ratio: 5 / 6;
+      width: 43.9%;
+      aspect-ratio: 261 / 313;
     }
 
     &:nth-child(3) {
-      left: 21.5%;
-      top: 24.3%;
-      width: 52.5%;
-      aspect-ratio: 2 / 3;
+      left: 23.5%;
+      top: 26.9%;
+      width: 51.3%;
+      aspect-ratio: 305 / 375;
       z-index: 2;
     }
   }
@@ -1089,6 +1108,14 @@
 // ── Home: short about strip ────────────────────────────
 .about-short {
   border-bottom: 1px solid $line;
+  // Reference: no padding above the About block (the logo section's padding is the gap),
+  // 90 px below on a 1440 px screen and 110 px on a 1920 px screen.
+  padding-top: 0;
+  padding-bottom: 5.625rem;
+
+  @media (min-width: 1600px) {
+    padding-bottom: 6.875rem;
+  }
 
   &__title {
     font-size: clamp(2rem, 1.3rem + 2vw, 3.25rem);

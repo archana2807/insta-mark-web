@@ -2,7 +2,6 @@ import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
 import BtnText from "@/components/ui/BtnText";
-import ScrollDrift from "@/components/ui/ScrollDrift";
 import FancyText from "@/components/ui/FancyText";
 import HeroSlider from "@/components/sections/HeroSlider";
 import { BANNER } from "@/shared/constants";
@@ -58,6 +57,7 @@ export default function HomeHero({ hero, image, slides = [], banner = null }) {
           alt={img.alt}
           fill
           priority={i === 0}
+          fetchPriority={i === 0 ? "high" : undefined}
           sizes="(min-width: 992px) 58vw, 100vw"
           key={img.src}
         />
@@ -76,7 +76,8 @@ export default function HomeHero({ hero, image, slides = [], banner = null }) {
                 </span>
               </p>
               <div className="load-stagger">
-                <h1 id="hero-title">{hero.title}</h1>
+                {/* The no-break space keeps "&" with "Road", so the line never ends with a lone "&". */}
+                <h1 id="hero-title">{hero.title.replace(" & ", " & ")}</h1>
                 <p className="hero-split__tagline">{hero.tagline}</p>
                 <p className="lead-text mb-5">{hero.text}</p>
                 <div className="d-flex flex-wrap gap-3">
@@ -92,9 +93,7 @@ export default function HomeHero({ hero, image, slides = [], banner = null }) {
           </div>
           <div className="col-lg-7 order-first order-lg-last">
             <div className="hero-split__media load-wipe">
-              <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
-                <HeroSlider slides={slideNodes} label="Featured signage projects" />
-              </ScrollDrift>
+              <HeroSlider slides={slideNodes} label="Featured signage projects" />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Icon from "@/components/ui/ClientIcon";
+import ScrollDrift from "@/components/ui/ScrollDrift";
 
 const INTERVAL_MS = 6000;
 
@@ -35,25 +36,35 @@ export default function HeroSlider({ slides, label = "Featured work" }) {
 
   const go = useCallback((delta) => setActive((i) => (i + delta + count) % count), [count]);
 
-  if (count < 2) return <>{slides[0]}</>;
+  // The photos drift on scroll (and zoom a little); the controls must stay put, so they
+  // are outside the drifting layer.
+  const drift = (children) => (
+    <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
+      {children}
+    </ScrollDrift>
+  );
+
+  if (count < 2) return drift(slides[0]);
 
   return (
     <div className="hero-slider" role="group" aria-roledescription="carousel" aria-label={label}>
-      <div className="hero-slider__slides" aria-live={playing ? "off" : "polite"}>
-        {slides.map((slide, i) => (
-          <div
-            className={`hero-slider__slide ${i === active ? "is-active" : ""}`}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}`}
-            inert={i !== active}
-            data-slide={i}
-            key={i}
-          >
-            {slide}
-          </div>
-        ))}
-      </div>
+      {drift(
+        <div className="hero-slider__slides" aria-live={playing ? "off" : "polite"}>
+          {slides.map((slide, i) => (
+            <div
+              className={`hero-slider__slide ${i === active ? "is-active" : ""}`}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${count}`}
+              inert={i !== active}
+              data-slide={i}
+              key={i}
+            >
+              {slide}
+            </div>
+          ))}
+        </div>,
+      )}
 
       <div className="hero-slider__controls">
         <button

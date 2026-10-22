@@ -60,10 +60,19 @@ test.beforeAll(async () => {
   await prisma.$disconnect();
 });
 
-test.afterAll(async () => {
-  const prisma = testPrisma();
-  await prisma.siteSetting.deleteMany({ where: { key: "home.banner" } });
-  await prisma.$disconnect();
+// Leave no slides behind, and go through admin so the site's cached home page is refreshed too
+// (a later `test:e2e:fast` run reuses the cache).
+test.afterAll(async ({ browser }) => {
+  const page = await browser.newPage();
+  await login(page);
+  await page.goto("/admin/banner");
+  page.on("dialog", (d) => d.accept());
+  while ((await page.locator("[data-slide]").count()) > 0) {
+    const before = await page.locator("[data-slide]").count();
+    await page.getByRole("button", { name: "Remove slide" }).first().click();
+    await expect(page.locator("[data-slide]")).toHaveCount(before - 1);
+  }
+  await page.close();
 });
 
 test("by default the banner is a slider of the three current photos with a 01 — 03 counter", async ({
@@ -109,36 +118,32 @@ test("the arrows change the slide; the headline and tagline stay the same", asyn
 });
 
 test("it plays by itself and the pause button stops it (WCAG 2.2.2)", async ({ page }) => {
-  await page.clock.install();
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const toggle = page.getByRole("button", { name: /slideshow/ });
   await expect(toggle).toHaveAccessibleName("Pause the slideshow");
   expect(await activeSlide(page)).toBe("0");
 
-  await page.clock.fastForward(6500);
-  await expect.poll(() => activeSlide(page)).toBe("1");
+  await expect.poll(() => activeSlide(page), { timeout: 12_000 }).toBe("1");
 
   await toggle.click();
   await expect(toggle).toHaveAccessibleName("Play the slideshow");
-  await page.clock.fastForward(20_000);
+  await page.waitForTimeout(7500);
   expect(await activeSlide(page)).toBe("1"); // paused: it did not move
 
   await toggle.click(); // play again
   await expect(toggle).toHaveAccessibleName("Pause the slideshow");
-  await page.clock.fastForward(6500);
-  await expect.poll(() => activeSlide(page)).toBe("2");
+  await expect.poll(() => activeSlide(page), { timeout: 12_000 }).toBe("2");
 });
 
 test("with reduced motion it does not play by itself", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.clock.install();
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.getByRole("button", { name: /slideshow/ })).toHaveAccessibleName(
     "Play the slideshow",
   );
-  await page.clock.fastForward(30_000);
+  await page.waitForTimeout(7500);
   expect(await activeSlide(page)).toBe("0");
 });
 
@@ -171,7 +176,9 @@ test("admin: two slides make a slider, the order can be changed, an empty slide 
   await expect(page.locator(".hero-slider__slide")).toHaveCount(2);
   await expect(page.locator(".hero-slider__count").last()).toHaveText("02");
   const firstSrc = () =>
-    page.locator('.hero-slider__slide[data-slide="0"] img').evaluate((el) => el.getAttribute("src"));
+    page
+      .locator('.hero-slider__slide[data-slide="0"] img')
+      .evaluate((el) => el.getAttribute("src"));
   const before = await firstSrc();
 
   // Move slide 1 later: the photos swap places on the website.

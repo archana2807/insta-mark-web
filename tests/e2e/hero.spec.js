@@ -55,6 +55,23 @@ test("home banner (desktop): vertical tagline on the left, headline runs onto th
 
   // Hierarchy: the headline is far bigger than the vertical label.
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(vertical)) * 2);
+
+  // The "&" never ends a line: it starts the second line, with "Road Safety".
+  const lastOfFirstLine = await headline.evaluate((el) => {
+    const range = document.createRange();
+    const node = el.firstChild;
+    const rows = new Map();
+    for (let i = 0; i < node.length; i++) {
+      range.setStart(node, i);
+      range.setEnd(node, i + 1);
+      const r = range.getClientRects()[0];
+      if (!r || r.width === 0) continue;
+      const row = Math.round(r.top);
+      rows.set(row, (rows.get(row) ?? "") + node.data[i]);
+    }
+    return [...rows.values()][0].trim();
+  });
+  expect(lastOfFirstLine.endsWith("&")).toBe(false);
 });
 
 test("home banner (desktop): the vertical tagline is fully visible without scrolling", async ({

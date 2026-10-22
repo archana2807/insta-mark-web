@@ -262,7 +262,7 @@ test("inner page headlines run onto the photo, like the theme (10f)", async ({ p
       m.x + 40,
     );
     // ... and where the title is long, its text lines lie on the photo too.
-    if (["/about", "/solutions", "/projects"].includes(route)) {
+    if (["/about", "/solutions"].includes(route)) {
       const textRight = await hero.locator("h1").evaluate((h) => {
         const range = document.createRange();
         range.selectNodeContents(h);
@@ -290,4 +290,25 @@ test("About wording follows the client's content document (10f)", async ({ page 
   await expect(page.locator("body")).toContainText(
     "Insta Mark is a leading architectural signage and road safety solutions company",
   );
+});
+
+test("inner page heroes show no Home / page breadcrumb, but keep it for search engines (10f)", async ({
+  page,
+}) => {
+  for (const route of [
+    "/about",
+    "/solutions",
+    "/projects",
+    "/contact",
+    "/solutions/tailor-made-signage",
+  ]) {
+    await page.goto(route);
+    await expect(page.locator(".inner-hero .breadcrumb"), `${route} still shows it`).toHaveCount(0);
+    await expect(page.locator('nav[aria-label="Breadcrumb"]')).toHaveCount(0);
+    const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
+    expect(
+      jsonLd.some((t) => t.includes("BreadcrumbList")),
+      `${route}: JSON-LD`,
+    ).toBe(true);
+  }
 });

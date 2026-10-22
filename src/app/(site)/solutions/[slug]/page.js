@@ -74,11 +74,10 @@ export default async function CategoryPage({ params }) {
 
   return (
     <>
-      {/* 1. Write-up (client's content) with a real project photo */}
+      {/* 1. Hero: only the label, the title and a real project photo (like the reference) */}
       <InnerHero
         label={`Solution ${String(category.number).padStart(2, "0")}`}
         title={category.name}
-        lead={category.overview}
         image={category.heroImages[0]}
         fallback={
           <div className="category-hero__placeholder h-100" aria-hidden="true">
@@ -89,18 +88,22 @@ export default async function CategoryPage({ params }) {
           { label: "Solutions", href: "/solutions" },
           { label: category.name, href: `/solutions/${category.slug}` },
         ]}
-      >
-        <div className="d-flex flex-wrap gap-3 mt-4">
-          <Link href="#enquiry" className="btn btn-dark btn-lg">
-            <BtnText>Get a quote</BtnText> <Icon name="arrow-right" />
-          </Link>
-          {category.executedImages.length > 0 && (
-            <Link href="#work" className="btn btn-outline-ink btn-lg">
-              <BtnText>See our work</BtnText>
-            </Link>
-          )}
+      />
+
+      {/* 2. Overview — the client's paragraph for this solution, word for word, under the
+          document's own heading; it comes first in the document, before Key Features */}
+      <section className="section pb-0" aria-labelledby="overview-title">
+        <div className="container">
+          <div className="row g-4 g-lg-5">
+            <Reveal className="col-lg-5">
+              <SectionHeading title={<span id="overview-title">Overview</span>} />
+            </Reveal>
+            <Reveal className="col-lg-7" delay={120}>
+              <p className="mb-0">{category.overview}</p>
+            </Reveal>
+          </div>
         </div>
-      </InnerHero>
+      </section>
 
       {/* What you get — the theme's counter columns: feature on top, big number below */}
       <section className="section pb-0" aria-labelledby="features-title">

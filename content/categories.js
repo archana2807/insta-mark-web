@@ -86,10 +86,10 @@ export const categories = [
     icon: "fire",
     shortDescription:
       "Fire exit, hazard and assembly point signs for emergency preparedness and compliance.",
-    // TODO(client): the PDF's "Overview" for this category repeats the
-    // applications list. This sentence is built from that text — please confirm.
+    // Word for word from the client's content document (its "Overview" for this category
+    // is a list of places; the document has no opening sentence).
     overview:
-      "Fire & safety signage for emergency preparedness across industrial plants, factories, warehouses, hospitals, hotels, shopping malls, commercial buildings, educational institutions, residential complexes, and public infrastructure.",
+      "Industrial plants, factories, warehouses, hospitals, hotels, shopping malls, commercial buildings, educational institutions, residential complexes, and public infrastructure for emergency preparedness.",
     features: [
       "Fire Exit Signs",
       "Hazard Signs",

@@ -13,9 +13,11 @@ export const home = {
   },
   about: {
     title: "Creating Signage That Makes Every Space Smarter",
-    // Home page shows only 1–2 lines (meeting: "one, two liners about the company").
-    short:
-      "Insta Mark is one of India’s leading providers of architectural signage, wayfinding systems, and road safety solutions — from design and manufacturing to installation.",
+    // The two paragraphs of the client's content document, word for word.
+    paragraphs: [
+      "Insta Mark is one of India’s leading providers of architectural signage, wayfinding systems, and road safety solutions. We serve diverse sectors with solutions that combine functionality, aesthetics, durability, and compliance.",
+      "From design and manufacturing to installation, we deliver precision-engineered signage that enhances navigation, strengthens branding, and improves safety across commercial, residential, healthcare, and infrastructure projects.",
+    ],
     text: "Insta Mark is one of India’s leading providers of architectural signage, wayfinding systems, and road safety solutions. We serve diverse sectors with solutions that combine functionality, aesthetics, durability, and compliance. From design and manufacturing to installation, we deliver precision-engineered signage that enhances navigation, strengthens branding, and improves safety across commercial, residential, healthcare, and infrastructure projects.",
   },
   expertise: {

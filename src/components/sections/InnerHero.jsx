@@ -5,7 +5,7 @@ import FancyText from "@/components/ui/FancyText";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
- * Inner-page hero (theme "About" layout): vertical label + breadcrumb + large
+ * Inner-page hero (theme "About" layout): vertical label + large
  * title on the left, a big photo on the right that the title overlaps.
  */
 export default function InnerHero({
@@ -14,16 +14,21 @@ export default function InnerHero({
   lead,
   image,
   fallback,
-  breadcrumbs = [],
+  breadcrumbs = [], // not shown (client, 22 Oct 2026); still sent to search engines as JSON-LD
   children,
 }) {
   const trail = [{ label: "Home", href: "/" }, ...breadcrumbs];
+  // As in the theme's About hero: a narrow text column and a wide photo. Pages that carry a
+  // longer lead or buttons get a slightly wider text column.
+  const wideText = Boolean(lead || children);
 
   return (
     <section className="inner-hero" aria-labelledby="page-title">
       <div className="container-fluid px-0">
         <div className="row g-0 align-items-stretch">
-          <div className="col-lg-5 inner-hero__text px-3 px-sm-4 px-lg-5">
+          <div
+            className={`${wideText ? "col-lg-5" : "col-lg-4"} inner-hero__text px-3 px-sm-4 px-lg-5`}
+          >
             <div className="d-flex w-100 ps-xl-4">
               {label && (
                 <div className="inner-hero__vertical" aria-hidden="true">
@@ -31,28 +36,13 @@ export default function InnerHero({
                 </div>
               )}
               <div className="load-stagger">
-                <nav aria-label="Breadcrumb">
-                  <ol className="breadcrumb">
-                    {trail.map((b, i) =>
-                      i === trail.length - 1 ? (
-                        <li className="breadcrumb-item active" aria-current="page" key={b.label}>
-                          {b.label}
-                        </li>
-                      ) : (
-                        <li className="breadcrumb-item" key={b.label}>
-                          <Link href={b.href}>{b.label}</Link>
-                        </li>
-                      ),
-                    )}
-                  </ol>
-                </nav>
                 <h1 id="page-title">{title}</h1>
                 {lead && <p className="inner-hero__lead">{lead}</p>}
                 {children}
               </div>
             </div>
           </div>
-          <div className="col-lg-7">
+          <div className={`${wideText ? "col-lg-7" : "col-lg-8"} order-first order-lg-last`}>
             {!image && fallback}
             {image && (
               <div className="inner-hero__media load-wipe">

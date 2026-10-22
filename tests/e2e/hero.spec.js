@@ -519,6 +519,14 @@ test("the contact form section follows the Crafto contact layout: photo left, ti
     parseFloat(await section.locator("h2").evaluate((el) => getComputedStyle(el).fontSize)),
   ).toBeGreaterThan(63);
 
+  // The section never touches the banner: 90 px of space above it (reference).
+  const heroBox = await page.locator(".inner-hero").boundingBox();
+  const sectionBox = await section.boundingBox();
+  expect(Math.round(media.y - (heroBox.y + heroBox.height))).toBeGreaterThanOrEqual(88);
+  expect(sectionBox.y).toBeGreaterThanOrEqual(heroBox.y + heroBox.height - 1);
+  // Only the client's words: no sentence that is not in the content document.
+  await expect(section).not.toContainText("Share your requirement");
+
   // The client's wording is unchanged: every field and the button keep their labels.
   for (const label of [
     "Name",

@@ -389,6 +389,13 @@
 // content column starts 63 px after it, the title is about 64 px, the fields are underlined
 // with an icon on the right and the button is black and full width, 68 px high.
 .enquiry-photo {
+  // Space above, as between the reference's sections (the form never touches the banner).
+  padding-top: 50px;
+
+  @include media-breakpoint-up(lg) {
+    padding-top: 90px;
+  }
+
   &__media {
     position: relative;
     height: 320px;
@@ -397,7 +404,7 @@
 
     @include media-breakpoint-up(lg) {
       height: 100%;
-      min-height: 760px;
+      min-height: 620px; // reference photo height
     }
 
     img {

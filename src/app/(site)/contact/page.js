@@ -22,7 +22,7 @@ export default async function ContactPage() {
     pageSectionService.getPageHeroImage("contactForm"),
     pageSectionService.getHomeContent(),
   ]);
-  const { address, mapEmbedUrl } = site.contact;
+  const { mapEmbedUrl } = site.contact;
 
   return (
     <>
@@ -36,7 +36,6 @@ export default async function ContactPage() {
       <EnquirySection
         id="contact-form"
         title="Request a consultation"
-        text={`Share your requirement and our team will get back to you. Head office: ${[address.line1, address.city, address.state].filter(Boolean).join(", ")}.`}
         categories={categories}
         contact={site.contact}
         photo={formPhoto}

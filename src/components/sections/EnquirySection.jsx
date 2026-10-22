@@ -91,7 +91,7 @@ export default function EnquirySection({
               <h2 id={`${id}-title`} className="enquiry-photo__title">
                 {title}
               </h2>
-              <p className="mb-0">{text}</p>
+              {text && <p className="mb-0">{text}</p>}
               <DirectContacts contact={contact} />
             </Reveal>
             <div className="enquiry-photo__form">{form("line")}</div>
@@ -109,7 +109,7 @@ export default function EnquirySection({
             <h2 id={`${id}-title`} className="mb-4">
               {title}
             </h2>
-            <p>{text}</p>
+            {text && <p>{text}</p>}
             <DirectContacts contact={contact} />
           </div>
           <div className="col-lg-8">

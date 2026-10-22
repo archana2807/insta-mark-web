@@ -88,7 +88,6 @@ export default function HomeHero({ hero, image, slides = [], banner = null }) {
                     <BtnText>{hero.secondaryCta.label}</BtnText>
                   </Link>
                 </div>
-                <div id="hero-slider-counter" className="hero-split__counter" />
               </div>
             </div>
           </div>

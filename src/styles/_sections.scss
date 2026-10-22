@@ -110,66 +110,6 @@
   }
 }
 
-// "01 ——— 03" counter in the text column, as in the reference.
-.hero-split__counter {
-  min-height: 44px;
-  margin-top: 2.5rem;
-}
-
-.hero-counter {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: $headings-font-family;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: $ink;
-
-  &__button {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin-left: -12px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: $ink;
-    font-size: 1rem;
-
-    &:hover,
-    &:focus-visible {
-      color: $brand-teal;
-    }
-  }
-
-  &__line {
-    position: relative;
-    display: block;
-    width: clamp(120px, 18vw, 275px);
-    height: 1px;
-    background: $line;
-  }
-
-  &__fill {
-    position: absolute;
-    inset: -0.5px 0;
-    background: $ink;
-    transform: scaleX(1);
-    transform-origin: left center;
-
-    &.is-running {
-      animation: hero-slider-line var(--interval, 6s) linear both;
-    }
-  }
-}
-
-@keyframes hero-slider-line {
-  from {
-    transform: scaleX(0);
-  }
-}
-
 .hero-split {
   position: relative;
 

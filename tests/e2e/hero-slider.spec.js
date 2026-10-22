@@ -75,7 +75,7 @@ test.afterAll(async ({ browser }) => {
   await page.close();
 });
 
-test("by default the banner is a slider of the three current photos with a 01 — 03 counter", async ({
+test("by default the banner is a slider of the three current photos, with no counter", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -83,8 +83,7 @@ test("by default the banner is a slider of the three current photos with a 01 �
   const slider = page.locator(".hero-slider");
   await expect(slider).toBeVisible();
   await expect(slider.locator(".hero-slider__slide")).toHaveCount(3);
-  await expect(page.locator(".hero-counter__count").first()).toHaveText("01");
-  await expect(page.locator(".hero-counter__count").last()).toHaveText("03");
+  await expect(page.locator(".hero-counter, .hero-split__counter")).toHaveCount(0);
   expect(await activeSlide(page)).toBe("0");
 
   // The first photo is the priority image; the others load lazily.
@@ -108,7 +107,6 @@ test("the keyboard arrows change the slide; the headline and tagline stay the sa
   };
   await press("Next slide");
   await expect.poll(() => activeSlide(page)).toBe("1");
-  await expect(page.locator(".hero-counter__count").first()).toHaveText("02");
   await press("Next slide");
   await expect.poll(() => activeSlide(page)).toBe("2");
   await press("Next slide");
@@ -132,12 +130,14 @@ test("it plays by itself and the pause button stops it (WCAG 2.2.2)", async ({ p
 
   await expect.poll(() => activeSlide(page), { timeout: 12_000 }).toBe("1");
 
-  await toggle.click();
+  await toggle.focus();
+  await page.keyboard.press("Enter");
   await expect(toggle).toHaveAccessibleName("Play the slideshow");
   await page.waitForTimeout(7500);
   expect(await activeSlide(page)).toBe("1"); // paused: it did not move
 
-  await toggle.click(); // play again
+  await toggle.focus();
+  await page.keyboard.press("Enter"); // play again
   await expect(toggle).toHaveAccessibleName("Pause the slideshow");
   await expect.poll(() => activeSlide(page), { timeout: 12_000 }).toBe("2");
 });
@@ -163,7 +163,6 @@ test("with one slide there is no slider and no counter, just the photo (10h)", a
   await page.goto("/");
   await expect(page.locator(".hero-split__media picture")).toHaveCount(1);
   await expect(page.locator(".hero-slider")).toHaveCount(0);
-  await expect(page.locator(".hero-counter")).toHaveCount(0);
   await expect(page.locator(".hero-slider__cursor")).toHaveCount(0);
 });
 
@@ -181,7 +180,7 @@ test("admin: two slides make a slider, the order can be changed, an empty slide 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expect(page.locator(".hero-slider__slide")).toHaveCount(2);
-  await expect(page.locator(".hero-counter__count").last()).toHaveText("02");
+  await expect(page.locator(".hero-slider__slide")).toHaveCount(2);
   const firstSrc = () =>
     page
       .locator('.hero-slider__slide[data-slide="0"] img')
@@ -248,17 +247,4 @@ test("no control bar over the photo; a round DRAG cursor appears on hover and dr
   // Leaving the photo hides the circle again.
   await page.mouse.move(box.x - 50, box.y + 100);
   await expect.poll(() => cursor.evaluate((el) => getComputedStyle(el).opacity)).toBe("0");
-});
-
-test("the 01 — 03 counter and the pause button sit in the text column, not on the photo", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  const counter = page.locator(".hero-split__counter .hero-counter");
-  await expect(counter).toBeVisible();
-  const c = await counter.boundingBox();
-  const media = await page.locator(".hero-split__media").boundingBox();
-  expect(c.x + c.width).toBeLessThanOrEqual(media.x + 1); // left of the photo
-  await expect(counter.getByRole("button", { name: "Pause the slideshow" })).toBeVisible();
 });

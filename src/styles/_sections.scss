@@ -413,56 +413,7 @@
   }
 }
 
-// ── Solution page "Where it is used": photo tiles + list with + icons ──
-.industry-tiles {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  aspect-ratio: 1 / 1.05;
-
-  &__tile {
-    position: relative;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    padding: 1rem;
-    color: #fff;
-    background: linear-gradient(135deg, #2b3641, #4b5a67);
-
-    &:first-child {
-      grid-row: span 2;
-    }
-
-    // Grey wash over the photo.
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(#1b2530, 0.5);
-    }
-  }
-
-  &__photo {
-    object-fit: cover;
-    filter: grayscale(1);
-  }
-
-  &__label {
-    position: relative;
-    z-index: 1;
-    padding-bottom: 0.6rem;
-    border-bottom: 3px solid #f2c200;
-    font-family: $headings-font-family;
-    font-size: clamp(0.9rem, 0.8rem + 0.35vw, 1.1rem);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    line-height: 1.25;
-    text-align: center;
-    text-transform: uppercase;
-  }
-}
-
+// ── Solution page "Where it is used": the industries as a list with + icons ──
 .used-list {
   display: grid;
   grid-template-columns: 1fr;

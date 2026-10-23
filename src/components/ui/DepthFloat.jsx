@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-// Subtle "depth" float, after the client's animation reference (the Synapse mosaic): one
-// depth number per element sets how far it travels while the section scrolls past, so the
-// photos read as near or far with no per-photo tuning. The movement follows the scroll with
-// a smooth catch-up, and each element bobs a few pixels on its own while the page is still.
-// One shared requestAnimationFrame loop runs only while an element is on screen.
+// Subtle layered float, after the client's animation reference (the Synapse mosaic): each
+// element travels a set distance while its section scrolls past, up or down and sideways,
+// so photos can move against each other and read as layers. The movement follows the
+// scroll with a smooth catch-up, and each element floats a few pixels in a slow loop while
+// the page is still. One shared requestAnimationFrame loop runs only while an element is
+// on screen.
 const items = new Set();
 let frame = 0;
 let last = 0;
@@ -20,24 +21,30 @@ function tick(now) {
   last = now;
   const t = now / 1000;
   const vh = window.innerHeight;
+  // Sideways movement shrinks on narrow screens so it never widens the page.
+  const xScale = Math.min(1, window.innerWidth / 1200);
   let active = false;
   for (const item of items) {
     if (!item.visible) continue;
     active = true;
-    const { el, depth, phase } = item;
+    const { el, travelX, travelY, bob, phase } = item;
     // Measure the untransformed box: subtract the offset applied last frame.
     const rect = el.getBoundingClientRect();
-    const top = rect.top - item.y;
+    const top = rect.top - item.y - item.bobY;
     // 0 when the element's top meets the viewport bottom, 1 when its bottom leaves the top.
     const progress = Math.min(1, Math.max(0, (vh - top) / (vh + rect.height)));
-    // Near elements (low depth) travel further: about ±52 px near, ±28 px far.
-    const travel = 40 + (1 - depth) * 80;
-    const target = (0.5 - progress) * travel;
-    item.y = item.fresh ? target : damp(item.y, target, 5, dt);
+    // +half the travel on the way in, -half on the way out (a negative travel reverses it).
+    const s = 0.5 - progress;
+    const targetX = s * travelX * xScale;
+    const targetY = s * travelY;
+    item.x = item.fresh ? targetX : damp(item.x, targetX, 4, dt);
+    item.y = item.fresh ? targetY : damp(item.y, targetY, 4, dt);
     item.fresh = false;
-    // Idle float: a slow bob of 2–6 px, larger for far elements, each on its own beat.
-    const bob = Math.sin(t * 0.5 + phase) * (2 + depth * 4);
-    el.style.transform = `translate3d(0, ${(item.y + bob).toFixed(2)}px, 0)`;
+    // Idle float: a slow loop, `bob` px up and down and 60 % of that sideways.
+    const a = t * 0.6 + phase;
+    item.bobY = Math.sin(a) * bob;
+    const bobX = Math.cos(a) * bob * 0.6 * xScale;
+    el.style.transform = `translate3d(${(item.x + bobX).toFixed(2)}px, ${(item.y + item.bobY).toFixed(2)}px, 0)`;
   }
   frame = active ? window.requestAnimationFrame(tick) : 0;
   if (!active) last = 0;
@@ -48,20 +55,39 @@ function start() {
 }
 
 /**
- * Floats its content on scroll at a given depth (0 = near, moves most; 1 = far, moves
- * least) and lets it bob gently while the page is still. Off for prefers-reduced-motion.
- * @param {{ depth?: number, phase?: number, className?: string,
- *   children: import("react").ReactNode }} props
+ * Floats its content while it scrolls past: `travelY` / `travelX` px in total (a negative
+ * value moves the other way), plus a slow idle float of `bob` px. Off for
+ * prefers-reduced-motion.
+ * @param {{ travelX?: number, travelY?: number, bob?: number, phase?: number,
+ *   className?: string, children: import("react").ReactNode }} props
  * @returns {JSX.Element}
  */
-export default function DepthFloat({ depth = 0.5, phase = 0, className = "", children }) {
+export default function DepthFloat({
+  travelX = 0,
+  travelY = 80,
+  bob = 4,
+  phase = 0,
+  className = "",
+  children,
+}) {
   const ref = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
 
-    const item = { el, depth, phase, y: 0, visible: false, fresh: true };
+    const item = {
+      el,
+      travelX,
+      travelY,
+      bob,
+      phase,
+      x: 0,
+      y: 0,
+      bobY: 0,
+      visible: false,
+      fresh: true,
+    };
     items.add(item);
     el.style.willChange = "transform";
     const observer = new IntersectionObserver(
@@ -79,7 +105,7 @@ export default function DepthFloat({ depth = 0.5, phase = 0, className = "", chi
       el.style.transform = "";
       el.style.willChange = "";
     };
-  }, [depth, phase]);
+  }, [travelX, travelY, bob, phase]);
 
   return (
     <div ref={ref} className={className || undefined}>

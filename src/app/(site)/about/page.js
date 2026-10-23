@@ -10,7 +10,7 @@ import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
-import AboutCollage from "@/components/sections/AboutCollage";
+import LayerCarousel from "@/components/sections/LayerCarousel";
 import Icon from "@/components/ui/Icon";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
 import { pageMetadata } from "@/lib/seo";
@@ -56,7 +56,8 @@ export default async function AboutPage() {
         <div className="container">
           <div className="row align-items-center g-4 g-lg-5">
             <div className="col-lg-6">
-              <AboutCollage images={about.featuredImages} />
+              {/* Layered card carousel in place of the photo collage (client, 23 Oct 2026) */}
+              <LayerCarousel items={about.carouselItems} label="Our work" />
             </div>
             <Reveal className="col-lg-5 offset-lg-1">
               <h2 id="vision-title" className="h3 mb-4">

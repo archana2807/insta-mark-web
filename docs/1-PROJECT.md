@@ -165,7 +165,7 @@ Home and About text is edited in `/content` by a developer today. Build an edito
 - Online payment
 - Multi-language (English only)
 - Blog
-- Sliders, carousels, marquees, big parallax backgrounds
+- Sliders, carousels, marquees, big parallax backgrounds (approved exceptions, asked for by the client: the home banner slider (task 10h), the scrolling line on Home, and the About page card carousel (23 Oct 2026))
 - Customer accounts or customer login (only Insta Mark staff log in)
 
 ## 10. Content, data and design

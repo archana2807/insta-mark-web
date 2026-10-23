@@ -515,7 +515,75 @@ test("inner page heroes show no Home / page breadcrumb, but keep it for search e
   }
 });
 
-test("the three collage photos have the reference's sizes, and the same size on every page (10c)", async ({
+test("About: a layered card carousel replaces the photo collage; arrows, keys and a click move the cards", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+  const section = page.locator("#vision-title").locator("xpath=ancestor::section[1]");
+  await expect(section.locator(".about-collage")).toHaveCount(0);
+  const carousel = section.locator(".layer-carousel");
+  await expect(carousel).toHaveAttribute("aria-roledescription", "carousel");
+  const cards = carousel.locator(".layer-carousel__card");
+  await expect(cards).toHaveCount(3);
+  // Each card is labelled with a real solution name.
+  await expect(carousel.locator(".layer-carousel__label")).toHaveText([
+    "Tailor-made Signage",
+    "Modular Signs",
+    "Road Signs",
+  ]);
+  const front = carousel.locator(".layer-carousel__card.is-active");
+  await expect(front.locator(".layer-carousel__label")).toHaveText("Tailor-made Signage");
+  await expect(front.getByRole("link", { name: /View solution/ })).toHaveAttribute(
+    "href",
+    "/solutions/tailor-made-signage",
+  );
+  // The front card is in front and bigger than the side cards.
+  const z = (loc) => loc.evaluate((el) => Number(getComputedStyle(el).zIndex));
+  expect(await z(front)).toBeGreaterThan(await z(cards.nth(1)));
+  await carousel.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(900);
+  const w = async (loc) => (await loc.boundingBox()).width;
+  expect(await w(front)).toBeGreaterThan((await w(cards.nth(1))) * 1.1);
+  // Only the front card's link can be reached with the keyboard.
+  await expect(cards.nth(1).locator("a")).toHaveAttribute("tabindex", "-1");
+
+  // Next arrow, then the keyboard, then a click on a side card.
+  const announce = carousel.locator("[aria-live=polite]");
+  await carousel.getByRole("button", { name: "Next card" }).click();
+  await expect(announce).toHaveText("Card 2 of 3: Modular Signs");
+  await expect(front.locator(".layer-carousel__label")).toHaveText("Modular Signs");
+  await carousel.getByRole("button", { name: "Previous card" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(announce).toHaveText("Card 3 of 3: Road Signs");
+  // Card 1 now sits on the right, partly behind the front card: click its free right edge.
+  await page.waitForTimeout(900);
+  const side = await cards.nth(0).boundingBox();
+  await page.mouse.click(side.x + side.width - 15, side.y + side.height / 2);
+  await expect(announce).toHaveText("Card 1 of 3: Tailor-made Signage");
+});
+
+test("About carousel: no sideways scroll on a phone and no motion with reduced motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/about");
+  const carousel = page.locator(".layer-carousel");
+  await carousel.scrollIntoViewIfNeeded();
+  // The site-wide reduced-motion rule turns every transition into 0.01 ms.
+  const duration = await carousel
+    .locator(".layer-carousel__card")
+    .first()
+    .evaluate((el) => parseFloat(getComputedStyle(el).transitionDuration));
+  expect(duration).toBeLessThan(0.01);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("the three collage photos have the reference's sizes, the same on Home and the solution pages (10c)", async ({
   page,
 }) => {
   const measure = async (route, scope) => {
@@ -526,7 +594,6 @@ test("the three collage photos have the reference's sizes, and the same size on 
     return items.evaluateAll((els) => els.map((el) => [el.offsetWidth, el.offsetHeight]));
   };
   const home = await measure("/", ".about-short");
-  const about = await measure("/about", "main");
   const solution = await measure("/solutions/tailor-made-signage", "main");
 
   // Reference layout sizes: 224×279, 261×313 and 305×375 (within a pixel or two).
@@ -545,8 +612,7 @@ test("the three collage photos have the reference's sizes, and the same size on 
       `photo ${i + 1} height (ours ${home[i][1]}, reference ${h})`,
     ).toBeLessThanOrEqual(8);
   }
-  // Identical on the other pages.
-  expect(about).toEqual(home);
+  // Identical on the solution pages (the About page has the card carousel instead).
   expect(solution).toEqual(home);
 });
 

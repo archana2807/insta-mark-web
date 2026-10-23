@@ -304,6 +304,145 @@
   }
 }
 
+// ── About page: layered card carousel (client, 23 Oct 2026) ──────────
+// The front card stands in the middle; the others sit on both sides, a step back, smaller and
+// a little darker. A change slides and scales every card (the theme's ease-out-expo curve).
+// Each card: a small label on top, the photo, and on the front card a "View solution" pill.
+.layer-carousel {
+  // How far a side card moves out, in card widths: wide enough that its label shows.
+  --spread: 50%;
+
+  position: relative;
+  padding-inline: 2.75rem; // room for the arrows
+
+  @include media-breakpoint-up(lg) {
+    --spread: 60%;
+  }
+
+  &__stage {
+    position: relative;
+    aspect-ratio: 10 / 9;
+    touch-action: pan-y; // a sideways swipe changes the card, an up-down one scrolls
+    user-select: none;
+  }
+
+  &__card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: calc(10 - var(--abs));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 64%;
+    padding: 0 10px 10px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px rgba($ink, 0.16);
+    transform: translate(-50%, -50%) translateX(calc(var(--d) * var(--spread)))
+      scale(calc(1 - var(--abs) * 0.18));
+    filter: brightness(calc(1 - var(--abs) * 0.12));
+    transition:
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.5s ease;
+    cursor: pointer;
+
+    &.is-active {
+      cursor: auto;
+    }
+
+    @include media-breakpoint-up(lg) {
+      width: 58%;
+    }
+  }
+
+  &__label {
+    padding: 10px 0;
+    font-family: $headings-font-family;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $ink;
+    white-space: nowrap;
+  }
+
+  &__photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 12px;
+    background: $surface;
+
+    img {
+      object-fit: cover;
+      pointer-events: none; // no ghost-image drag
+    }
+  }
+
+  &__link {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #fff;
+    background: rgba($ink, 0.85);
+    border-radius: 999px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
+    }
+
+    .is-active & {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: $ink;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
+    }
+
+    &--prev {
+      left: 0;
+    }
+
+    &--next {
+      right: 0;
+    }
+  }
+}
+
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
 // Three portrait photos of different sizes: a small one top-left, a taller one top-right
 // and the biggest in front at the bottom, with soft wide shadows.

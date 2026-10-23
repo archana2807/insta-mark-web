@@ -117,7 +117,15 @@ export async function getAboutContent() {
     industries,
     // The client's six About-page items (R-5.3). Titles only: no invented text.
     whyChooseRows: about.whyChooseUs.map((title) => ({ title })),
-    featuredImages: featured.about,
+    // Cards of the About page carousel: the photo, the solution's real name and its page.
+    carouselItems: featured.aboutCarousel
+      .map(({ slug, image }) => {
+        const category = categories.find((c) => c.slug === slug);
+        return category
+          ? { src: image.src, alt: image.alt, label: category.name, href: `/solutions/${slug}` }
+          : null;
+      })
+      .filter(Boolean),
     heroImage: featured.pages.about,
     featureImage: featured.aboutFeature,
     counters: realCounters(categories, industries),

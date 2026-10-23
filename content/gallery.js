@@ -571,6 +571,13 @@ export const featured = {
     gallery["modular-signs"][0],
     gallery["tailor-made-signage"][13],
   ],
+  // About page card carousel (client, 23 Oct 2026): one photo from each of three solutions;
+  // each card is labelled with that solution's name and links to its page.
+  aboutCarousel: [
+    { slug: "tailor-made-signage", image: gallery["tailor-made-signage"][2] },
+    { slug: "modular-signs", image: gallery["modular-signs"][0] },
+    { slug: "road-signs", image: pick("road-signs", "pylons-020.jpg") },
+  ],
   // The home banner slider shows these three photos until the client's final ones are
   // uploaded in Admin → Banner (task 10h).
   heroSlides: [

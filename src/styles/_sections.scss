@@ -164,14 +164,11 @@
   }
 }
 
-// ── Project logos right under the home banner ──────────
-// Theme: logos in equal columns across the full width, each centred, muted grey, with
-// generous air above and below.
-// Spacing measured on the reference: the logo section has 90 px above and below on a 1440 px
-// screen (110 px on a 1920 px screen), the logos are about 35 px high, and the About block
-// that follows has no top padding. Our logo files are taller than the reference's wordmarks
-// (up to 48 px), so the padding is a little smaller to keep the gap from the logos the same.
-.project-logos {
+// ── Counters right under the home banner (client, 23 Oct 2026) ──────────
+// They replace the theme's logo row, so they keep its spacing: about 84 px above and below
+// on a 1440 px screen (the reference's logo section has 90 px), more on very wide screens.
+// The About block that follows has no top padding, as in the reference.
+.home-counters {
   padding-block: 4rem;
 
   @include media-breakpoint-up(lg) {
@@ -182,46 +179,25 @@
     padding-block: 6.5rem;
   }
 
-  // Phones and tablets: rows that wrap and stay centred (no lone logo stuck on the left).
-  &__list {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 2.5rem 1.5rem;
+  // Five columns are narrower than the theme's four: a slightly smaller number that never
+  // breaks ("500+" stays on one line).
+  .counter-cols {
+    > div {
+      padding-inline: 1.5rem;
 
-    li {
-      display: flex;
-      justify-content: center;
-      flex: 0 0 calc(50% - 0.75rem);
-
-      @include media-breakpoint-up(md) {
-        flex-basis: calc(33.333% - 1rem);
+      // Two per row below 992 px: the fifth counter takes the full row, not half of it.
+      &:last-child {
+        @include media-breakpoint-down(lg) {
+          flex: 0 0 100%;
+          max-width: 100%;
+        }
       }
     }
 
-    @include media-breakpoint-up(lg) {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-      justify-items: center;
-      gap: 2.5rem 2rem;
-
-      li {
-        flex: none;
-      }
+    strong {
+      font-size: clamp(2.6rem, 1.8rem + 2vw, 3.75rem);
+      white-space: nowrap;
     }
-  }
-
-  img {
-    display: block;
-    width: auto;
-    max-width: min(100%, 190px);
-    height: auto;
-    max-height: 48px;
-    object-fit: contain;
-    opacity: 0.85;
-    filter: grayscale(1); // the strip under the banner stays grey, as in the theme
-    mix-blend-mode: multiply; // the logo files have a white background
   }
 }
 

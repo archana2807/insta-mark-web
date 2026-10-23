@@ -141,6 +141,52 @@ test("home About: three overlapping photos on the left, the company text on the 
   await expect.poll(overlapCount, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
 });
 
+test("home About photos float on scroll at three depths: the front photo moves most, and they bob gently", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const items = page.locator(".about-short .about-collage__item");
+  const offsets = () =>
+    items.evaluateAll((els) => els.map((el) => new DOMMatrix(getComputedStyle(el).transform).m42));
+
+  // Two scroll positions while the collage is on screen; let the smooth catch-up settle.
+  await items.first().scrollIntoViewIfNeeded();
+  const top = await page.evaluate(() => scrollY);
+  await page.evaluate((y) => scrollTo(0, y - 250), top);
+  await page.waitForTimeout(1500);
+  const before = await offsets();
+  await page.evaluate((y) => scrollTo(0, y + 150), top);
+  await page.waitForTimeout(1500);
+  const after = await offsets();
+  const moved = before.map((b, i) => Math.abs(after[i] - b));
+  // Back (small) photo < middle < front (big) photo; all subtle (under 60 px for 400 px).
+  expect(moved[2]).toBeGreaterThan(moved[1]);
+  expect(moved[1]).toBeGreaterThan(moved[0]);
+  expect(moved[0]).toBeGreaterThan(2);
+  expect(Math.max(...moved)).toBeLessThan(60);
+
+  // Idle float: without scrolling, the photos still move a little (a few pixels).
+  const still = await offsets();
+  await page.waitForTimeout(1200);
+  const later = await offsets();
+  const bob = later.map((v, i) => Math.abs(v - still[i]));
+  expect(Math.max(...bob)).toBeGreaterThan(0.3);
+  expect(Math.max(...bob)).toBeLessThan(8);
+});
+
+test("home About photos do not float with reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const items = page.locator(".about-short .about-collage__item");
+  await items.first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  const transforms = await items.evaluateAll((els) =>
+    els.map((el) => getComputedStyle(el).transform),
+  );
+  expect(transforms).toEqual(["none", "none", "none"]);
+});
+
 test("no small label above a headline on any public page (10b)", async ({ page }) => {
   await page.goto("/solutions");
   const solution = await page.locator('a[href^="/solutions/"]').first().getAttribute("href");

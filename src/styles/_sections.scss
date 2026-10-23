@@ -212,12 +212,36 @@
     }
   }
 
-  // A counter in place of each logo (client, 23 Oct 2026): number on top, label under it,
-  // both centred in the column.
+  // A counter in place of each logo (client, 23 Oct 2026). Look: a light band, hairline
+  // dividers between the columns (from 992 px), the number in ink with a small raised "+",
+  // a short brand-gradient line that draws in, and a small uppercase label.
+  &--stats {
+    background: $surface;
+
+    // Columns stretch to the tallest one (equal dividers) and their content starts at the
+    // top, so every number sits on one line even when a label wraps.
+    .project-logos__list {
+      align-items: stretch;
+
+      li {
+        justify-content: flex-start;
+      }
+    }
+  }
+
   &__stat {
     flex-direction: column;
     align-items: center;
     text-align: center;
+
+    @include media-breakpoint-up(lg) {
+      width: 100%;
+      padding-inline: 1rem;
+
+      & + & {
+        border-left: 1px solid $line;
+      }
+    }
   }
 
   &__value {
@@ -228,29 +252,55 @@
     letter-spacing: -0.04em;
     white-space: nowrap;
     color: $ink;
+
+    .digit-roll__sym {
+      display: inline-block;
+      margin-left: 0.04em;
+      font-size: 0.55em;
+      vertical-align: top;
+      color: $brand-teal;
+    }
+  }
+
+  // Draws in from the left when the row comes into view, in step with its item.
+  &__bar {
+    display: block;
+    width: 32px;
+    height: 3px;
+    margin: 1rem auto 0.9rem;
+    border-radius: 2px;
+    background: $brand-gradient;
+    transform-origin: left center;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); // the theme's ease-out-expo
+    transition-delay: inherit;
+
+    .motion-armed & {
+      transform: scaleX(0);
+    }
   }
 
   &__label {
-    margin-top: 0.75rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    line-height: 1.4;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     color: $muted;
   }
 }
 
 // ── Counters under the logo row (client, 23 Oct 2026) ──────────
-// The logo row's bottom padding is the gap above; below, the same gap as the logo row
-// (about 84 px on a 1440 px screen), because the About block has no top padding.
+// The counter band above ends at its own edge, so these need a gap above (72 px at 1440 px);
+// below, the same gap as the logo row (84 px), because the About block has no top padding.
 .home-counters {
-  padding-bottom: 4rem;
+  padding-block: 3.5rem 4rem;
 
   @include media-breakpoint-up(lg) {
-    padding-bottom: 5.25rem;
+    padding-block: 4.5rem 5.25rem;
   }
 
   @media (min-width: 1600px) {
-    padding-bottom: 6.5rem;
+    padding-block: 5.5rem 6.5rem;
   }
 }
 

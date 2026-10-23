@@ -22,7 +22,9 @@ export function RollingNumber({ value }) {
               </span>
             </span>
           ) : (
-            <span key={i}>{ch}</span>
+            <span className="digit-roll__sym" key={i}>
+              {ch}
+            </span>
           ),
         )}
       </span>

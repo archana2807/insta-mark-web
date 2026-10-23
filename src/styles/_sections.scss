@@ -239,12 +239,11 @@
     padding-bottom: 6.5rem;
   }
 
-  // Five columns are narrower than the theme's four: a slightly smaller number that never
-  // breaks ("500+" stays on one line).
+  // Same look as the About page counters (client, 23 Oct 2026): same label, number size and
+  // padding. Only between 992 and 1199 px, where five columns are narrow, the padding and the
+  // number shrink a little so "500+" stays on one line.
   .counter-cols {
     > div {
-      padding-inline: 1.5rem;
-
       // Two per row below 992 px: the fifth counter takes the full row, not half of it.
       &:last-child {
         @include media-breakpoint-down(lg) {
@@ -252,11 +251,18 @@
           max-width: 100%;
         }
       }
+
+      @include media-breakpoint-only(lg) {
+        padding-inline: 1.25rem;
+      }
     }
 
     strong {
-      font-size: clamp(2.6rem, 1.8rem + 2vw, 3.75rem);
       white-space: nowrap;
+
+      @include media-breakpoint-only(lg) {
+        font-size: 2.75rem;
+      }
     }
   }
 }

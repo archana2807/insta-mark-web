@@ -8,8 +8,7 @@ export const home = {
     title: "Architectural Signage & Road Safety",
     tagline: "Signage That Guides. Safety That Lasts.",
     text: "From intelligent wayfinding and architectural signage to road safety solutions, Insta Mark delivers end-to-end design, manufacturing, and installation for spaces that are smarter, safer, and built to perform.",
-    primaryCta: { label: "Explore Our Solutions", href: "/solutions" },
-    secondaryCta: { label: "Request a Consultation", href: "/contact" },
+    // No buttons in the banner (client, 23 Oct 2026).
   },
   about: {
     title: "Creating Signage That Makes Every Space Smarter",

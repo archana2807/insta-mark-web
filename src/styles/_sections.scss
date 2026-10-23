@@ -127,16 +127,11 @@
     line-height: 0.914;
     letter-spacing: -0.057em;
 
+    // The headline stays in its own column, never on the photo (client, 23 Oct 2026).
+    // Beside the photo the column is narrow, so the size follows the screen width and
+    // "Architectural", the longest word, always fits on one line.
     @include media-breakpoint-up(lg) {
-      // Theme: the headline runs past its column and lies on the photo: the first line
-      // ("Architectural Signage") reaches about 150 px into it at 1440 px. A soft light
-      // glow keeps the dark letters readable on the photo (WCAG AA).
-      margin-right: -26vw;
-      position: relative;
-      z-index: 2;
-      text-shadow:
-        0 0 18px rgba(#fff, 0.85),
-        0 0 4px rgba(#fff, 0.6);
+      font-size: clamp(2.75rem, 4.4vw, 4.375rem);
     }
   }
 

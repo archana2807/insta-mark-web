@@ -8,6 +8,7 @@ import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
 import CounterColumns from "@/components/sections/CounterColumns";
+import ProjectLogos from "@/components/sections/ProjectLogos";
 import SectionHeading from "@/components/ui/SectionHeading";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as pageSectionService from "@/server/modules/page-sections/page-section.service";
@@ -23,8 +24,9 @@ export const metadata = pageMetadata({
 });
 
 /**
- * Order (client feedback 21 Oct 2026, Crafto "Branding Agency" flow): banner → counters
- * (23 Oct 2026) → About → scrolling line → products → industries → working process → trusted by
+ * Order (client feedback 21 Oct 2026, Crafto "Branding Agency" flow): banner → project
+ * logos → counters (23 Oct 2026) → About → scrolling line → products → industries →
+ * working process → trusted by
  * (all project logos) → call to action. Longer copy (why choose us, FAQs) lives on About,
  * Contact and the category pages.
  */
@@ -49,7 +51,10 @@ export default async function HomePage() {
         banner={home.banner}
       />
 
-      {/* Five counters right under the banner (client, 23 Oct 2026; replaces the logo row) */}
+      {/* Five project logos right under the banner */}
+      <ProjectLogos logos={home.projectLogos.slice(0, 5)} />
+
+      {/* Five counters under the logos (client, 23 Oct 2026) */}
       <CounterColumns items={home.counters} className="home-counters" colClass="col-6 col-lg" />
 
       {/* 2. About — photo collage left, company text right */}

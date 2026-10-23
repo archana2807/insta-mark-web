@@ -33,7 +33,6 @@ export default async function SolutionsPage() {
   return (
     <>
       <InnerHero
-        label="Our solutions"
         image={heroImage}
         title="Complete signage & road safety solutions"
         lead={home.about.text}

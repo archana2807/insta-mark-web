@@ -122,14 +122,6 @@ $motion-duration: 0.6s;
   }
 }
 
-@keyframes motion-blur-in {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-    filter: blur(20px);
-  }
-}
-
 // The hero photo zooms in slowly while it is revealed (reference: scale 1 → 1.049 in about
 // 2.5 s). The photo also drifts on scroll (ScrollDrift, scale 1.08), so the zoom starts a
 // little below its resting size and ends at it.
@@ -169,14 +161,6 @@ $motion-duration: 0.6s;
     animation: motion-wipe-off 1s $ease-out-expo 0.15s both;
     pointer-events: none;
   }
-}
-
-// Vertical label: letters blur in one by one (components/ui/FancyText.jsx).
-.fancy-text span {
-  display: inline-block;
-  white-space: pre;
-  animation: motion-blur-in 0.4s $ease-out-quad both;
-  animation-delay: calc(var(--i) * 50ms);
 }
 
 // 3. Counters roll to their value (CounterColumns) ───────────────────

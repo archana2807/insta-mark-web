@@ -51,7 +51,6 @@ export default async function ContactPage({ searchParams }) {
   return (
     <>
       <InnerHero
-        label="Contact us"
         image={heroImage}
         title={page.title}
         lead={page.text}

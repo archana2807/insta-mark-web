@@ -76,7 +76,7 @@ test("What you get stacks in two columns on a phone without sideways scroll (10e
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test("every solution hero is only the label, the title and the photo; the client's Overview follows (10f)", async ({
+test("every solution hero is only the title and the photo; the client's Overview follows (10f)", async ({
   page,
 }) => {
   await page.goto("/solutions");
@@ -89,7 +89,7 @@ test("every solution hero is only the label, the title and the photo; the client
     await page.goto(href);
     const hero = page.locator(".inner-hero");
     await expect(hero.locator("h1")).toHaveCount(1);
-    await expect(hero.locator(".inner-hero__vertical")).toHaveCount(1);
+    await expect(hero.locator(".inner-hero__vertical")).toHaveCount(0); // like the home banner
     // No paragraph and no button in the hero.
     await expect(hero.locator("p")).toHaveCount(0);
     await expect(hero.locator("a.btn, button")).toHaveCount(0);

@@ -1,15 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { breadcrumbJsonLd } from "@/lib/seo";
-import FancyText from "@/components/ui/FancyText";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
- * Inner-page hero (theme "About" layout): vertical label + large
- * title on the left, a big photo on the right that the title overlaps.
+ * Inner-page hero, laid out like the home banner (client, 23 Oct 2026): the title (and the
+ * lead, if any) in the left column, never on the photo, and the photo on the right. No
+ * vertical label. Same columns and left padding as the home banner, so all heroes line up.
+ * @param {{ title: string, lead?: string, image?: { src: string, alt: string },
+ *   fallback?: import("react").ReactNode, breadcrumbs?: { label: string, href: string }[],
+ *   children?: import("react").ReactNode }} props
+ * @returns {JSX.Element}
  */
 export default function InnerHero({
-  label,
   title,
   lead,
   image,
@@ -22,13 +25,8 @@ export default function InnerHero({
     <section className="inner-hero" aria-labelledby="page-title">
       <div className="container-fluid px-0">
         <div className="row g-0 align-items-stretch">
-          <div className="col-xl-4 col-lg-5 inner-hero__text">
-            <div className="d-flex w-100">
-              {label && (
-                <div className="inner-hero__vertical" aria-hidden="true">
-                  <FancyText text={label} />
-                </div>
-              )}
+          <div className="col-lg-5 inner-hero__text px-3 px-sm-4 px-lg-5">
+            <div className="w-100 ps-xl-4">
               <div className="load-stagger">
                 <h1 id="page-title">{title}</h1>
                 {lead && <p className="inner-hero__lead">{lead}</p>}
@@ -36,7 +34,7 @@ export default function InnerHero({
               </div>
             </div>
           </div>
-          <div className="col-xl-8 col-lg-7 order-first order-lg-last">
+          <div className="col-lg-7 order-first order-lg-last">
             {!image && fallback}
             {image && (
               <div className="inner-hero__media load-wipe">
@@ -52,7 +50,7 @@ export default function InnerHero({
                     alt={image.alt}
                     fill
                     priority
-                    sizes="(min-width: 1200px) 67vw, (min-width: 992px) 58vw, 100vw"
+                    sizes="(min-width: 992px) 58vw, 100vw"
                   />
                 </ScrollDrift>
               </div>

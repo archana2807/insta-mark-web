@@ -92,35 +92,62 @@ test("home banner (desktop): the tagline is fully visible without scrolling", as
   expect(label.y + label.height).toBeLessThanOrEqual(800);
 });
 
-test("project logos sit right under the banner: 4–5 logos that load (R-3.10)", async ({ page }) => {
+test("the row under the banner shows five counters in place of the logos, in the same equal columns", async ({
+  page,
+}) => {
   await page.goto("/");
-  const logos = page.locator(".project-logos");
-  await expect(logos).toBeVisible();
-  const imgs = logos.locator("img");
-  const count = await imgs.count();
-  expect(count).toBeGreaterThanOrEqual(4);
-  expect(count).toBeLessThanOrEqual(5);
-  for (let i = 0; i < count; i++) {
-    await expect(imgs.nth(i)).toBeVisible();
-    await expect(imgs.nth(i)).toHaveAttribute("alt", /\S+ logo$/);
-    expect(await imgs.nth(i).evaluate((el) => el.naturalWidth)).toBeGreaterThan(0);
-  }
-  // Theme look: equal columns across the page, each logo centred in its column.
-  const centres = await imgs.evaluateAll((els) =>
+  const row = page.locator(".project-logos");
+  await expect(row).toBeVisible();
+  await expect(row.locator("img")).toHaveCount(0);
+  const items = row.locator(".project-logos__stat");
+  await expect(row.locator(".project-logos__label")).toHaveText([
+    "Projects Delivered",
+    "Years of Experience",
+    "Locations Covered",
+    "Solutions & Applications",
+    "Industries Served",
+  ]);
+  // Screen readers get each number as plain text; the last two come from real content.
+  const values = row.locator(".project-logos__value .visually-hidden");
+  await expect(values.nth(3)).toHaveText("8");
+  await expect(values.nth(4)).toHaveText("12");
+  for (let i = 0; i < 3; i++) await expect(values.nth(i)).toHaveText(/^\d+\+$/);
+
+  // Same look as the logo row: one row of equal columns, each item centred in its column.
+  const centres = await items.evaluateAll((els) =>
     els.map((el) => {
       const r = el.getBoundingClientRect();
-      return r.left + r.width / 2;
+      return [el.offsetTop, r.left + r.width / 2];
     }),
   );
-  const steps = centres.slice(1).map((c, i) => c - centres[i]);
+  expect(new Set(centres.map(([top]) => top)).size).toBe(1);
+  const steps = centres.slice(1).map(([, c], i) => c - centres[i][1]);
   for (const step of steps) expect(Math.abs(step - steps[0])).toBeLessThan(4);
-  expect(steps[0]).toBeGreaterThan(200);
 
-  // Directly after the banner, before the About intro.
+  // Directly after the banner.
   const hero = await page.locator(".hero-split").boundingBox();
-  const band = await logos.boundingBox();
+  const band = await row.boundingBox();
   expect(band.y).toBeGreaterThanOrEqual(hero.y + hero.height - 1);
   expect(band.y - (hero.y + hero.height)).toBeLessThan(40);
+
+  // Rolling digits: the "8" strip ends on its digit once the row is in view.
+  await row.scrollIntoViewIfNeeded();
+  const strip = items.nth(3).locator(".digit-roll__strip");
+  await expect
+    .poll(() => strip.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), {
+      timeout: 5000,
+    })
+    .toBeLessThan(-1);
+});
+
+test("the counter row wraps centred on a phone without sideways scroll", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator(".project-logos__stat")).toHaveCount(5);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("the About page counters sit right under the logo row, same content; the digits roll in", async ({

@@ -54,8 +54,8 @@ export default async function HomePage() {
       {/* Five project logos right under the banner */}
       <ProjectLogos logos={home.projectLogos.slice(0, 5)} />
 
-      {/* Five counters under the logos (client, 23 Oct 2026) */}
-      <CounterColumns items={home.counters} className="home-counters" colClass="col-6 col-lg" />
+      {/* The About page counters under the logos (client, 23 Oct 2026) */}
+      <CounterColumns items={home.counters} className="home-counters" />
 
       {/* 2. About — photo collage left, company text right */}
       <AboutIntro about={home.about} images={home.featured.about} />

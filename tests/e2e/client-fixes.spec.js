@@ -64,8 +64,9 @@ test("the home banner shows the tagline under the headline, not the old services
   );
   await expect(hero).not.toContainText(/Signage\s*·\s*Wayfinding/i);
 
+  // Inner pages follow the home banner: no vertical label there either (23 Oct 2026).
   await page.goto("/about");
-  await expect(page.locator(".inner-hero__vertical")).toHaveCount(1);
+  await expect(page.locator(".inner-hero__vertical")).toHaveCount(0);
 });
 
 test("the years badge is gone, even when a founding year is set in admin", async ({ page }) => {

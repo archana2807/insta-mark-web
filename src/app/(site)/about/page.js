@@ -32,9 +32,8 @@ export default async function AboutPage() {
 
   return (
     <>
-      {/* 1. Hero: vertical label + title over a large photo (headings from the client's content document) */}
+      {/* 1. Hero: title left, large photo right, like the home banner (headings from the client's content document) */}
       <InnerHero
-        label="About Insta Mark"
         title={home.about.title}
         image={about.heroImage}
         breadcrumbs={[{ label: "About", href: "/about" }]}

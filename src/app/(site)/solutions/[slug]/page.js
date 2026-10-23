@@ -69,9 +69,8 @@ export default async function CategoryPage({ params }) {
 
   return (
     <>
-      {/* 1. Hero: only the label, the title and a real project photo (like the reference) */}
+      {/* 1. Hero: only the title and a real project photo, laid out like the home banner */}
       <InnerHero
-        label={`Solution ${String(category.number).padStart(2, "0")}`}
         title={category.name}
         image={category.heroImages[0]}
         fallback={

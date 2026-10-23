@@ -1,9 +1,8 @@
 // Home banner (client feedback, 21 Oct 2026; Crafto "Branding Agency" hero):
 // - H1 "Architectural Signage & Road Safety", the page's only H1, beside the photo (not on it);
-// - wide screens (≥ 1200 px): the tagline "Signage That Guides. Safety That Lasts." is
-//   the vertical label on the left (with a thin line next to the headline);
-// - narrower screens (no vertical label, as in the theme): the tagline is a smaller line
-//   right under the H1.
+// - the tagline "Signage That Guides. Safety That Lasts." is a smaller line right under the
+//   H1 at every width; no vertical label (client, 23 Oct 2026). Inner pages follow the same
+//   layout.
 // No small label above the headline at any width.
 import { test, expect } from "@playwright/test";
 
@@ -406,7 +405,9 @@ test("home banner (phone): the tagline is a smaller line under the H1", async ({
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(tagline)) * 1.5);
 });
 
-test("inner page headlines run onto the photo, like the theme (10f)", async ({ page }) => {
+test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
+  page,
+}) => {
   const routes = [
     "/about",
     "/solutions",
@@ -414,28 +415,21 @@ test("inner page headlines run onto the photo, like the theme (10f)", async ({ p
     "/contact",
     "/solutions/tailor-made-signage",
   ];
+  await page.setViewportSize({ width: 1440, height: 900 });
   for (const route of routes) {
     await page.goto(route);
     const hero = page.locator(".inner-hero");
+    await expect(hero.locator(".inner-hero__vertical"), route).toHaveCount(0);
     const media = hero.locator(".inner-hero__media").first();
     if ((await media.count()) === 0) continue; // a page without a photo has nothing to overlap
     const m = await media.boundingBox();
-    // The title's block runs past its column into the photo ...
-    const blockRight = await hero.locator("h1").evaluate((h) => h.getBoundingClientRect().right);
-    expect(blockRight, `${route}: the title block should reach the photo`).toBeGreaterThan(
-      m.x + 40,
-    );
-    // ... and where the title is long, its text lines lie on the photo too.
-    if (["/about", "/solutions"].includes(route)) {
-      const textRight = await hero.locator("h1").evaluate((h) => {
-        const range = document.createRange();
-        range.selectNodeContents(h);
-        return Math.max(...[...range.getClientRects()].map((r) => r.right));
-      });
-      expect(textRight, `${route}: the title text should reach the photo`).toBeGreaterThan(m.x);
-    }
-    const z = await hero.locator("h1").evaluate((h) => getComputedStyle(h).zIndex);
-    expect(Number(z)).toBeGreaterThan(0);
+    // The letters themselves end before the photo, with air between.
+    const textRight = await hero.locator("h1").evaluate((h) => {
+      const range = document.createRange();
+      range.selectNodeContents(h);
+      return Math.max(...[...range.getClientRects()].map((r) => r.right));
+    });
+    expect(textRight, `${route}: the title must not reach the photo`).toBeLessThanOrEqual(m.x - 16);
   }
 });
 
@@ -611,13 +605,14 @@ test("header and inner hero follow the Crafto reference's measured sizes (10f)",
     expect(await css(cta, "fontWeight")).toBe("600");
     expect(Math.round((await cta.boundingBox()).height * 10) / 10).toBeCloseTo(45.5, 0);
 
-    // Hero: 550 px high, text 1/3 and photo 2/3 of the width, label 92 px from the left.
+    // Hero: 550 px high; like the home banner, text 5/12 and photo 7/12 of the width, and
+    // the title starts where the home headline does (72 px from the left).
     const hero = await page.locator(".inner-hero").boundingBox();
     expect(Math.round(hero.height), `${route} hero height`).toBe(550);
     const media = await page.locator(".inner-hero__media").boundingBox();
-    expect(Math.abs(media.x - 480), `${route} photo starts at 1/3`).toBeLessThanOrEqual(2);
-    const label = await page.locator(".inner-hero__vertical").boundingBox();
-    expect(Math.abs(label.x - 92), `${route} label position`).toBeLessThanOrEqual(3);
+    expect(Math.abs(media.x - 600), `${route} photo starts at 5/12`).toBeLessThanOrEqual(2);
+    const title = await page.locator(".inner-hero h1").boundingBox();
+    expect(Math.abs(title.x - 72), `${route} title position`).toBeLessThanOrEqual(3);
     expect(await css(page.locator(".inner-hero h1"), "fontSize")).toBe("55.008px");
     const lead = page.locator(".inner-hero__lead");
     if ((await lead.count()) > 0) expect(await css(lead, "fontSize")).toBe("16px");

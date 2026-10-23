@@ -141,6 +141,61 @@ test("home About: three overlapping photos on the left, the company text on the 
   await expect.poll(overlapCount, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
 });
 
+test("home About photos float against each other on scroll: left and right go opposite ways, up-down and sideways", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const items = page.locator(".about-short .about-collage__item");
+  const offsets = () =>
+    items.evaluateAll((els) =>
+      els.map((el) => {
+        const m = new DOMMatrix(getComputedStyle(el).transform);
+        return [m.m41, m.m42];
+      }),
+    );
+
+  // Two scroll positions while the collage is on screen; let the smooth catch-up settle.
+  await items.first().scrollIntoViewIfNeeded();
+  const top = await page.evaluate(() => scrollY);
+  await page.evaluate((y) => scrollTo(0, y - 250), top);
+  await page.waitForTimeout(1800);
+  const before = await offsets();
+  await page.evaluate((y) => scrollTo(0, y + 150), top);
+  await page.waitForTimeout(1800);
+  const after = await offsets();
+  const dx = before.map((b, i) => after[i][0] - b[0]);
+  const dy = before.map((b, i) => after[i][1] - b[1]);
+  // Left photo rises while the right one sinks, by a clearly visible amount (bob aside).
+  expect(dy[0]).toBeLessThan(-15);
+  expect(dy[1]).toBeGreaterThan(15);
+  // Sideways too, in opposite directions.
+  expect(Math.sign(dx[0])).toBe(-Math.sign(dx[1]));
+  expect(Math.abs(dx[0])).toBeGreaterThan(3);
+  // Still subtle: under 80 px for a 400 px scroll.
+  expect(Math.max(...dy.map(Math.abs))).toBeLessThan(80);
+
+  // Idle float: without scrolling, the photos still move a little.
+  const still = await offsets();
+  await page.waitForTimeout(1200);
+  const later = await offsets();
+  const bob = later.map((v, i) => Math.abs(v[1] - still[i][1]));
+  expect(Math.max(...bob)).toBeGreaterThan(0.5);
+  expect(Math.max(...bob)).toBeLessThan(17);
+});
+
+test("home About photos do not float with reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const items = page.locator(".about-short .about-collage__item");
+  await items.first().scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  const transforms = await items.evaluateAll((els) =>
+    els.map((el) => getComputedStyle(el).transform),
+  );
+  expect(transforms).toEqual(["none", "none", "none"]);
+});
+
 test("no small label above a headline on any public page (10b)", async ({ page }) => {
   await page.goto("/solutions");
   const solution = await page.locator('a[href^="/solutions/"]').first().getAttribute("href");

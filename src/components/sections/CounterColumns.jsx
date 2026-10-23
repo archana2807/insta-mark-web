@@ -1,8 +1,12 @@
 import Icon from "@/components/ui/Icon";
 import Reveal from "@/components/ui/Reveal";
 
-/** Each digit is a 0–9 strip that rolls to its value when scrolled into view. */
-function RollingNumber({ value }) {
+/**
+ * Each digit is a 0–9 strip that rolls to its value when its Reveal parent scrolls into view.
+ * @param {{ value: string | number }} props
+ * @returns {JSX.Element}
+ */
+export function RollingNumber({ value }) {
   const text = String(value);
   return (
     <>

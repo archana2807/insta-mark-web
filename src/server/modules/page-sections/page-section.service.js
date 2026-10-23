@@ -3,7 +3,7 @@
 // it with data from the other modules.
 import "server-only";
 import { featured } from "@/content/gallery";
-import { mainNav } from "@/content/site";
+import { mainNav, statsPlaceholders } from "@/content/site";
 import {
   home,
   whyChooseUs,
@@ -93,7 +93,16 @@ export async function getHomeContent() {
     faqs,
     clientLogos,
     banner, // null until an admin uploads one (fallback: featured.hero)
-    // The About page counters, also under the logo row (client, 23 Oct 2026).
+    // Five counters in the row under the banner, where the logos were (client, 23 Oct
+    // 2026). The first three are sample numbers until the client confirms them.
+    stats: [
+      { value: statsPlaceholders.projectsDelivered, label: "Projects Delivered" },
+      { value: statsPlaceholders.yearsOfExperience, label: "Years of Experience" },
+      { value: statsPlaceholders.locationsCovered, label: "Locations Covered" },
+      { value: categories.length, label: "Solutions & Applications" },
+      { value: industries.length, label: "Industries Served" },
+    ],
+    // The About page counters, below that row (client, 23 Oct 2026).
     counters: realCounters(categories, industries),
   };
 }

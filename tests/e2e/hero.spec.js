@@ -140,6 +140,50 @@ test("the row under the banner shows five counters in place of the logos, in the
     .toBeLessThan(-1);
 });
 
+test("the counter row looks finished: light band, dividers, small raised plus, gradient line, uppercase labels", async ({
+  page,
+}) => {
+  const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const row = page.locator(".project-logos");
+  // A light band, different from the white banner above.
+  expect(await css(row, "backgroundColor")).not.toBe("rgba(0, 0, 0, 0)");
+  // Hairline dividers between the columns (not before the first).
+  const stats = row.locator(".project-logos__stat");
+  expect(await css(stats.first(), "borderLeftWidth")).toBe("0px");
+  expect(await css(stats.nth(1), "borderLeftWidth")).toBe("1px");
+  // The "+" is smaller than the number.
+  const value = row.locator(".project-logos__value").first();
+  const plus = value.locator(".digit-roll__sym");
+  expect(parseFloat(await css(plus, "fontSize"))).toBeLessThan(
+    parseFloat(await css(value, "fontSize")) * 0.7,
+  );
+  // Small uppercase labels.
+  const label = row.locator(".project-logos__label").first();
+  expect(await css(label, "textTransform")).toBe("uppercase");
+  expect(parseFloat(await css(label, "fontSize"))).toBeLessThanOrEqual(14);
+  // The gradient line is fully drawn once the row is in view.
+  await row.scrollIntoViewIfNeeded();
+  const bar = row.locator(".project-logos__bar").first();
+  expect(await css(bar, "backgroundImage")).toContain("linear-gradient");
+  await expect
+    .poll(() => bar.evaluate((el) => el.getBoundingClientRect().width), { timeout: 5000 })
+    .toBeGreaterThan(30);
+});
+
+test("with reduced motion the counter row shows its final numbers and lines at once", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const row = page.locator(".project-logos");
+  await row.scrollIntoViewIfNeeded();
+  const bar = row.locator(".project-logos__bar").first();
+  expect(await bar.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThan(30);
+  await expect(row.locator(".project-logos__value .visually-hidden").nth(3)).toHaveText("8");
+});
+
 test("the counter row wraps centred on a phone without sideways scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");

@@ -123,24 +123,23 @@ test("project logos sit right under the banner: 4–5 logos that load (R-3.10)",
   expect(band.y - (hero.y + hero.height)).toBeLessThan(40);
 });
 
-test("five counters sit right under the logo row; the digits roll in", async ({ page }) => {
+test("the About page counters sit right under the logo row, same content; the digits roll in", async ({
+  page,
+}) => {
   await page.goto("/");
   const counters = page.locator(".home-counters");
   const labels = counters.locator("dt");
   await expect(labels).toHaveText([
-    "Projects Delivered",
-    "Years of Experience",
-    "Locations Covered",
-    "Solutions & Applications",
-    "Industries Served",
+    "Signage & road safety solution categories",
+    "Industries and sectors served",
+    "In-house manufacturing capabilities",
+    "Steps from discovery to after-sales support",
   ]);
-  // Screen readers get each number as plain text; the last two come from real content.
+  // Counted from real content; screen readers get each number as plain text.
   const values = counters.locator("dd .visually-hidden");
-  await expect(values.nth(3)).toHaveText("8");
-  await expect(values.nth(4)).toHaveText("12");
-  for (let i = 0; i < 3; i++) await expect(values.nth(i)).toHaveText(/^\d+\+$/);
+  await expect(values).toHaveText(["8", "12", "12", "5"]);
 
-  // Right under the logo row, before the About block; one row of five on a laptop.
+  // Right under the logo row, before the About block; one row of four on a laptop.
   const logos = await page.locator(".project-logos").boundingBox();
   const box = await counters.boundingBox();
   expect(box.y).toBeGreaterThanOrEqual(logos.y + logos.height - 1);
@@ -152,7 +151,7 @@ test("five counters sit right under the logo row; the digits roll in", async ({ 
 
   // Rolling digits: each strip ends on its digit once the row has scrolled into view.
   await counters.scrollIntoViewIfNeeded();
-  const strip = counters.locator(".digit-roll__strip").nth(3); // the "8"
+  const strip = counters.locator(".digit-roll__strip").first(); // the "8"
   await expect
     .poll(() => strip.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), {
       timeout: 5000,
@@ -160,20 +159,15 @@ test("five counters sit right under the logo row; the digits roll in", async ({ 
     .toBeLessThan(-1);
 });
 
-test("the counters stack two by two on a phone, the last one full width, without sideways scroll", async ({
-  page,
-}) => {
+test("the home counters stack two by two on a phone without sideways scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const cols = page.locator(".home-counters .counter-cols > div");
-  await expect(cols).toHaveCount(5);
+  await expect(cols).toHaveCount(4);
   const lefts = await cols.evaluateAll((els) =>
     els.map((el) => Math.round(el.getBoundingClientRect().left)),
   );
   expect(new Set(lefts).size).toBe(2);
-  // The fifth counter takes the whole last row instead of half of it.
-  const widths = await cols.evaluateAll((els) => els.map((el) => el.offsetWidth));
-  expect(widths[4]).toBeGreaterThan(widths[0] * 1.8);
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

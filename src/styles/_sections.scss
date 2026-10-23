@@ -238,33 +238,6 @@
   @media (min-width: 1600px) {
     padding-bottom: 6.5rem;
   }
-
-  // Same look as the About page counters (client, 23 Oct 2026): same label, number size and
-  // padding. Only between 992 and 1199 px, where five columns are narrow, the padding and the
-  // number shrink a little so "500+" stays on one line.
-  .counter-cols {
-    > div {
-      // Two per row below 992 px: the fifth counter takes the full row, not half of it.
-      &:last-child {
-        @include media-breakpoint-down(lg) {
-          flex: 0 0 100%;
-          max-width: 100%;
-        }
-      }
-
-      @include media-breakpoint-only(lg) {
-        padding-inline: 1.25rem;
-      }
-    }
-
-    strong {
-      white-space: nowrap;
-
-      @include media-breakpoint-only(lg) {
-        font-size: 2.75rem;
-      }
-    }
-  }
 }
 
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──

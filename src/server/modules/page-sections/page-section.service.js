@@ -3,7 +3,7 @@
 // it with data from the other modules.
 import "server-only";
 import { featured } from "@/content/gallery";
-import { mainNav, statsPlaceholders } from "@/content/site";
+import { mainNav } from "@/content/site";
 import {
   home,
   whyChooseUs,
@@ -58,6 +58,24 @@ export async function getCategoryPage(slug) {
   };
 }
 
+/**
+ * The counters shown on Home and About, counted from real content (never invented figures).
+ * @param {{ length: number }} categories
+ * @param {{ length: number }} industries
+ * @returns {{ value: number, label: string }[]}
+ */
+function realCounters(categories, industries) {
+  return [
+    { value: categories.length, label: "Signage & road safety solution categories" },
+    { value: industries.length, label: "Industries and sectors served" },
+    {
+      value: about.manufacturing.capabilities.length,
+      label: "In-house manufacturing capabilities",
+    },
+    { value: about.process.length, label: "Steps from discovery to after-sales support" },
+  ];
+}
+
 export async function getHomeContent() {
   const [industries, categories, faqs, clientLogos, banner] = await Promise.all([
     industryService.listIndustries(),
@@ -75,15 +93,8 @@ export async function getHomeContent() {
     faqs,
     clientLogos,
     banner, // null until an admin uploads one (fallback: featured.hero)
-    // Counters under the banner (client, 23 Oct 2026). The first three are sample numbers
-    // until the client confirms them; the last two are counted from real content.
-    counters: [
-      { value: statsPlaceholders.projectsDelivered, label: "Projects Delivered" },
-      { value: statsPlaceholders.yearsOfExperience, label: "Years of Experience" },
-      { value: statsPlaceholders.locationsCovered, label: "Locations Covered" },
-      { value: categories.length, label: "Solutions & Applications" },
-      { value: industries.length, label: "Industries Served" },
-    ],
+    // The About page counters, also under the logo row (client, 23 Oct 2026).
+    counters: realCounters(categories, industries),
   };
 }
 
@@ -100,16 +111,7 @@ export async function getAboutContent() {
     featuredImages: featured.about,
     heroImage: featured.pages.about,
     featureImage: featured.aboutFeature,
-    // Counted from real content — never invented figures.
-    counters: [
-      { value: categories.length, label: "Signage & road safety solution categories" },
-      { value: industries.length, label: "Industries and sectors served" },
-      {
-        value: about.manufacturing.capabilities.length,
-        label: "In-house manufacturing capabilities",
-      },
-      { value: about.process.length, label: "Steps from discovery to after-sales support" },
-    ],
+    counters: realCounters(categories, industries),
   };
 }
 

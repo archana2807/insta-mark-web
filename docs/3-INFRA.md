@@ -88,6 +88,5 @@
 - [ ] Client facts confirmed (contact details, founding year); test data removed
 - [ ] **Footer sample data replaced:** the footer shows fake sample contact details and social links (`footerPlaceholders` in `content/site.js`) until the real ones are entered in Admin → Settings; enter all of them, then delete the placeholders
 - [ ] **Contact office sample data replaced:** the Contact page shows three sample offices (`officePlaceholders` in `content/site.js`; the head office switches to the real address, email and phone from Admin → Settings once set); replace them with the client's real offices or remove the extra columns
-- [ ] **Home counter sample numbers replaced:** Projects Delivered (500+), Years of Experience (9+) and Locations Covered (25+) on the home page are sample numbers (`statsPlaceholders` in `content/site.js`); replace them with the client's confirmed figures
 - [ ] Lighthouse mobile ≥ 90 and LCP ≤ 2.5 s on production; axe 0 violations; no sideways scroll at 390 px
 

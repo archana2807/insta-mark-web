@@ -140,37 +140,8 @@
     }
   }
 
-  // Tagline as the theme's vertical label (wide screens only, like the theme).
-  &__vertical {
-    display: none;
-
-    @include media-breakpoint-up(xl) {
-      display: flex;
-      align-items: center;
-      align-self: stretch;
-      // In a vertical writing mode the main axis is vertical: after the 180° turn the text
-      // would sit at the bottom of the tall column (cut off below the fold). flex-end keeps it
-      // at the top, in the first screen.
-      justify-content: flex-end;
-      flex-shrink: 0;
-      margin: 0 3.5rem 0 0;
-      // Left side before the 180° turn = right side on screen: text, gap, then the line
-      // next to the headline, as in the theme.
-      padding-left: 2.75rem;
-      border-left: 1px solid $line;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg); // reads bottom to top
-      font-family: $headings-font-family;
-      font-size: 0.9375rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: $ink;
-    }
-  }
-
-  // Below 1200 px the vertical label is hidden, so the tagline is a line under the H1:
-  // clearly smaller than the H1, larger than the intro text.
+  // Tagline right under the H1 at every width (client, 23 Oct 2026): clearly smaller than
+  // the H1 (28 px against 70 px on wide screens), larger than the intro text.
   &__tagline {
     margin-bottom: 1.5rem;
     font-family: $headings-font-family;
@@ -179,10 +150,7 @@
     line-height: 1.25;
     letter-spacing: -0.02em;
     color: $ink;
-
-    @include media-breakpoint-up(xl) {
-      display: none;
-    }
+    text-wrap: balance; // two even lines, never a lone "Lasts."
   }
 
   &__media {

@@ -116,7 +116,7 @@ test("the keyboard arrows change the slide; the headline and tagline stay the sa
 
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.locator("h1")).toHaveText(TITLE);
-  await expect(page.locator(".hero-split__vertical .visually-hidden")).toHaveText(
+  await expect(page.locator(".hero-split__tagline")).toHaveText(
     "Signage That Guides. Safety That Lasts.",
   );
 });

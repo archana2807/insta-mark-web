@@ -3,7 +3,7 @@
 // it with data from the other modules.
 import "server-only";
 import { featured } from "@/content/gallery";
-import { mainNav } from "@/content/site";
+import { mainNav, statsPlaceholders } from "@/content/site";
 import {
   home,
   whyChooseUs,
@@ -59,8 +59,9 @@ export async function getCategoryPage(slug) {
 }
 
 export async function getHomeContent() {
-  const [industries, faqs, clientLogos, banner] = await Promise.all([
+  const [industries, categories, faqs, clientLogos, banner] = await Promise.all([
     industryService.listIndustries(),
+    categoryService.listCategories(),
     faqService.listFaqs("home"),
     clientLogoService.listClientLogos(),
     bannerService.getBanner(),
@@ -74,6 +75,15 @@ export async function getHomeContent() {
     faqs,
     clientLogos,
     banner, // null until an admin uploads one (fallback: featured.hero)
+    // Counters under the banner (client, 23 Oct 2026). The first three are sample numbers
+    // until the client confirms them; the last two are counted from real content.
+    counters: [
+      { value: statsPlaceholders.projectsDelivered, label: "Projects Delivered" },
+      { value: statsPlaceholders.yearsOfExperience, label: "Years of Experience" },
+      { value: statsPlaceholders.locationsCovered, label: "Locations Covered" },
+      { value: categories.length, label: "Solutions & Applications" },
+      { value: industries.length, label: "Industries Served" },
+    ],
   };
 }
 

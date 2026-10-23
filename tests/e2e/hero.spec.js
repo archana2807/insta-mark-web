@@ -92,35 +92,64 @@ test("home banner (desktop): the tagline is fully visible without scrolling", as
   expect(label.y + label.height).toBeLessThanOrEqual(800);
 });
 
-test("project logos sit right under the banner: 4–5 logos that load (R-3.10)", async ({ page }) => {
+test("five counters sit right under the banner, in place of the logo row; the digits roll in", async ({
+  page,
+}) => {
   await page.goto("/");
-  const logos = page.locator(".project-logos");
-  await expect(logos).toBeVisible();
-  const imgs = logos.locator("img");
-  const count = await imgs.count();
-  expect(count).toBeGreaterThanOrEqual(4);
-  expect(count).toBeLessThanOrEqual(5);
-  for (let i = 0; i < count; i++) {
-    await expect(imgs.nth(i)).toBeVisible();
-    await expect(imgs.nth(i)).toHaveAttribute("alt", /\S+ logo$/);
-    expect(await imgs.nth(i).evaluate((el) => el.naturalWidth)).toBeGreaterThan(0);
-  }
-  // Theme look: equal columns across the page, each logo centred in its column.
-  const centres = await imgs.evaluateAll((els) =>
-    els.map((el) => {
-      const r = el.getBoundingClientRect();
-      return r.left + r.width / 2;
-    }),
-  );
-  const steps = centres.slice(1).map((c, i) => c - centres[i]);
-  for (const step of steps) expect(Math.abs(step - steps[0])).toBeLessThan(4);
-  expect(steps[0]).toBeGreaterThan(200);
+  await expect(page.locator(".project-logos")).toHaveCount(0);
+  const counters = page.locator(".home-counters");
+  const labels = counters.locator("dt");
+  await expect(labels).toHaveText([
+    "Projects Delivered",
+    "Years of Experience",
+    "Locations Covered",
+    "Solutions & Applications",
+    "Industries Served",
+  ]);
+  // Screen readers get each number as plain text; the last two come from real content.
+  const values = counters.locator("dd .visually-hidden");
+  await expect(values.nth(3)).toHaveText("8");
+  await expect(values.nth(4)).toHaveText("12");
+  for (let i = 0; i < 3; i++) await expect(values.nth(i)).toHaveText(/^\d+\+$/);
 
-  // Directly after the banner, before the About intro.
+  // Right under the banner, before the About block; one row of five on a laptop.
   const hero = await page.locator(".hero-split").boundingBox();
-  const band = await logos.boundingBox();
-  expect(band.y).toBeGreaterThanOrEqual(hero.y + hero.height - 1);
-  expect(band.y - (hero.y + hero.height)).toBeLessThan(40);
+  const box = await counters.boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(hero.y + hero.height - 1);
+  expect(box.y - (hero.y + hero.height)).toBeLessThan(2);
+  const tops = await counters
+    .locator(".counter-cols > div")
+    .evaluateAll((els) => els.map((el) => el.offsetTop)); // layout box, ignores the reveal
+  expect(new Set(tops).size).toBe(1);
+
+  // Rolling digits: each strip ends on its digit once the row has scrolled into view.
+  await counters.scrollIntoViewIfNeeded();
+  const strip = counters.locator(".digit-roll__strip").nth(3); // the "8"
+  await expect
+    .poll(() => strip.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), {
+      timeout: 5000,
+    })
+    .toBeLessThan(-1);
+});
+
+test("the counters stack two by two on a phone, the last one full width, without sideways scroll", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const cols = page.locator(".home-counters .counter-cols > div");
+  await expect(cols).toHaveCount(5);
+  const lefts = await cols.evaluateAll((els) =>
+    els.map((el) => Math.round(el.getBoundingClientRect().left)),
+  );
+  expect(new Set(lefts).size).toBe(2);
+  // The fifth counter takes the whole last row instead of half of it.
+  const widths = await cols.evaluateAll((els) => els.map((el) => el.offsetWidth));
+  expect(widths[4]).toBeGreaterThan(widths[0] * 1.8);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("home About: three overlapping photos on the left, the company text on the right", async ({
@@ -268,9 +297,9 @@ test("the footer carries the call to action text on every page; no logo, no butt
 
 test("home sections follow the client's order and look (10c)", async ({ page }) => {
   await page.goto("/");
-  // Order: logos → About → scrolling line → products → industries → process → trusted by.
+  // Order: counters → About → scrolling line → products → industries → process → trusted by.
   const ids = [
-    ".project-logos",
+    ".home-counters",
     "#about-title",
     ".text-marquee",
     "#solutions-title",
@@ -489,21 +518,22 @@ test("the phone headline is 52.5 px like the reference and nothing overflows at 
   expect(photo.y).toBeLessThan(title.y);
 });
 
-test("the gaps around the logo row match the reference's 90 px (10c)", async ({ page }) => {
+test("the gaps around the counters match the reference logo row's 90 px (10c)", async ({
+  page,
+}) => {
   await page.goto("/");
   // Reference (1440 px): the logo section has 90 px above and below, the About block that
-  // follows has no top padding, so the gap under the logos is exactly the section padding.
-  // Ours is 84 px because our logo files are taller than the reference's 35 px wordmarks.
+  // follows has no top padding. Our counters took the logo row's place and spacing (84 px).
   const m = await page.evaluate(() => {
     const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
-    const logos = document.querySelector(".project-logos");
+    const logos = document.querySelector(".home-counters");
     const cs = getComputedStyle(logos);
     const about = document.querySelector(".about-short");
     return {
       padTop: parseFloat(cs.paddingTop),
       padBottom: parseFloat(cs.paddingBottom),
-      heroToLogos: rect(".project-logos").top - rect(".hero-split").bottom,
-      logosToAbout: rect(".about-short").top - rect(".project-logos").bottom,
+      heroToLogos: rect(".home-counters").top - rect(".hero-split").bottom,
+      logosToAbout: rect(".about-short").top - rect(".home-counters").bottom,
       aboutPadTop: getComputedStyle(about).paddingTop,
     };
   });

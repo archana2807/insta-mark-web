@@ -55,15 +55,18 @@ export function CounterGrid({ items, colClass = "col-6 col-lg-3", arrow = true }
 }
 
 /**
- * Theme counter columns as a page section. Only real, verifiable figures belong here.
- * @param {{ items: { label: string, value: string | number }[] }} props
+ * Theme counter columns as a page section. Only real, verifiable figures belong here
+ * (sample numbers only where the developer asked for them, marked in content/site.js).
+ * @param {{ items: { label: string, value: string | number }[], className?: string,
+ *   colClass?: string }} props `className` sets the section spacing; `colClass` the
+ *   column width (see CounterGrid).
  * @returns {JSX.Element}
  */
-export default function CounterColumns({ items }) {
+export default function CounterColumns({ items, className = "pb-7", colClass }) {
   return (
-    <section className="pb-7" aria-label="Insta Mark in numbers">
+    <section className={className} aria-label="Insta Mark in numbers">
       <div className="container">
-        <CounterGrid items={items} />
+        <CounterGrid items={items} colClass={colClass} />
       </div>
     </section>
   );

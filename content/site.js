@@ -87,3 +87,13 @@ export const officePlaceholders = [
     phone: "+91 00000 00002",
   },
 ];
+
+// PLACEHOLDERS for three of the home counters (the developer asked for sample numbers on
+// 23 Oct 2026, to be replaced before launch). These are NOT client facts: replace them with
+// the client's confirmed figures (see the docs/3-INFRA.md checklist). The other two
+// counters are counted from the site's own data.
+export const statsPlaceholders = {
+  projectsDelivered: "500+",
+  yearsOfExperience: "9+",
+  locationsCovered: "25+",
+};

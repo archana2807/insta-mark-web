@@ -1,5 +1,5 @@
 // Home banner (client feedback, 21 Oct 2026; Crafto "Branding Agency" hero):
-// - H1 "Architectural Signage & Road Safety", the page's only H1, running onto the photo;
+// - H1 "Architectural Signage & Road Safety", the page's only H1, beside the photo (not on it);
 // - wide screens (≥ 1200 px): the tagline "Signage That Guides. Safety That Lasts." is
 //   the vertical label on the left (with a thin line next to the headline);
 // - narrower screens (no vertical label, as in the theme): the tagline is a smaller line
@@ -18,43 +18,33 @@ test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
 });
 
-test("home banner (desktop): vertical tagline on the left, headline runs onto the photo", async ({
+test("home banner (desktop): the tagline sits right under the headline; no buttons", async ({
   page,
 }) => {
   await page.goto("/");
   const hero = page.locator(".hero-split");
   const headline = hero.locator("h1");
-  const vertical = hero.locator(".hero-split__vertical");
+  const tagline = hero.locator(".hero-split__tagline");
   await expect(headline).toHaveText(HEADLINE);
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(hero.locator(".eyebrow")).toHaveCount(0);
 
-  // The vertical label shows the tagline; screen readers read it once, as one line.
-  await expect(vertical).toBeVisible();
-  await expect(vertical.locator(".visually-hidden")).toHaveText(TAGLINE);
-  await expect(vertical.locator("[aria-hidden=true]")).toHaveText(TAGLINE);
-  expect(await vertical.evaluate((el) => getComputedStyle(el).writingMode)).toBe("vertical-rl");
-  await expect(hero.locator(".hero-split__tagline")).toBeHidden(); // shown only below 1200 px
-
-  // Left of the headline, with the thin line between them.
-  const v = await vertical.boundingBox();
+  // No vertical label any more: the tagline is the line right under the headline.
+  await expect(hero.locator(".hero-split__vertical")).toHaveCount(0);
+  await expect(tagline).toBeVisible();
+  await expect(tagline).toHaveText(TAGLINE);
+  await expect(headline.locator("xpath=following-sibling::*[1]")).toHaveText(TAGLINE);
   const h = await headline.boundingBox();
-  expect(v.x + v.width).toBeLessThanOrEqual(h.x);
-  expect(await vertical.evaluate((el) => getComputedStyle(el).borderLeftWidth)).toBe("1px");
+  const t = await tagline.boundingBox();
+  expect(t.y).toBeGreaterThanOrEqual(h.y + h.height - 1);
+  expect(t.y - (h.y + h.height)).toBeLessThan(40);
+  expect(Math.abs(t.x - h.x)).toBeLessThanOrEqual(1); // same left edge
 
-  // Theme effect: the headline runs past its column onto the photo.
-  const media = await hero.locator(".hero-split__media").boundingBox();
-  expect(h.x + h.width).toBeGreaterThan(media.x);
-  // The text itself lies clearly on the photo (not just one stray letter): 100 px or more.
-  const textRight = await headline.evaluate((el) => {
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    return Math.max(...[...range.getClientRects()].map((r) => r.right));
-  });
-  expect(textRight - media.x).toBeGreaterThanOrEqual(100);
+  // No buttons in the banner (client, 23 Oct 2026).
+  await expect(hero.locator(".hero-split__text-col").locator("a, button")).toHaveCount(0);
 
-  // Hierarchy: the headline is far bigger than the vertical label.
-  expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(vertical)) * 2);
+  // Hierarchy: the headline is far bigger than the tagline.
+  expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(tagline)) * 2);
 
   // The "&" never ends a line: it starts the second line, with "Road Safety".
   const lastOfFirstLine = await headline.evaluate((el) => {
@@ -74,12 +64,30 @@ test("home banner (desktop): vertical tagline on the left, headline runs onto th
   expect(lastOfFirstLine.endsWith("&")).toBe(false);
 });
 
-test("home banner (desktop): the vertical tagline is fully visible without scrolling", async ({
+test("home banner: the headline stays beside the photo, never on it, from 1024 to 1920 px", async ({
   page,
 }) => {
+  for (const width of [1024, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const hero = page.locator(".hero-split");
+    const media = await hero.locator(".hero-split__media").boundingBox();
+    // Right edge of the letters themselves, not of the H1 box.
+    const textRight = await hero.locator("h1").evaluate((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      return Math.max(...[...range.getClientRects()].map((r) => r.right));
+    });
+    expect(textRight, `${width} px`).toBeLessThanOrEqual(media.x - 16);
+    // Still the biggest text on the page: 44 px or more.
+    expect(await fontPx(hero.locator("h1")), `${width} px`).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test("home banner (desktop): the tagline is fully visible without scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
-  const label = await page.locator(".hero-split__vertical [aria-hidden=true]").boundingBox();
+  const label = await page.locator(".hero-split__tagline").boundingBox();
   expect(label.y).toBeGreaterThanOrEqual(0);
   expect(label.y + label.height).toBeLessThanOrEqual(800);
 });
@@ -299,9 +307,7 @@ test("home sections follow the client's order and look (10c)", async ({ page }) 
   await expect(page.locator("#solutions-title")).toHaveText("Our products");
 });
 
-test("home banner (phone): no vertical label; the tagline is a smaller line under the H1", async ({
-  page,
-}) => {
+test("home banner (phone): the tagline is a smaller line under the H1", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const hero = page.locator(".hero-split");
@@ -433,11 +439,12 @@ test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 20
   const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
   await page.goto("/");
 
-  // Home hero: 70 px headline, 15 px vertical label, 16 px / 30 px text, 18 px menu.
+  // Home hero: 63 px headline at 1440 px (4.4vw, so it stays beside the photo; 70 px from
+  // about 1600 px), 28 px tagline under it, 16 px / 30 px text, 18 px menu.
   const h1 = page.locator(".hero-split h1");
-  expect(await css(h1, "fontSize")).toBe("70px");
+  expect(await css(h1, "fontSize")).toBe("63.36px");
   expect(await css(h1, "fontWeight")).toBe("600");
-  expect(await css(page.locator(".hero-split__vertical"), "fontSize")).toBe("15px");
+  expect(await css(page.locator(".hero-split__tagline"), "fontSize")).toBe("28px");
   const text = page.locator(".hero-split .lead-text");
   expect(await css(text, "fontSize")).toBe("16px");
   expect(await css(text, "lineHeight")).toBe("30px");

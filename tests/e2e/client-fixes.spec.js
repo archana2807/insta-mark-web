@@ -50,16 +50,16 @@ test.beforeAll(async () => {
   await prisma.$disconnect();
 });
 
-test("the home banner's vertical label is the tagline, not the old services line", async ({
+test("the home banner shows the tagline under the headline, not the old services line", async ({
   page,
 }) => {
-  // R-3.4 as revised on 21 Oct 2026: the services line is gone; the vertical label now
-  // carries the tagline (details in hero.spec.js).
+  // R-3.4 as revised on 23 Oct 2026: the services line is gone and there is no vertical
+  // label; the tagline is the line under the headline (details in hero.spec.js).
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const hero = page.locator(".hero-split");
   await expect(hero).toBeVisible();
-  await expect(hero.locator(".hero-split__vertical .visually-hidden")).toHaveText(
+  await expect(hero.locator(".hero-split__tagline")).toHaveText(
     "Signage That Guides. Safety That Lasts.",
   );
   await expect(hero).not.toContainText(/Signage\s*·\s*Wayfinding/i);

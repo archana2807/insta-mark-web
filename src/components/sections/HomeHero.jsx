@@ -1,8 +1,4 @@
 import Image, { getImageProps } from "next/image";
-import Link from "next/link";
-import Icon from "@/components/ui/Icon";
-import BtnText from "@/components/ui/BtnText";
-import FancyText from "@/components/ui/FancyText";
 import HeroSlider from "@/components/sections/HeroSlider";
 import { BANNER } from "@/shared/constants";
 
@@ -38,11 +34,11 @@ function BannerPicture({ banner, fallback, first }) {
 }
 
 /**
- * Theme hero (Crafto "Branding Agency"): text left, photo right; the headline runs onto
- * the photo. On wide screens the tagline is the vertical label on the left; below
- * 1200 px (where the label is hidden) it is a line under the headline. The photo is a
- * slider of 1–3 slides (task 10h): the slides uploaded in Admin → Banner, or, until there
- * are any, three hand-picked photos. The headline and tagline never change with the slide.
+ * Theme hero (Crafto "Branding Agency"): text left, photo right. The headline stays in its
+ * column, off the photo, with the tagline right under it, and there are no buttons
+ * (client, 23 Oct 2026). The photo is a slider of 1–3 slides (task 10h): the slides
+ * uploaded in Admin → Banner, or, until there are any, three hand-picked photos. The
+ * headline and tagline never change with the slide.
  * @param {{ hero: object, image: { src: string, alt: string },
  *   slides: { src: string, alt: string }[],
  *   banner?: { desktop: object | null, mobile: object | null, alt: string | null }[] | null }} props
@@ -69,25 +65,11 @@ export default function HomeHero({ hero, image, slides = [], banner = null }) {
         <div className="row g-0">
           <div className="col-lg-5 hero-split__text-col px-3 px-sm-4 px-lg-5">
             <div className="d-flex w-100 ps-xl-4">
-              <p className="hero-split__vertical">
-                <span className="visually-hidden">{hero.tagline}</span>
-                <span aria-hidden="true">
-                  <FancyText text={hero.tagline} />
-                </span>
-              </p>
               <div className="load-stagger">
                 {/* The no-break space keeps "&" with "Road", so the line never ends with a lone "&". */}
                 <h1 id="hero-title">{hero.title.replace(" & ", " & ")}</h1>
                 <p className="hero-split__tagline">{hero.tagline}</p>
-                <p className="lead-text mb-5">{hero.text}</p>
-                <div className="d-flex flex-wrap gap-3">
-                  <Link href={hero.primaryCta.href} className="btn btn-gradient btn-lg">
-                    <BtnText>{hero.primaryCta.label}</BtnText> <Icon name="arrow-right" />
-                  </Link>
-                  <Link href={hero.secondaryCta.href} className="btn btn-outline-ink btn-lg">
-                    <BtnText>{hero.secondaryCta.label}</BtnText>
-                  </Link>
-                </div>
+                <p className="lead-text mb-0">{hero.text}</p>
               </div>
             </div>
           </div>

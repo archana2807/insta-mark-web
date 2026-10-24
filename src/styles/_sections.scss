@@ -1119,16 +1119,15 @@
 
   // Laid out like the home banner (client, 23 Oct 2026): the text column is 5/12 and the
   // photo 7/12 from 992 px, with the home banner's left padding (Bootstrap classes in
-  // InnerHero), so every hero lines up. 550 px high on desktop, as measured on the Crafto
-  // reference. On phones the photo (390 × 272) comes first, flush under the header, then a
-  // 50 px gap and the title. No vertical label.
+  // InnerHero), and the photo has the home banner's height (24 Oct 2026), so every hero
+  // lines up. On phones the photo comes first, flush under the header, then a 50 px gap
+  // and the title. No vertical label.
   &__text {
     display: flex;
     align-items: center;
     padding-top: 50px;
 
     @include media-breakpoint-up(lg) {
-      min-height: 550px;
       padding-top: 0;
     }
   }
@@ -1148,15 +1147,17 @@
     font-size: 1rem; // reference paragraphs: 16 px / 30 px
   }
 
+  // The photo has the home banner's size (client, 24 Oct 2026), with the same rules as
+  // .hero-split__media: 500 px tall on phones and tablets; from 992 px at least the screen
+  // height under the header.
   &__media {
     position: relative;
-    aspect-ratio: 390 / 272; // reference phone photo
-    height: auto;
+    height: 500px;
     background: $surface;
 
     @include media-breakpoint-up(lg) {
-      aspect-ratio: auto;
-      height: 550px;
+      height: 100%;
+      min-height: calc(100vh - 94px);
     }
 
     img {
@@ -1352,13 +1353,14 @@
   }
 }
 
-// Category without photos yet: icon panel fills the hero image area.
+// Category without photos yet: icon panel fills the hero image area, at the photo's size.
 .inner-hero .category-hero__placeholder {
   aspect-ratio: auto;
-  min-height: 320px;
+  height: 500px;
 
   @include media-breakpoint-up(lg) {
-    min-height: 560px;
+    height: 100%;
+    min-height: calc(100vh - 94px);
   }
 }
 

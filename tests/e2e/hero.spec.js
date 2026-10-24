@@ -649,7 +649,7 @@ test("About carousel: no sideways scroll on a phone; no motion and no auto-slide
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test("the three collage photos have the reference's sizes, the same on Home and the solution pages (10c)", async ({
+test("the three collage photos on Home have the reference's sizes; solution pages show the photo deck instead (10c, 10e)", async ({
   page,
 }) => {
   const measure = async (route, scope) => {
@@ -660,7 +660,6 @@ test("the three collage photos have the reference's sizes, the same on Home and 
     return items.evaluateAll((els) => els.map((el) => [el.offsetWidth, el.offsetHeight]));
   };
   const home = await measure("/", ".about-short");
-  const solution = await measure("/solutions/tailor-made-signage", "main");
 
   // Reference layout sizes: 224×279, 261×313 and 305×375 (within a pixel or two).
   const reference = [
@@ -678,8 +677,11 @@ test("the three collage photos have the reference's sizes, the same on Home and 
       `photo ${i + 1} height (ours ${home[i][1]}, reference ${h})`,
     ).toBeLessThanOrEqual(8);
   }
-  // Identical on the solution pages (the About page has the card carousel instead).
-  expect(solution).toEqual(home);
+  // The solution pages have the fanned photo deck instead (client, 24 Oct 2026), and the
+  // About page the card carousel.
+  await page.goto("/solutions/tailor-made-signage");
+  await expect(page.locator("main .about-collage")).toHaveCount(0);
+  await expect(page.locator("main .card-deck")).toHaveCount(1);
 });
 
 test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 2026 (10g)", async ({

@@ -19,13 +19,15 @@ const STEP = 0.02; // resolution of the position table, in cards
 
 /**
  * Cards visible side by side for a stage width (fewer on phones, so photos stay readable).
+ * One fewer than before on every screen, so each card is a little bigger (client, 24 Oct
+ * 2026).
  * @param {number} width
  * @returns {number}
  */
 function cardsAcross(width) {
-  if (width >= 1200) return 8;
-  if (width >= 768) return 6;
-  return 3.4;
+  if (width >= 1200) return 7;
+  if (width >= 768) return 5;
+  return 3;
 }
 
 /**

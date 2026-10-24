@@ -38,13 +38,9 @@ export default function InnerHero({
             {!image && fallback}
             {image && (
               <div className="inner-hero__media load-wipe">
-                {/* Reference: "liquid parallax", scale 1.05, the photo moves at 0.2 × the scroll speed. */}
-                <ScrollDrift
-                  className="drift-fill drift-fill--parallax"
-                  from={-203}
-                  to={110}
-                  scale={1.049}
-                >
+                {/* The same motion as the home banner photo (client, 24 Oct 2026): it zooms in on
+                    load and drifts ±40 px while scrolling, at scale 1.08. */}
+                <ScrollDrift className="drift-fill" from={-40} to={40} scale={1.08}>
                   <Image
                     src={image.src}
                     alt={image.alt}

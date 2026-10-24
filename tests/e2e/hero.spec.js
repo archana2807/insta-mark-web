@@ -549,7 +549,8 @@ test("About: a layered card carousel replaces the photo collage; arrows, keys an
   await expect(cards.nth(1).locator("a")).toHaveAttribute("tabindex", "-1");
 
   // Next arrow, then the keyboard, then a click on a side card.
-  const announce = carousel.locator("[aria-live=polite]");
+  // The live region (silent while auto-sliding, polite once paused) names the front card.
+  const announce = carousel.locator("[aria-live]");
   await carousel.getByRole("button", { name: "Next card" }).click();
   await expect(announce).toHaveText("Card 2 of 3: Modular Signs");
   await expect(front.locator(".layer-carousel__label")).toHaveText("Modular Signs");
@@ -563,7 +564,33 @@ test("About: a layered card carousel replaces the photo collage; arrows, keys an
   await expect(announce).toHaveText("Card 1 of 3: Tailor-made Signage");
 });
 
-test("About carousel: no sideways scroll on a phone and no motion with reduced motion", async ({
+test("About carousel slides by itself every 4 s, and the pause button stops it (WCAG 2.2.2)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+  const carousel = page.locator(".layer-carousel");
+  await carousel.scrollIntoViewIfNeeded();
+  await page.mouse.move(5, 5); // the mouse away from the carousel (hover pauses it)
+  const frontLabel = carousel.locator(".layer-carousel__card.is-active .layer-carousel__label");
+  await expect(frontLabel).toHaveText("Tailor-made Signage");
+  await expect(frontLabel).toHaveText("Modular Signs", { timeout: 6000 });
+
+  // Pause: nothing moves for longer than one interval.
+  const pause = carousel.getByRole("button", { name: "Pause the cards" });
+  await expect(pause).toBeVisible();
+  await pause.click();
+  await page.mouse.move(5, 5);
+  const now = await frontLabel.textContent();
+  await page.waitForTimeout(5000);
+  await expect(frontLabel).toHaveText(now);
+  await expect(carousel.getByRole("button", { name: "Play the cards" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+});
+
+test("About carousel: no sideways scroll on a phone; no motion and no auto-slide with reduced motion", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -571,6 +598,13 @@ test("About carousel: no sideways scroll on a phone and no motion with reduced m
   await page.goto("/about");
   const carousel = page.locator(".layer-carousel");
   await carousel.scrollIntoViewIfNeeded();
+  // No auto-slide: the first card stays in front; the play button is offered instead.
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(4800);
+  await expect(
+    carousel.locator(".layer-carousel__card.is-active .layer-carousel__label"),
+  ).toHaveText("Tailor-made Signage");
+  await expect(carousel.getByRole("button", { name: "Play the cards" })).toBeVisible();
   // The site-wide reduced-motion rule turns every transition into 0.01 ms.
   const duration = await carousel
     .locator(".layer-carousel__card")

@@ -441,6 +441,30 @@
       right: 0;
     }
   }
+
+  // Pause / play for the auto-slide (WCAG 2.2.2): small, under the cards, always visible.
+  &__play {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin: 0.75rem auto 0;
+    padding: 0;
+    font-size: 0.875rem;
+    color: $ink;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 50%;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
+    }
+  }
 }
 
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──

@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/ClientIcon";
 
 const DRAG_PX = 50; // how far a drag or swipe must go to change the card
+const INTERVAL_MS = 4000; // auto-slide: the next card comes forward every 4 s
 
 /**
  * Where a card sits relative to the active one: 0 = front, ±1 = beside it, … The cards wrap
@@ -26,7 +27,11 @@ function offsetOf(i, active, count) {
  * Layered card carousel (client, 23 Oct 2026; replaces the About page photo collage): the
  * active card stands in front, the others step back and shrink on both sides. The arrows,
  * a drag or swipe, or the keyboard arrow keys bring the next card forward; the cards slide
- * and scale smoothly (no movement with prefers-reduced-motion). No automatic play.
+ * and scale smoothly (no movement with prefers-reduced-motion).
+ *  - Auto-slide (client, 24 Oct 2026): the next card every 4 s. It waits while the mouse is
+ *    over the carousel, while it is off screen and while the tab is hidden; a manual change
+ *    starts the 4 s again. A visible pause/play button stops it (WCAG 2.2.2). It does not
+ *    start by itself for prefers-reduced-motion.
  *  - Each card shows its label on top; the front card links to `href`; a click on a side
  *    card brings it to the front.
  *  - Only the front card is exposed to assistive technology; the change is announced.
@@ -39,6 +44,39 @@ export default function LayerCarousel({ items, label = "Our work" }) {
   const [active, setActive] = useState(0);
   const dragStart = useRef(null);
   const go = useCallback((delta) => setActive((i) => (i + delta + count) % count), [count]);
+  const rootRef = useRef(null);
+  const [playing, setPlaying] = useState(true);
+  const [hovering, setHovering] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [tabVisible, setTabVisible] = useState(true);
+
+  // Reduced motion: no automatic change; the visitor can still press play.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPlaying(false);
+  }, []);
+
+  // Only play while the carousel is on screen and the tab is visible.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.3,
+    });
+    observer.observe(el);
+    const onVisibility = () => setTabVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  // One timer per card: a manual change (new `active`) starts the 4 s again.
+  useEffect(() => {
+    if (!playing || hovering || !inView || !tabVisible || count < 2) return undefined;
+    const timer = window.setTimeout(() => go(1), INTERVAL_MS);
+    return () => window.clearTimeout(timer);
+  }, [playing, hovering, inView, tabVisible, active, count, go]);
 
   // Arrow keys move the cards while focus is inside the carousel.
   const onKeyDown = (e) => {
@@ -71,11 +109,14 @@ export default function LayerCarousel({ items, label = "Our work" }) {
 
   return (
     <div
+      ref={rootRef}
       className="layer-carousel"
       role="group"
       aria-roledescription="carousel"
       aria-label={label}
       onKeyDown={onKeyDown}
+      onPointerEnter={(e) => e.pointerType === "mouse" && setHovering(true)}
+      onPointerLeave={() => setHovering(false)}
     >
       <div
         className="layer-carousel__stage"
@@ -134,7 +175,18 @@ export default function LayerCarousel({ items, label = "Our work" }) {
         <Icon name="arrow-right" />
       </button>
 
-      <p className="visually-hidden" aria-live="polite">
+      <button
+        type="button"
+        className="layer-carousel__play"
+        aria-label={playing ? "Pause the cards" : "Play the cards"}
+        aria-pressed={!playing}
+        onClick={() => setPlaying((p) => !p)}
+      >
+        <Icon name={playing ? "pause-fill" : "play-fill"} />
+      </button>
+
+      {/* Announced only while paused, so auto-slide does not keep talking. */}
+      <p className="visually-hidden" aria-live={playing ? "off" : "polite"}>
         {`Card ${active + 1} of ${count}: ${items[active].label}`}
       </p>
     </div>

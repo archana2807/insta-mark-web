@@ -7,7 +7,6 @@ import LogoWall from "@/components/sections/LogoWall";
 import ProcessSteps from "@/components/sections/ProcessSteps";
 import IconGrid from "@/components/sections/IconGrid";
 import LogoStrip from "@/components/sections/LogoStrip";
-import CounterColumns from "@/components/sections/CounterColumns";
 import StatRow from "@/components/sections/StatRow";
 import SectionHeading from "@/components/ui/SectionHeading";
 import * as categoryService from "@/server/modules/categories/category.service";
@@ -25,7 +24,7 @@ export const metadata = pageMetadata({
 
 /**
  * Order (client feedback 21 Oct 2026, Crafto "Branding Agency" flow): banner → counter
- * row in place of the logos → counters (23 Oct 2026) → About → scrolling line → products → industries →
+ * row in place of the logos (23 Oct 2026) → About → scrolling line → products → industries →
  * working process → trusted by
  * (all project logos) → call to action. Longer copy (why choose us, FAQs) lives on About,
  * Contact and the category pages.
@@ -53,9 +52,6 @@ export default async function HomePage() {
 
       {/* Five counters right under the banner, in the logo row's place and look */}
       <StatRow items={home.stats} />
-
-      {/* The About page counters under the logos (client, 23 Oct 2026) */}
-      <CounterColumns items={home.counters} className="home-counters" />
 
       {/* 2. About — photo collage left, company text right */}
       <AboutIntro about={home.about} images={home.featured.about} />

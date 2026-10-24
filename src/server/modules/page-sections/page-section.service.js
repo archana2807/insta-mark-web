@@ -59,7 +59,7 @@ export async function getCategoryPage(slug) {
 }
 
 /**
- * The counters shown on Home and About, counted from real content (never invented figures).
+ * The About page counters, counted from real content (never invented figures).
  * @param {{ length: number }} categories
  * @param {{ length: number }} industries
  * @returns {{ value: number, label: string }[]}
@@ -102,8 +102,6 @@ export async function getHomeContent() {
       { value: categories.length, label: "Solutions & Applications" },
       { value: industries.length, label: "Industries Served" },
     ],
-    // The About page counters, below that row (client, 23 Oct 2026).
-    counters: realCounters(categories, industries),
   };
 }
 

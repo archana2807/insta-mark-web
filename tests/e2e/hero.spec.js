@@ -183,6 +183,40 @@ test("with reduced motion the counter row shows its final numbers and lines at o
   await expect(row.locator(".project-logos__value .visually-hidden").nth(3)).toHaveText("8");
 });
 
+test("the counter row rolls like an odometer (zeros too) and the labels fade up when it comes into view", async ({
+  page,
+}) => {
+  // The banner fills the screen, so the row comes into view when the visitor scrolls.
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.addInitScript(() => {
+    window.__armed = false;
+    new MutationObserver(() => {
+      if (document.querySelector(".project-logos__list.motion-armed")) window.__armed = true;
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ["class"] });
+  });
+  await page.goto("/");
+  const row = page.locator(".project-logos");
+  await expect.poll(() => page.evaluate(() => window.__armed), { timeout: 5000 }).toBe(true);
+  await row.scrollIntoViewIfNeeded();
+
+  // "500": the last zero turns two full rounds before it stops on 0 (20 digits = 20 em).
+  const zero = row.locator(".project-logos__stat").first().locator(".digit-roll__strip").nth(2);
+  const fontPx = await zero.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  await expect
+    .poll(() => zero.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), {
+      timeout: 6000,
+    })
+    .toBeLessThan(-19 * fontPx);
+  // It is still a 0 on screen, and the screen reader text is the real value.
+  await expect(row.locator(".project-logos__value .visually-hidden").first()).toHaveText(/^\d+\+$/);
+
+  // The labels end fully visible.
+  const label = row.locator(".project-logos__label").first();
+  await expect
+    .poll(() => label.evaluate((el) => Number(getComputedStyle(el).opacity)), { timeout: 5000 })
+    .toBe(1);
+});
+
 test("the counter row wraps centred on a phone without sideways scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -193,55 +227,25 @@ test("the counter row wraps centred on a phone without sideways scroll", async (
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test("the About page counters sit right under the logo row, same content; the digits roll in", async ({
+test("Home has only the one counter row under the banner; the About counters stay on About", async ({
   page,
 }) => {
   await page.goto("/");
-  const counters = page.locator(".home-counters");
-  const labels = counters.locator("dt");
-  await expect(labels).toHaveText([
-    "Signage & road safety solution categories",
-    "Industries and sectors served",
-    "In-house manufacturing capabilities",
-    "Steps from discovery to after-sales support",
-  ]);
-  // Counted from real content; screen readers get each number as plain text.
-  const values = counters.locator("dd .visually-hidden");
-  await expect(values).toHaveText(["8", "12", "12", "5"]);
-
-  // Right under the logo row, before the About block; one row of four on a laptop.
-  const logos = await page.locator(".project-logos").boundingBox();
-  const box = await counters.boundingBox();
-  expect(box.y).toBeGreaterThanOrEqual(logos.y + logos.height - 1);
-  expect(box.y - (logos.y + logos.height)).toBeLessThan(2);
-  const tops = await counters
-    .locator(".counter-cols > div")
-    .evaluateAll((els) => els.map((el) => el.offsetTop)); // layout box, ignores the reveal
-  expect(new Set(tops).size).toBe(1);
-
-  // Rolling digits: each strip ends on its digit once the row has scrolled into view.
-  await counters.scrollIntoViewIfNeeded();
-  const strip = counters.locator(".digit-roll__strip").first(); // the "8"
-  await expect
-    .poll(() => strip.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), {
-      timeout: 5000,
-    })
-    .toBeLessThan(-1);
-});
-
-test("the home counters stack two by two on a phone without sideways scroll", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const cols = page.locator(".home-counters .counter-cols > div");
-  await expect(cols).toHaveCount(4);
-  const lefts = await cols.evaluateAll((els) =>
-    els.map((el) => Math.round(el.getBoundingClientRect().left)),
-  );
-  expect(new Set(lefts).size).toBe(2);
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
+  await expect(page.locator(".home-counters")).toHaveCount(0);
+  await expect(page.locator(".counter-cols")).toHaveCount(0);
+  await expect(page.locator(".project-logos__stat")).toHaveCount(5);
+  // A white gap between the band and the About content (the band's bottom margin; the
+  // About row's negative gutter and its columns' gutter cancel out). The columns are
+  // centred, so the gap you see is to the highest one, not to the section box.
+  const band = await page.locator(".project-logos").boundingBox();
+  const tops = await page
+    .locator(".about-short .row > *")
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top + scrollY));
+  const gap = Math.min(...tops) - (band.y + band.height);
+  expect(gap).toBeGreaterThanOrEqual(76);
+  expect(gap).toBeLessThanOrEqual(92);
+  await page.goto("/about");
+  await expect(page.locator(".counter-cols dt")).toHaveCount(4);
 });
 
 test("home About: three overlapping photos on the left, the company text on the right", async ({
@@ -389,10 +393,9 @@ test("the footer carries the call to action text on every page; no logo, no butt
 
 test("home sections follow the client's order and look (10c)", async ({ page }) => {
   await page.goto("/");
-  // Order: logos → counters → About → scrolling line → products → industries → process → trusted by.
+  // Order: counter row → About → scrolling line → products → industries → process → trusted by.
   const ids = [
     ".project-logos",
-    ".home-counters",
     "#about-title",
     ".text-marquee",
     "#solutions-title",
@@ -450,16 +453,17 @@ test("home banner (phone): the tagline is a smaller line under the H1", async ({
 });
 
 test("inner page photos have the home banner's size on laptops and a phone", async ({ page }) => {
+  test.setTimeout(240000); // 12 page loads at 3 screen sizes
   for (const [w, h] of [
     [1440, 900],
     [1920, 1080],
     [390, 844],
   ]) {
     await page.setViewportSize({ width: w, height: h });
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     const home = await page.locator(".hero-split__media").boundingBox();
     for (const route of ["/about", "/contact", "/solutions", "/solutions/road-signs"]) {
-      await page.goto(route);
+      await page.goto(route, { waitUntil: "domcontentloaded" });
       const inner = await page.locator(".inner-hero__media").boundingBox();
       expect(
         Math.abs(inner.height - home.height),

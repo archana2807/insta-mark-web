@@ -216,7 +216,19 @@
   // dividers between the columns (from 992 px), the number in ink with a small raised "+",
   // a short brand-gradient line that draws in, and a small uppercase label.
   &--stats {
+    // The band is the only counter section on Home (client, 24 Oct 2026). The About block
+    // after it has no top padding, so the white gap below the band is this margin (84 px
+    // at 1440 px, as under the theme's logo row).
+    margin-bottom: 4rem;
     background: $surface;
+
+    @include media-breakpoint-up(lg) {
+      margin-bottom: 5.25rem;
+    }
+
+    @media (min-width: 1600px) {
+      margin-bottom: 6.5rem;
+    }
 
     // Columns stretch to the tallest one (equal dividers) and their content starts at the
     // top, so every number sits on one line even when a label wraps.
@@ -262,6 +274,13 @@
     }
   }
 
+  // Odometer: fast at first, settling on the value; each digit a little after the one on its
+  // left, all starting with their item.
+  &__value .digit-roll__strip {
+    transition: transform calc(1.2s + var(--i, 0) * 0.15s) cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
   // Draws in from the left when the row comes into view, in step with its item.
   &__bar {
     display: block;
@@ -272,7 +291,7 @@
     background: $brand-gradient;
     transform-origin: left center;
     transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); // the theme's ease-out-expo
-    transition-delay: inherit;
+    transition-delay: calc(var(--reveal-delay, 0ms) + 250ms);
 
     .motion-armed & {
       transform: scaleX(0);
@@ -286,21 +305,16 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     color: $muted;
-  }
-}
+    // Fades up after its number has started rolling.
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--reveal-delay, 0ms) + 350ms);
 
-// ── Counters under the logo row (client, 23 Oct 2026) ──────────
-// The counter band above ends at its own edge, so these need a gap above (72 px at 1440 px);
-// below, the same gap as the logo row (84 px), because the About block has no top padding.
-.home-counters {
-  padding-block: 3.5rem 4rem;
-
-  @include media-breakpoint-up(lg) {
-    padding-block: 4.5rem 5.25rem;
-  }
-
-  @media (min-width: 1600px) {
-    padding-block: 5.5rem 6.5rem;
+    .motion-armed & {
+      opacity: 0;
+      transform: translateY(12px);
+    }
   }
 }
 

@@ -449,6 +449,29 @@ test("home banner (phone): the tagline is a smaller line under the H1", async ({
   expect(await fontPx(headline)).toBeGreaterThanOrEqual((await fontPx(tagline)) * 1.5);
 });
 
+test("inner page photos have the home banner's size on laptops and a phone", async ({ page }) => {
+  for (const [w, h] of [
+    [1440, 900],
+    [1920, 1080],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("/");
+    const home = await page.locator(".hero-split__media").boundingBox();
+    for (const route of ["/about", "/contact", "/solutions", "/solutions/road-signs"]) {
+      await page.goto(route);
+      const inner = await page.locator(".inner-hero__media").boundingBox();
+      expect(
+        Math.abs(inner.height - home.height),
+        `${route} at ${w} px: height`,
+      ).toBeLessThanOrEqual(2);
+      expect(Math.abs(inner.width - home.width), `${route} at ${w} px: width`).toBeLessThanOrEqual(
+        2,
+      );
+    }
+  }
+});
+
 test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
   page,
 }) => {
@@ -649,10 +672,11 @@ test("header and inner hero follow the Crafto reference's measured sizes (10f)",
     expect(await css(cta, "fontWeight")).toBe("600");
     expect(Math.round((await cta.boundingBox()).height * 10) / 10).toBeCloseTo(45.5, 0);
 
-    // Hero: 550 px high; like the home banner, text 5/12 and photo 7/12 of the width, and
+    // Hero: like the home banner, the photo is the screen height under the header (806 px on
+    // a 900 px screen), text 5/12 and photo 7/12 of the width, and
     // the title starts where the home headline does (72 px from the left).
     const hero = await page.locator(".inner-hero").boundingBox();
-    expect(Math.round(hero.height), `${route} hero height`).toBe(550);
+    expect(Math.round(hero.height), `${route} hero height`).toBe(806);
     const media = await page.locator(".inner-hero__media").boundingBox();
     expect(Math.abs(media.x - 600), `${route} photo starts at 5/12`).toBeLessThanOrEqual(2);
     const title = await page.locator(".inner-hero h1").boundingBox();
@@ -667,14 +691,15 @@ test("header and inner hero follow the Crafto reference's measured sizes (10f)",
   await page.waitForTimeout(500);
   expect(Math.round((await page.locator(".site-header").boundingBox()).height)).toBe(94);
 
-  // Phone: 78 px header, bare menu icon, photo 390 × 272 right under it, title 41.256 px.
+  // Phone: 78 px header, bare menu icon, photo 390 × 500 right under it (the home banner's
+  // phone size), title 41.256 px.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/about");
   expect(Math.round((await page.locator(".site-header").boundingBox()).height)).toBe(78);
   expect(await css(page.locator(".menu-toggle"), "borderTopWidth")).toBe("0px");
   const photo = await page.locator(".inner-hero__media").boundingBox();
   expect(Math.round(photo.width)).toBe(390);
-  expect(Math.abs(photo.height - 272)).toBeLessThanOrEqual(1);
+  expect(Math.abs(photo.height - 500)).toBeLessThanOrEqual(1);
   expect(Math.abs(photo.y - 78)).toBeLessThanOrEqual(1);
   expect(parseFloat(await css(page.locator(".inner-hero h1"), "fontSize"))).toBeCloseTo(41.256, 1);
 });

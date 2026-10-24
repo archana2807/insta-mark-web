@@ -515,7 +515,7 @@ test("inner page heroes show no Home / page breadcrumb, but keep it for search e
   }
 });
 
-test("About: a layered card carousel replaces the photo collage; arrows, keys and a click move the cards", async ({
+test("About: a layered card carousel replaces the photo collage; keys, a swipe and a click move the cards", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -542,29 +542,36 @@ test("About: a layered card carousel replaces the photo collage; arrows, keys an
   const z = (loc) => loc.evaluate((el) => Number(getComputedStyle(el).zIndex));
   expect(await z(front)).toBeGreaterThan(await z(cards.nth(1)));
   await carousel.scrollIntoViewIfNeeded();
+  await carousel.hover(); // the mouse over the carousel holds the auto-slide
   await page.waitForTimeout(900);
   const w = async (loc) => (await loc.boundingBox()).width;
   expect(await w(front)).toBeGreaterThan((await w(cards.nth(1))) * 1.1);
   // Only the front card's link can be reached with the keyboard.
   await expect(cards.nth(1).locator("a")).toHaveAttribute("tabindex", "-1");
 
-  // Next arrow, then the keyboard, then a click on a side card.
-  // The live region (silent while auto-sliding, polite once paused) names the front card.
+  // No arrows: it slides by itself. The keyboard (on the pause button), a swipe and a click
+  // on a side card still change the card.
+  await expect(carousel.locator(".layer-carousel__arrow")).toHaveCount(0);
   const announce = carousel.locator("[aria-live]");
-  await carousel.getByRole("button", { name: "Next card" }).click();
+  await carousel.getByRole("button", { name: /the cards/ }).focus();
+  await page.keyboard.press("ArrowRight");
   await expect(announce).toHaveText("Card 2 of 3: Modular Signs");
   await expect(front.locator(".layer-carousel__label")).toHaveText("Modular Signs");
-  await carousel.getByRole("button", { name: "Previous card" }).focus();
-  await page.keyboard.press("ArrowRight");
+  const stage = await carousel.locator(".layer-carousel__stage").boundingBox();
+  const cy = stage.y + stage.height / 2;
+  await page.mouse.move(stage.x + stage.width * 0.7, cy);
+  await page.mouse.down();
+  await page.mouse.move(stage.x + stage.width * 0.3, cy, { steps: 5 });
+  await page.mouse.up();
   await expect(announce).toHaveText("Card 3 of 3: Road Signs");
   // Card 1 now sits on the right, partly behind the front card: click its free right edge.
   await page.waitForTimeout(900);
   const side = await cards.nth(0).boundingBox();
-  await page.mouse.click(side.x + side.width - 15, side.y + side.height / 2);
+  await page.mouse.click(side.x + side.width - 12, side.y + side.height / 2);
   await expect(announce).toHaveText("Card 1 of 3: Tailor-made Signage");
 });
 
-test("About carousel slides by itself every 4 s, and the pause button stops it (WCAG 2.2.2)", async ({
+test("About carousel slides by itself every 2 s, and the pause button stops it (WCAG 2.2.2)", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -574,7 +581,9 @@ test("About carousel slides by itself every 4 s, and the pause button stops it (
   await page.mouse.move(5, 5); // the mouse away from the carousel (hover pauses it)
   const frontLabel = carousel.locator(".layer-carousel__card.is-active .layer-carousel__label");
   await expect(frontLabel).toHaveText("Tailor-made Signage");
-  await expect(frontLabel).toHaveText("Modular Signs", { timeout: 6000 });
+  await page.waitForTimeout(800);
+  await expect(frontLabel).toHaveText("Tailor-made Signage"); // not yet after 0.8 s
+  await expect(frontLabel).toHaveText("Modular Signs", { timeout: 3000 });
 
   // Pause: nothing moves for longer than one interval.
   const pause = carousel.getByRole("button", { name: "Pause the cards" });
@@ -582,7 +591,7 @@ test("About carousel slides by itself every 4 s, and the pause button stops it (
   await pause.click();
   await page.mouse.move(5, 5);
   const now = await frontLabel.textContent();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(3500);
   await expect(frontLabel).toHaveText(now);
   await expect(carousel.getByRole("button", { name: "Play the cards" })).toHaveAttribute(
     "aria-pressed",
@@ -600,7 +609,7 @@ test("About carousel: no sideways scroll on a phone; no motion and no auto-slide
   await carousel.scrollIntoViewIfNeeded();
   // No auto-slide: the first card stays in front; the play button is offered instead.
   await page.mouse.move(5, 5);
-  await page.waitForTimeout(4800);
+  await page.waitForTimeout(3000);
   await expect(
     carousel.locator(".layer-carousel__card.is-active .layer-carousel__label"),
   ).toHaveText("Tailor-made Signage");

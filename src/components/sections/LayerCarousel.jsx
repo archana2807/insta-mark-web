@@ -6,7 +6,7 @@ import Link from "next/link";
 import Icon from "@/components/ui/ClientIcon";
 
 const DRAG_PX = 50; // how far a drag or swipe must go to change the card
-const INTERVAL_MS = 4000; // auto-slide: the next card comes forward every 4 s
+const INTERVAL_MS = 2000; // auto-slide: the next card every 2 s (client, 24 Oct 2026)
 
 /**
  * Where a card sits relative to the active one: 0 = front, ±1 = beside it, … The cards wrap
@@ -25,16 +25,16 @@ function offsetOf(i, active, count) {
 
 /**
  * Layered card carousel (client, 23 Oct 2026; replaces the About page photo collage): the
- * active card stands in front, the others step back and shrink on both sides. The arrows,
- * a drag or swipe, or the keyboard arrow keys bring the next card forward; the cards slide
- * and scale smoothly (no movement with prefers-reduced-motion).
- *  - Auto-slide (client, 24 Oct 2026): the next card every 4 s. It waits while the mouse is
- *    over the carousel, while it is off screen and while the tab is hidden; a manual change
- *    starts the 4 s again. A visible pause/play button stops it (WCAG 2.2.2). It does not
- *    start by itself for prefers-reduced-motion.
- *  - Each card shows its label on top; the front card links to `href`; a click on a side
- *    card brings it to the front.
- *  - Only the front card is exposed to assistive technology; the change is announced.
+ * active card stands in front, the others step back and shrink on both sides, and the cards
+ * slide and scale smoothly to the next one (no movement with prefers-reduced-motion).
+ *  - Auto-slide (client, 24 Oct 2026): the next card every 2 s, with no arrows. It waits
+ *    while the mouse is over the carousel, while it is off screen and while the tab is
+ *    hidden. A visible pause/play button stops it (WCAG 2.2.2); while it has focus, the
+ *    keyboard arrow keys also change the card. A swipe or a click on a side card brings
+ *    that card forward, and the 2 s start again. It does not start by itself for
+ *    prefers-reduced-motion.
+ *  - Each card shows its label on top; the front card links to `href`.
+ *  - Only the front card is exposed to assistive technology.
  * @param {{ items: { src: string, alt: string, label: string, href: string }[],
  *   label?: string }} props
  * @returns {JSX.Element}
@@ -71,14 +71,14 @@ export default function LayerCarousel({ items, label = "Our work" }) {
     };
   }, []);
 
-  // One timer per card: a manual change (new `active`) starts the 4 s again.
+  // One timer per card: a manual change (new `active`) starts the 2 s again.
   useEffect(() => {
     if (!playing || hovering || !inView || !tabVisible || count < 2) return undefined;
     const timer = window.setTimeout(() => go(1), INTERVAL_MS);
     return () => window.clearTimeout(timer);
   }, [playing, hovering, inView, tabVisible, active, count, go]);
 
-  // Arrow keys move the cards while focus is inside the carousel.
+  // Arrow keys move the cards while focus is inside the carousel (on the pause button).
   const onKeyDown = (e) => {
     if (e.key === "ArrowRight") go(1);
     else if (e.key === "ArrowLeft") go(-1);
@@ -129,8 +129,8 @@ export default function LayerCarousel({ items, label = "Our work" }) {
           const d = offsetOf(i, active, count);
           const front = d === 0;
           return (
-            // A side card comes to the front when clicked (the arrows do the same for
-            // keyboard users, so the card itself needs no focus).
+            // A side card comes to the front when clicked (keyboard users use the arrow keys
+            // on the pause button, so the card itself needs no focus).
             <div
               className={`layer-carousel__card ${front ? "is-active" : ""}`}
               style={{ "--d": d, "--abs": Math.abs(d) }}
@@ -157,23 +157,6 @@ export default function LayerCarousel({ items, label = "Our work" }) {
           );
         })}
       </div>
-
-      <button
-        type="button"
-        className="layer-carousel__arrow layer-carousel__arrow--prev"
-        aria-label="Previous card"
-        onClick={() => go(-1)}
-      >
-        <Icon name="arrow-left" />
-      </button>
-      <button
-        type="button"
-        className="layer-carousel__arrow layer-carousel__arrow--next"
-        aria-label="Next card"
-        onClick={() => go(1)}
-      >
-        <Icon name="arrow-right" />
-      </button>
 
       <button
         type="button"

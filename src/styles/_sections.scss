@@ -309,14 +309,15 @@
 // a little darker. A change slides and scales every card (the theme's ease-out-expo curve).
 // Each card: a small label on top, the photo, and on the front card a "View solution" pill.
 .layer-carousel {
-  // How far a side card moves out, in card widths: wide enough that its label shows.
-  --spread: 50%;
+  // How far a side card moves out, in card widths: far enough that its label shows, and
+  // with the card widths below it stays inside the carousel (no sideways scroll).
+  --spread: 44%;
 
   position: relative;
-  padding-inline: 2.75rem; // room for the arrows
+  padding-inline: 1rem;
 
   @include media-breakpoint-up(lg) {
-    --spread: 60%;
+    --spread: 52%;
   }
 
   &__stage {
@@ -334,7 +335,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 64%;
+    width: 60%;
     padding: 0 10px 10px;
     background: #fff;
     border-radius: 18px;
@@ -352,7 +353,7 @@
     }
 
     @include media-breakpoint-up(lg) {
-      width: 58%;
+      width: 56%;
     }
   }
 
@@ -406,39 +407,6 @@
     .is-active & {
       opacity: 1;
       pointer-events: auto;
-    }
-  }
-
-  &__arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 20;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    color: $ink;
-    background: #fff;
-    border: 1px solid $line;
-    border-radius: 50%;
-    transform: translateY(-50%);
-    transition:
-      background 0.2s ease,
-      color 0.2s ease;
-
-    &:hover,
-    &:focus-visible {
-      color: #fff;
-      background: $ink;
-    }
-
-    &--prev {
-      left: 0;
-    }
-
-    &--next {
-      right: 0;
     }
   }
 

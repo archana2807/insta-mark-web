@@ -7,7 +7,7 @@ import FaqSection from "@/components/sections/FaqSection";
 import CtaBand from "@/components/sections/CtaBand";
 import CategoryGrid from "@/components/sections/CategoryGrid";
 import { CounterGrid } from "@/components/sections/CounterColumns";
-import AboutCollage from "@/components/sections/AboutCollage";
+import CardDeck from "@/components/sections/CardDeck";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 import * as categoryService from "@/server/modules/categories/category.service";
@@ -66,7 +66,7 @@ export default async function CategoryPage({ params }) {
         (img) => [img.src, img],
       ),
     ).values(),
-  ].slice(0, 3);
+  ].slice(0, 7);
 
   return (
     <>
@@ -112,15 +112,16 @@ export default async function CategoryPage({ params }) {
         </div>
       </section>
 
-      {/* Where it is used — the theme's three overlapping photos (fade in one by one, drift on
-          scroll) on the left, every industry with a + icon on the right */}
+      {/* Where it is used — a fanned photo deck on the left (client, 24 Oct 2026), every
+          industry with a + icon on the right */}
       <section className="section" aria-labelledby="used-title">
         <div className="container">
           <div className="row align-items-center g-4 g-lg-5">
             {usedPhotos.length > 0 && (
               <div className="col-lg-6">
-                <AboutCollage
-                  images={usedPhotos.map((photo) => ({ src: photo.src, alt: photo.alt ?? "" }))}
+                <CardDeck
+                  images={usedPhotos.map((photo) => ({ ...photo, alt: photo.alt ?? "" }))}
+                  label={`${category.name} photos`}
                 />
               </div>
             )}

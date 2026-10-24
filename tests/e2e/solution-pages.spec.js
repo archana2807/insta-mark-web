@@ -34,24 +34,55 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
   expect(b.y).toBeGreaterThan(a.y + a.height - 1);
 });
 
-test("Where it is used: three overlapping photos on the left, every industry with a + icon on the right (10e)", async ({
+test("Where it is used: a fanned photo deck on the left, every industry with a + icon on the right (10e)", async ({
   page,
 }) => {
   await page.goto("/solutions/tailor-made-signage");
   const section = page.locator("#used-title").locator("xpath=ancestor::section[1]");
+  const deck = section.locator(".card-deck");
+  await deck.scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Pause the photo deck" }).click();
 
-  // The theme's photo collage: three photos that overlap each other.
-  const photos = section.locator(".about-collage__item");
-  await expect(photos).toHaveCount(3);
-  await section.locator(".about-collage").scrollIntoViewIfNeeded();
-  const overlaps = () =>
-    photos.evaluateAll((items) => {
-      const r = items.map((el) => el.getBoundingClientRect());
-      const hit = (a, b) =>
-        a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-      return [hit(r[0], r[1]), hit(r[0], r[2]), hit(r[1], r[2])].filter(Boolean).length;
-    });
-  await expect.poll(overlaps, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
+  // The front card stands in the middle; the cards beside it are smaller, on both sides.
+  const cards = section.locator(".card-deck__card:not(.is-far)");
+  expect(await cards.count()).toBeGreaterThanOrEqual(5);
+  await page.waitForTimeout(1000); // the cards have settled
+  const boxes = await cards.evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, w: r.width, front: el.classList.contains("is-active") };
+    }),
+  );
+  const front = boxes.find((b) => b.front);
+  const d = await deck.boundingBox();
+  expect(Math.abs(front.x - (d.x + d.width / 2))).toBeLessThan(4);
+  for (const b of boxes.filter((b) => !b.front)) expect(b.w).toBeLessThan(front.w);
+  expect(boxes.some((b) => b.x < front.x)).toBe(true);
+  expect(boxes.some((b) => b.x > front.x)).toBe(true);
+
+  // Next / previous buttons, the arrow keys and the dots change the front card.
+  const current = () => section.locator(".card-deck__dots .is-active").getAttribute("aria-label");
+  await expect.poll(current).toBe("Show photo 1 of 7");
+  await page.getByRole("button", { name: "Next photo" }).click();
+  await expect.poll(current).toBe("Show photo 2 of 7");
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(current).toBe("Show photo 3 of 7");
+  await page.getByRole("button", { name: "Show photo 6 of 7" }).click();
+  await expect.poll(current).toBe("Show photo 6 of 7");
+
+  // A drag to the left brings the next card forward.
+  const box = await section.locator(".card-deck__stage").boundingBox();
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width * 0.7, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width * (0.7 - i * 0.03), y);
+  await page.mouse.up();
+  await expect.poll(current).toBe("Show photo 7 of 7");
+
+  // The front card opens the full photo.
+  await section.locator(".card-deck__card.is-active button").click();
+  await expect(page.locator(".yarl__container")).toBeVisible();
+  await page.keyboard.press("Escape");
 
   // All industries from the client's text, each with a + icon.
   const items = section.locator(".used-list li");
@@ -59,10 +90,32 @@ test("Where it is used: three overlapping photos on the left, every industry wit
   await expect(items.first()).toContainText("Corporate offices");
   await expect(items.first().locator("svg, .bi").first()).toBeVisible();
 
-  // Collage on the left, list on the right.
-  const c = await section.locator(".about-collage").boundingBox();
+  // Deck on the left, list on the right.
   const l = await section.locator(".used-list").boundingBox();
-  expect(c.x + c.width).toBeLessThanOrEqual(l.x + 1);
+  expect(d.x + d.width).toBeLessThanOrEqual(l.x + 1);
+});
+
+test("Where it is used: the deck plays by itself, and stands still with reduced motion (10e)", async ({
+  browser,
+}) => {
+  for (const reducedMotion of ["no-preference", "reduce"]) {
+    const context = await browser.newContext({ reducedMotion });
+    const page = await context.newPage();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/solutions/tailor-made-signage");
+    const deck = page.locator(".card-deck");
+    await deck.scrollIntoViewIfNeeded();
+    await page.mouse.move(5, 5); // not over the deck
+    const current = () => deck.locator(".card-deck__dots .is-active").getAttribute("aria-label");
+    if (reducedMotion === "reduce") {
+      await expect(deck.getByRole("button", { name: "Play the photo deck" })).toBeVisible();
+      await page.waitForTimeout(4500);
+      expect(await current()).toBe("Show photo 1 of 7");
+    } else {
+      await expect.poll(current, { timeout: 8000 }).toBe("Show photo 2 of 7");
+    }
+    await context.close();
+  }
 });
 
 test("What you get stacks in two columns on a phone without sideways scroll (10e)", async ({

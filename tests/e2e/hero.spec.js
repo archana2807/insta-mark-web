@@ -217,6 +217,44 @@ test("the counter row rolls like an odometer (zeros too) and the labels fade up 
     .toBe(1);
 });
 
+test("scroll entrances replay every time they come into view, scrolling down and back up", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const grid = page.locator(".product-mosaic"); // a Reveal with staggered tiles
+  const armed = () => grid.evaluate((el) => el.classList.contains("motion-armed"));
+  const tileOpacity = () => grid.evaluate((el) => Number(getComputedStyle(el.children[0]).opacity));
+
+  // 1. First time down: it plays.
+  await grid.scrollIntoViewIfNeeded();
+  await expect.poll(armed).toBe(false);
+  await expect.poll(tileOpacity, { timeout: 4000 }).toBe(1);
+
+  // 2. Scrolled away (above it, back to the top): reset while off screen.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(armed).toBe(true);
+
+  // 3. Down again: it plays again.
+  await grid.scrollIntoViewIfNeeded();
+  await expect.poll(armed).toBe(false);
+  await expect.poll(tileOpacity, { timeout: 4000 }).toBe(1);
+
+  // 4. Past it to the bottom, then back UP onto it: it resets and plays again.
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect.poll(armed).toBe(true);
+  await grid.scrollIntoViewIfNeeded();
+  await expect.poll(armed).toBe(false);
+  await expect.poll(tileOpacity, { timeout: 4000 }).toBe(1);
+
+  // 5. No flicker at the edge: while any part is on screen it is never reset.
+  const box = await grid.boundingBox();
+  const top = await page.evaluate(() => window.scrollY);
+  await page.evaluate((y) => window.scrollTo(0, y), top + box.y + box.height - 40);
+  await page.waitForTimeout(300);
+  expect(await armed()).toBe(false);
+});
+
 test("the counter row wraps centred on a phone without sideways scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -237,11 +275,20 @@ test("Home has only the one counter row under the banner; the About counters sta
   // A white gap between the band and the About content (the band's bottom margin; the
   // About row's negative gutter and its columns' gutter cancel out). The columns are
   // centred, so the gap you see is to the highest one, not to the section box.
-  const band = await page.locator(".project-logos").boundingBox();
-  const tops = await page
-    .locator(".about-short .row > *")
-    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top + scrollY));
-  const gap = Math.min(...tops) - (band.y + band.height);
+  const bandBottom = await page.locator(".project-logos").evaluate((el) => {
+    let y = el.offsetHeight;
+    for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  });
+  // Layout positions (offsetTop), so an entrance animation's 30 px start offset does not count.
+  const tops = await page.locator(".about-short .row > *").evaluateAll((els) =>
+    els.map((el) => {
+      let y = 0;
+      for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+      return y;
+    }),
+  );
+  const gap = Math.min(...tops) - bandBottom;
   expect(gap).toBeGreaterThanOrEqual(76);
   expect(gap).toBeLessThanOrEqual(92);
   await page.goto("/about");

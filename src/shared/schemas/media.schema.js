@@ -3,7 +3,7 @@ import { IMAGE_TYPES } from "../constants.js";
 import { id } from "./fields.js";
 
 /** Which gallery an image belongs to. */
-export const galleryKindSchema = z.enum(["category", "project"]);
+export const galleryKindSchema = z.enum(["category"]);
 
 /**
  * Cloudinary upload response, as sent back by the browser.

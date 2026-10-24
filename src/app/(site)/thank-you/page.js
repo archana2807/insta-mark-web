@@ -22,8 +22,8 @@ export default function ThankYouPage() {
           Our team will review your requirement and get back to you shortly.
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3">
-          <Link href="/projects" className="btn btn-dark btn-lg">
-            See our projects <Icon name="arrow-right" />
+          <Link href="/solutions" className="btn btn-dark btn-lg">
+            Our solutions <Icon name="arrow-right" />
           </Link>
           <Link href="/" className="btn btn-outline-ink btn-lg">
             Back to home

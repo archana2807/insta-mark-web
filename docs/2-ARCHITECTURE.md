@@ -50,7 +50,7 @@ src/
 ├─ app/            VIEW: routes only — (site)/, admin/, api/, sitemap.js, robots.js, error.jsx, not-found.jsx
 ├─ components/     VIEW: ui/, shared/, layout/, sections/, forms/  (Bootstrap + theme)
 ├─ server/
-│  ├─ modules/     enquiries/ categories/ projects/ client-logos/ faqs/ industries/
+│  ├─ modules/     enquiries/ categories/ client-logos/ faqs/ industries/
 │  │               settings/ banner/ media/ users/ auth/ audit/ rate-limits/
 │  │               page-sections/ (service only until the page_sections table, D5)
 │  ├─ integrations/ resend/ cloudinary/ turnstile/
@@ -84,6 +84,7 @@ prisma/ · public/ · tests/unit · tests/e2e
 | Branches / commits | `feature/<NN>-<name>`, Conventional Commits | `feat(enquiries): move to module` |
 
 ### 3.3 Request flow (example: admin updates a project)
+The Projects module was removed on 24 Oct 2026; the example still shows the pattern every module follows (e.g. categories, FAQs).
 ```
 ProjectForm (View, client component)
   → updateProject(prev, formData)            projects/project.controller.js  ('use server')
@@ -103,7 +104,7 @@ ProjectForm (View, client component)
 | users | `admin_users` | create, role, deactivate, reset password, own password | audit |
 | enquiries | `enquiries`, `enquiry_notes` | submit (validate → store → email), list, filter, status, owner, notes, CSV | categories, rate-limits, resend, turnstile, audit |
 | categories | `categories`, `category_images` | read for pages, edit text, gallery order, cover | media, audit |
-| projects | `projects`, `project_images`, `project_categories` | CRUD, gallery, public pages | media, industries, audit |
+| ~~projects~~ | `projects`, `project_images`, `project_categories` (kept, unused) | removed at the client's request, 24 Oct 2026 (no module, no pages) | — |
 | client-logos | `client_logos` | CRUD, order | media, audit |
 | faqs | `faqs` | CRUD, home / category FAQs | audit |
 | industries | `industries` | read for pages (admin later) | — |
@@ -112,7 +113,7 @@ ProjectForm (View, client component)
 | media | `media_assets` | Cloudinary signing, verify upload, delete unused | cloudinary |
 | audit | `audit_logs` | write and list the log | — |
 | rate-limits | `rate_limits` | fixed-window limiter | — |
-| page-sections | — (reads `/content`, D5) | page copy for Home, About, Projects, Contact, category pages; nav | categories, faqs, industries, client-logos |
+| page-sections | — (reads `/content`, D5) | page copy for Home, About, Contact, category pages; nav | categories, faqs, industries, client-logos |
 
 ## 4. Data model
 Full schema: `prisma/schema.prisma` (PostgreSQL, Prisma 6). Conventions: cuid ids, snake_case tables and columns, `created_at` / `updated_at`.
@@ -155,12 +156,11 @@ Since task 04 every action lives in `src/server/modules/<module>/<singular>.cont
 | `logoutEverywhere` | `auth/auth.controller.js` | Editor, Admin | Sign out on every device (`token_version` + 1, audit `LOGOUT_ALL`) | F6 |
 | `updateCategory` | `categories/category.controller.js` | Editor, Admin | Edit category text, group, icon, SEO, order, active | F7 |
 | `getUploadSignature` | `media/media.controller.js` | Editor, Admin | Signed Cloudinary params for a gallery upload | F7 |
-| `attachUploadedImage` | `media/media.controller.js` | Editor, Admin | Verify upload, save asset, add to category/project gallery | F7 |
+| `attachUploadedImage` | `media/media.controller.js` | Editor, Admin | Verify upload, save asset, add to category gallery | F7 |
 | `updateImage` | `media/media.controller.js` | Editor, Admin | Alt text, caption, type (catalogue / executed) | F7 |
 | `moveImage` | `media/media.controller.js` | Editor, Admin | Reorder gallery | F7 |
-| `setCoverImage` | `media/media.controller.js` | Editor, Admin | Set category / project cover | F7 |
+| `setCoverImage` | `media/media.controller.js` | Editor, Admin | Set category cover | F7 |
 | `removeImage` | `media/media.controller.js` | Editor, Admin | Remove from gallery; delete asset if unused | F7 |
-| `createProject`, `updateProject`, `deleteProject` | `projects/project.controller.js` | Editor, Admin | Projects CRUD | F7 |
 | `getLogoUploadSignature` | `client-logos/client-logo.controller.js` | Editor, Admin | Signed Cloudinary params for a logo | F7 |
 | `createClientLogo`, `updateClientLogo`, `deleteClientLogo` | `client-logos/client-logo.controller.js` | Editor, Admin | Client logos | F7 |
 | `saveFaq`, `deleteFaq` | `faqs/faq.controller.js` | Editor, Admin | FAQs | F7 |

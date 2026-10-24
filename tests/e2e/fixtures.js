@@ -20,12 +20,3 @@ export const USERS = {
     password: "Lock-Test-Pass-1",
   },
 };
-
-export const FIXTURE_PROJECT = {
-  slug: "sample-residential-tower",
-  title: "Sample Residential Tower",
-  clientName: "Sample Developer",
-  city: "Mumbai",
-  year: 2024,
-  description: "QA fixture project (test data only).",
-};

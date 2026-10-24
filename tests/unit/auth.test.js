@@ -87,7 +87,7 @@ test("middleware route map", () => {
   assert.equal(permissionForPath("/admin/audit"), "audit:read");
   assert.equal(permissionForPath("/admin/enquiries/export"), "enquiry:export");
   assert.equal(permissionForPath("/admin/enquiries/abc"), "enquiry:read");
-  assert.equal(permissionForPath("/admin/projects/new"), "content:write");
+  assert.equal(permissionForPath("/admin/clients/new"), "content:write");
   assert.equal(permissionForPath("/admin/account"), null);
   assert.equal(permissionForPath("/admin/settingsX"), null);
 });

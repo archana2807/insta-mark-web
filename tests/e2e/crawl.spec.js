@@ -112,11 +112,9 @@ test.describe.serial("public site crawl", () => {
     const mustFind = [
       "/",
       "/solutions",
-      "/projects",
       "/about",
       "/contact",
       "/privacy-policy",
-      "/projects/sample-residential-tower",
       ...[
         "tailor-made-signage",
         "modular-signs",
@@ -154,8 +152,6 @@ test("admin pages: axe WCAG 2.1 AA 0 violations", async ({ page }) => {
     "/admin",
     "/admin/enquiries",
     "/admin/categories",
-    "/admin/projects",
-    "/admin/projects/new",
     "/admin/clients",
     "/admin/faqs",
     "/admin/settings",

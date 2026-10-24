@@ -575,6 +575,36 @@ test("scroll-linked photos glide to their place like the reference, the same way
   expect(Math.abs((await y()) - start)).toBeLessThanOrEqual(0.5);
 });
 
+test("About: the manufacturing heading sits beside its photo, not over it, lined up with its text", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+  const section = page.locator("#mfg-title").locator("xpath=ancestor::section[1]");
+  await section.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1500);
+  const media = await section.locator(".overlap-feature__media").boundingBox();
+  const h2 = section.locator("#mfg-title");
+  // No white panel and no shift onto the photo.
+  expect(await h2.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+  const textLeft = await h2.evaluate((el) => {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return Math.min(...[...range.getClientRects()].map((r) => r.left));
+  });
+  expect(textLeft).toBeGreaterThanOrEqual(media.x + media.width + 16);
+  // Lined up on the left with the intro under it (layout position, so the fade-up does not count).
+  const left = (loc) =>
+    loc.evaluate((el) => {
+      let x = 0;
+      for (let n = el; n; n = n.offsetParent) x += n.offsetLeft;
+      return x;
+    });
+  expect(
+    Math.abs((await left(h2)) - (await left(section.locator("p").first()))),
+  ).toBeLessThanOrEqual(2);
+});
+
 test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
   page,
 }) => {

@@ -3,7 +3,7 @@
 import Accordion from "react-bootstrap/Accordion";
 
 /** Theme services block: heading left, line accordion right. Emits FAQPage JSON-LD. */
-export default function FaqSection({ faqs, title = "Frequently asked questions" }) {
+export default function FaqSection({ faqs, title = "Frequently Asked Questions" }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

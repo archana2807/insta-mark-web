@@ -103,7 +103,7 @@ export default async function CategoryPage({ params }) {
       {/* What you get — the theme's counter columns: feature on top, big number below */}
       <section className="section pb-0" aria-labelledby="features-title">
         <div className="container">
-          <SectionHeading className="mb-6" title={<span id="features-title">What you get</span>} />
+          <SectionHeading className="mb-6" title={<span id="features-title">What You Get</span>} />
           <CounterGrid
             items={category.features.map((f, i) => ({ label: f, value: pad2(i + 1) }))}
             colClass="col-6 col-lg"
@@ -127,7 +127,7 @@ export default async function CategoryPage({ params }) {
             )}
             <Reveal className={usedPhotos.length > 0 ? "col-lg-6" : "col-lg-8"}>
               <SectionHeading
-                title={<span id="used-title">Where it is used</span>}
+                title={<span id="used-title">Where It Is Used</span>}
                 text={category.applications}
               />
               <Reveal as="ul" effect="flip-y" stagger={80} className="used-list mt-5">
@@ -162,7 +162,7 @@ export default async function CategoryPage({ params }) {
           <div className="container">
             <SectionHeading
               className="mb-6"
-              title={<span id="work-title">Our work on site</span>}
+              title={<span id="work-title">Our Work on Site</span>}
               text={`Real ${category.name.toLowerCase()} projects designed, manufactured and installed by Insta Mark.`}
             />
           </div>
@@ -187,7 +187,7 @@ export default async function CategoryPage({ params }) {
           <div className="container">
             <SectionHeading
               className="mb-6"
-              title={<span id="related-title">Related solutions</span>}
+              title={<span id="related-title">Related Solutions</span>}
             />
             <CategoryGrid
               categories={category.related}

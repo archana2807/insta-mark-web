@@ -90,12 +90,12 @@ test("About 'Why Choose Us' shows the six items from the client's About text", a
   await page.goto("/about");
   const list = page.locator("section[aria-labelledby=why-title] .row-list li");
   await expect(list.locator("h3")).toHaveText([
-    "End-to-end project execution",
-    "In-house design and manufacturing",
-    "Premium materials",
-    "Nationwide installation",
-    "Tailor-made solutions",
-    "Strict quality control",
+    "End-to-End Project Execution",
+    "In-House Design and Manufacturing",
+    "Premium Materials",
+    "Nationwide Installation",
+    "Tailor-Made Solutions",
+    "Strict Quality Control",
   ]);
   await expect(list.locator("p")).toHaveCount(0); // no invented descriptions
 });

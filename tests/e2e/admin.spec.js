@@ -230,7 +230,7 @@ test("gallery order / cover / remove", async () => {
   check(
     "public gallery order follows admin",
     await eventually("/solutions/road-safety-products", (h) => {
-      const gallery = h.slice(h.indexOf("Our work on site"));
+      const gallery = h.slice(h.indexOf("Our Work on Site"));
       const a = gallery.indexOf(esc(newFirstAlt));
       const b = gallery.indexOf(esc(firstAlt));
       return a !== -1 && b !== -1 && a < b;

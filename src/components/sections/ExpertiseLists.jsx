@@ -8,13 +8,13 @@ export default function ExpertiseLists({ expertise }) {
   const groups = [
     {
       key: "architectural",
-      title: "Architectural signage",
+      title: "Architectural Signage",
       icon: "signpost-split",
       items: expertise.architectural,
     },
     {
       key: "road",
-      title: "Road safety solutions",
+      title: "Road Safety Solutions",
       icon: "cone-striped",
       items: expertise.roadSafety,
     },
@@ -26,7 +26,7 @@ export default function ExpertiseLists({ expertise }) {
         <div className="row g-4 g-lg-5">
           <div className="col-lg-4">
             <SectionHeading
-              title={<span id="expertise-title">Everything your project needs, from one team</span>}
+              title={<span id="expertise-title">Everything Your Project Needs, from One Team</span>}
               text="Design, manufacturing and installation for interior and exterior signage and on-ground road safety."
             />
             <Link href="/contact#contact-form" className="link-arrow mt-4">

@@ -194,12 +194,12 @@ export const about = {
   mission:
     "To deliver durable, compliant, and customized signage solutions while maintaining the highest standards of quality, service, and execution.",
   whyChooseUs: [
-    "End-to-end project execution",
-    "In-house design and manufacturing",
-    "Premium materials",
-    "Nationwide installation",
-    "Tailor-made solutions",
-    "Strict quality control",
+    "End-to-End Project Execution",
+    "In-House Design and Manufacturing",
+    "Premium Materials",
+    "Nationwide Installation",
+    "Tailor-Made Solutions",
+    "Strict Quality Control",
   ],
   solutions: [
     {

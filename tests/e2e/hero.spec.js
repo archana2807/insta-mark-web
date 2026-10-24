@@ -472,8 +472,8 @@ test("home sections follow the client's order and look (10c)", async ({ page }) 
   expect(rowTops.filter((t) => t === rowTops[0]).length).toBe(5);
   await expect(page.locator("#trusted-title")).toHaveText("Trusted by Leading Brands");
 
-  // Products: the heading is "Our products", with its description and no small label above.
-  await expect(page.locator("#solutions-title")).toHaveText("Our products");
+  // Products: the heading is "Our Products", with its description and no small label above.
+  await expect(page.locator("#solutions-title")).toHaveText("Our Products");
 });
 
 test("home banner (phone): the tagline is a smaller line under the H1", async ({ page }) => {
@@ -951,7 +951,7 @@ test("the contact form section follows the Crafto contact layout: photo left, ti
   expect(Math.abs(media.width - 720)).toBeLessThanOrEqual(2);
   const title = await section.locator("h2").boundingBox();
   expect(title.x).toBeGreaterThanOrEqual(media.x + media.width);
-  await expect(section.locator("h2")).toHaveText("Request a consultation");
+  await expect(section.locator("h2")).toHaveText("Request a Consultation");
   expect(
     parseFloat(await section.locator("h2").evaluate((el) => getComputedStyle(el).fontSize)),
   ).toBeGreaterThan(63);

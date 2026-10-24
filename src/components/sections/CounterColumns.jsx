@@ -3,11 +3,13 @@ import Reveal from "@/components/ui/Reveal";
 
 /**
  * Each digit is a 0–9 strip that rolls to its value when its Reveal parent scrolls into view.
- * @param {{ value: string | number }} props
+ * With `spins`, every digit first turns that many full rounds (an odometer: zeros roll too).
+ * @param {{ value: string | number, spins?: number }} props
  * @returns {JSX.Element}
  */
-export function RollingNumber({ value }) {
+export function RollingNumber({ value, spins = 0 }) {
   const text = String(value);
+  let digit = 0; // position among the digits, for a small left-to-right stagger
   return (
     <>
       <span className="visually-hidden">{text}</span>
@@ -15,9 +17,12 @@ export function RollingNumber({ value }) {
         {[...text].map((ch, i) =>
           /\d/.test(ch) ? (
             <span className="digit-roll" key={i}>
-              <span className="digit-roll__strip" style={{ "--d": ch }}>
-                {Array.from({ length: 10 }, (_, n) => (
-                  <span key={n}>{n}</span>
+              <span
+                className="digit-roll__strip"
+                style={{ "--d": Number(ch) + spins * 10, "--i": digit++ }}
+              >
+                {Array.from({ length: 10 * (spins + 1) }, (_, n) => (
+                  <span key={n}>{n % 10}</span>
                 ))}
               </span>
             </span>

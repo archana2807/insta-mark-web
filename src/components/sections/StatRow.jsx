@@ -4,8 +4,9 @@ import { RollingNumber } from "@/components/sections/CounterColumns";
 /**
  * The row right under the home banner (client, 23 Oct 2026): the same section, spacing and
  * equal centred columns as the theme's logo row, with a counter in place of each logo, on a
- * light band with hairline dividers. The digits roll to their value, the items rise in one
- * by one and a short brand-gradient line draws in under each number.
+ * light band with hairline dividers. When the row comes into view (also when it is already
+ * on screen at load), each item rises in turn, its digits spin like an odometer (two full
+ * rounds, then their value), the brand-gradient line draws in and the label fades up.
  * @param {{ items: { label: string, value: string | number }[] }} props
  * @returns {JSX.Element | null} nothing when there are no items
  */
@@ -14,11 +15,11 @@ export default function StatRow({ items }) {
   return (
     <section className="project-logos project-logos--stats" aria-label="Insta Mark at a glance">
       <div className="container">
-        <Reveal as="ul" stagger={150} className="project-logos__list list-unstyled mb-0">
+        <Reveal as="ul" stagger={150} always className="project-logos__list list-unstyled mb-0">
           {items.map((item) => (
             <li className="project-logos__stat" key={item.label}>
               <strong className="project-logos__value">
-                <RollingNumber value={item.value} />
+                <RollingNumber value={item.value} spins={2} />
               </strong>
               <span className="project-logos__bar" aria-hidden="true" />
               <span className="project-logos__label">{item.label}</span>

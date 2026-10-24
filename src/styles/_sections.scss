@@ -661,6 +661,16 @@
     font-size: 0.8125rem;
     line-height: 1.45;
     color: $body-text;
+    transition:
+      opacity 0.4s ease,
+      visibility 0.4s;
+
+    // Only the front card shows its caption: on the dimmed side cards the text would fail
+    // WCAG AA contrast (and could not be read anyway).
+    .card-deck__card:not(.is-active) & {
+      visibility: hidden;
+      opacity: 0;
+    }
   }
 
   &__num {

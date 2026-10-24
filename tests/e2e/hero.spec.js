@@ -817,6 +817,9 @@ test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 20
   expect(await css(h1, "fontSize")).toBe("63.36px");
   expect(await css(h1, "fontWeight")).toBe("600");
   expect(await css(page.locator(".hero-split__tagline"), "fontSize")).toBe("28px");
+  // The tagline alone is in Pacifico (client, 24 Oct 2026); the headline keeps its font.
+  expect(await css(page.locator(".hero-split__tagline"), "fontFamily")).toMatch(/script/i);
+  expect(await css(h1, "fontFamily")).not.toMatch(/script/i);
   const text = page.locator(".hero-split .lead-text");
   expect(await css(text, "fontSize")).toBe("16px");
   expect(await css(text, "lineHeight")).toBe("30px");

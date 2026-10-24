@@ -1540,19 +1540,10 @@
     }
   }
 
+  // The heading stays in its own column, beside the photo, lined up with the text under
+  // it (client, 24 Oct 2026: no white panel cutting into the photo, like the heroes).
   h2 {
-    position: relative;
-    z-index: 2;
     font-size: clamp(2.2rem, 1.4rem + 2.6vw, 4rem);
-
-    // Theme look: the heading sits on a white panel cutting into the photo,
-    // so the text never runs over the image (contrast).
-    @include media-breakpoint-up(lg) {
-      display: inline-block;
-      margin-left: calc(-12% - 3rem);
-      padding: 2rem 2.5rem 1.5rem 3rem;
-      background: #fff;
-    }
   }
 
   &__highlight {

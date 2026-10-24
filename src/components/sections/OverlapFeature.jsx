@@ -4,8 +4,9 @@ import Icon from "@/components/ui/Icon";
 import ScrollDrift from "@/components/ui/ScrollDrift";
 
 /**
- * Theme "We create highly unique…" block: tall image left, large heading that
- * overlaps the image, then copy, optional tags and a highlight box.
+ * Theme "We create highly unique…" block: tall image left; on the right a large heading
+ * (beside the photo, not over it: client, 24 Oct 2026), then copy, optional tags and a
+ * highlight box.
  */
 export default function OverlapFeature({ id, title, intro, text, image, tags, highlight }) {
   return (

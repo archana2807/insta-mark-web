@@ -17,6 +17,13 @@ const grotesk = localFont({
   variable: "--font-grotesk",
   display: "swap",
 });
+// Pacifico (OFL-1.1, @fontsource) for the Home banner tagline only (client, 24 Oct 2026).
+const script = localFont({
+  src: "../../node_modules/@fontsource/pacifico/files/pacifico-latin-400-normal.woff2",
+  weight: "400",
+  variable: "--font-script",
+  display: "swap",
+});
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -37,7 +44,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-IN" className={`${inter.variable} ${grotesk.variable}`}>
+    <html lang="en-IN" className={`${inter.variable} ${grotesk.variable} ${script.variable}`}>
       <body>{children}</body>
     </html>
   );

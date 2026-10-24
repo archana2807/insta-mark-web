@@ -15,7 +15,7 @@
 | Shape | Single Next.js 15 app, not monorepo + Express | One web app, no separate API clients |
 | UI | **Bootstrap 5.3 + React-Bootstrap + Sass**, not Tailwind / shadcn | Recreates the Crafto "Branding Agency" premium theme (Bootstrap based) |
 | Icons | Generated inline SVGs from `bootstrap-icons` (`npm run icons`), not lucide | No icon font; 65 icons, small bundle |
-| Fonts | Inter + Space Grotesk, self-hosted (`next/font/local`) | Builds never depend on Google Fonts |
+| Fonts | Merriweather (headings) + Lato (body, interface), self-hosted (`next/font/local`, Fontsource; client choice 24 Oct 2026) | Builds never depend on Google Fonts |
 | Forms | React 19 `useActionState` + server actions + Zod, not React Hook Form | Works without JS; shared rules for browser and server |
 | Frontend data | Server components read through services; no RTK Query, no Redux | Content site; no client cache needed |
 | Auth | **`jose` JWT in an HttpOnly cookie, not Auth.js** | Works in Edge middleware; we keep our own login rules (lockout, audit) |

@@ -46,8 +46,8 @@ $header-h-lg: 94px;
   }
 
   .nav-link {
-    font-family: $headings-font-family;
-    font-size: 1.125rem; // reference menu: Space Grotesk 18 px, semibold
+    font-family: $ui-font-family;
+    font-size: 1.125rem; // reference menu: 18 px, semibold
     font-weight: 600;
     color: $ink;
 
@@ -83,12 +83,12 @@ $header-h-lg: 94px;
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-size: 1.15rem;
     font-weight: 700;
     color: #fff;
     background: $ink;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
 
     span {
       color: #4fd1d4;
@@ -96,10 +96,10 @@ $header-h-lg: 94px;
   }
 
   &__text {
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-size: 1.35rem;
     font-weight: 700;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.01em;
     line-height: 1;
     white-space: nowrap;
   }
@@ -137,7 +137,7 @@ $header-h-lg: 94px;
 
   &__group-title {
     margin-bottom: 0.75rem;
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -150,7 +150,7 @@ $header-h-lg: 94px;
     align-items: center;
     gap: 0.7rem;
     padding: 0.55rem 0.5rem;
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-weight: 500;
     color: $ink;
     white-space: normal;
@@ -178,7 +178,7 @@ $header-h-lg: 94px;
     display: block;
     padding: 0.8rem 0;
     border-bottom: 1px solid $line;
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-size: 1.35rem;
     font-weight: 600;
     color: $ink;
@@ -266,7 +266,7 @@ $header-h-lg: 94px;
   &__label {
     display: block;
     margin-bottom: 0.6rem;
-    font-family: $headings-font-family;
+    font-family: $ui-font-family;
     font-size: 0.82rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;

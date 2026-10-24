@@ -12,32 +12,32 @@ body {
 h1,
 .h1 {
   font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5rem);
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
 }
 
 h2,
 .h2 {
   font-size: clamp(2rem, 1.4rem + 2.2vw, 3.4rem);
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 h3,
 .h3 {
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
 }
 
 h4,
 .h4 {
   font-size: 1.35rem;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
 }
 
 h5,
 .h5 {
   font-size: 1.15rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .font-alt {
@@ -49,7 +49,7 @@ h5,
 }
 
 .lead-text {
-  font-size: 1rem; // reference paragraphs: Inter 16 px / 30 px
+  font-size: 1rem; // reference paragraphs: 16 px / 30 px
   max-width: 34rem;
 }
 
@@ -87,3 +87,8 @@ h5,
 }
 
 // Motion lives in _motion.scss.
+
+// Merriweather and Lato: lining figures, so numbers (counters, steps) sit evenly on the line.
+body {
+  font-variant-numeric: lining-nums;
+}

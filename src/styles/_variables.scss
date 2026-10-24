@@ -29,14 +29,16 @@ $link-hover-color: $brand-teal;
 $link-decoration: none;
 
 $font-family-sans-serif:
-  var(--font-inter),
+  var(--font-body),
   system-ui,
   -apple-system,
   "Segoe UI",
   sans-serif;
-$headings-font-family: var(--font-grotesk), var(--font-inter), sans-serif;
+$headings-font-family: var(--font-heading), Georgia, "Times New Roman", serif;
+// Interface text (menu, buttons, labels, tags, captions) stays in the body font.
+$ui-font-family: var(--font-body), system-ui, sans-serif;
 $headings-font-weight: 600;
-$headings-line-height: 1.1;
+$headings-line-height: 1.2; // a serif needs a little more air than a grotesk
 $font-size-base: 1rem;
 $line-height-base: 1.875; // reference body text: 16 px / 30 px
 
@@ -47,8 +49,8 @@ $border-radius-lg: 0;
 $border-radius-xl: 0;
 $border-radius-pill: 50rem;
 
-$btn-font-family: var(--font-grotesk), sans-serif;
-$btn-font-weight: 400; // reference buttons: Space Grotesk 16 px, regular
+$btn-font-family: $ui-font-family;
+$btn-font-weight: 400;
 $btn-padding-y: 0.85rem;
 $btn-padding-x: 1.75rem;
 $btn-padding-y-lg: 1.05rem;

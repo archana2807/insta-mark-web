@@ -803,11 +803,11 @@ test("type sizes and hero timing follow the Crafto reference, measured 22 Oct 20
   expect(await css(zoom, "animationName")).toBe("hero-zoom");
   expect(await css(zoom, "animationDuration")).toBe("2.5s");
 
-  // About hero headline: 55 px / 55 px.
+  // About hero headline: 55 px, line height 1.15 (Merriweather needs a little more air).
   await page.goto("/about");
   const about = page.locator(".inner-hero h1");
   expect(await css(about, "fontSize")).toBe("55.008px");
-  expect(await css(about, "lineHeight")).toBe("55.008px");
+  expect(parseFloat(await css(about, "lineHeight")) / 55.008).toBeCloseTo(1.15, 2);
 });
 
 test("the phone headline is 52.5 px like the reference and nothing overflows at 360 and 390 px (10g)", async ({

@@ -19,9 +19,10 @@
 Swap the accents once the official logo arrives (Q6). They are the only brand-specific values.
 
 ### 3.2 Type
-- **Headings and buttons:** Space Grotesk variable (600).
-- **Body:** Inter variable (1rem / 1.75).
-- **Hosting:** both self-hosted.
+- **Headings:** Merriweather variable (600), letter-spacing about −0.02 em, line height 1.1–1.2 (client choice, 24 Oct 2026).
+- **Body and interface** (menu, buttons, labels, tags, captions): Lato 400 / 700 (1rem / 1.875).
+- **Figures:** lining numerals everywhere, so counters sit evenly.
+- **Hosting:** both self-hosted (Fontsource, OFL-1.1).
 - **Display sizes:** use `clamp()` and tight tracking.
 - **Eyebrows:** a short gradient rule plus small caps.
 

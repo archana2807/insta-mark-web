@@ -3,18 +3,27 @@ import "@/styles/globals.scss";
 import { site } from "@/content/site";
 import { siteUrl } from "@/lib/seo";
 
-// Self-hosted variable fonts (OFL-1.1, @fontsource-variable) — no build-time
-// dependency on Google Fonts, which made builds fail on flaky networks.
-const inter = localFont({
-  src: "../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
-  weight: "100 900",
-  variable: "--font-inter",
+// Self-hosted fonts (OFL-1.1, Fontsource) — no build-time dependency on Google Fonts, which
+// made builds fail on flaky networks. Client choice (24 Oct 2026): Merriweather for headings,
+// Lato for body text and the interface (menu, buttons, labels).
+const body = localFont({
+  src: [
+    {
+      path: "../../node_modules/@fontsource/lato/files/lato-latin-400-normal.woff2",
+      weight: "400",
+    },
+    {
+      path: "../../node_modules/@fontsource/lato/files/lato-latin-700-normal.woff2",
+      weight: "700",
+    },
+  ],
+  variable: "--font-body",
   display: "swap",
 });
-const grotesk = localFont({
-  src: "../../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2",
-  weight: "300 700",
-  variable: "--font-grotesk",
+const heading = localFont({
+  src: "../../node_modules/@fontsource-variable/merriweather/files/merriweather-latin-wght-normal.woff2",
+  weight: "300 900",
+  variable: "--font-heading",
   display: "swap",
 });
 
@@ -37,7 +46,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-IN" className={`${inter.variable} ${grotesk.variable}`}>
+    <html lang="en-IN" className={`${body.variable} ${heading.variable}`}>
       <body>{children}</body>
     </html>
   );

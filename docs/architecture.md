@@ -73,7 +73,7 @@ Insta Mark एक architectural signage और road safety solutions कंप�
 | Framework | **Next.js 15 (App Router)**, **JavaScript (no TypeScript)** | SSR/SSG से SEO, frontend और backend एक codebase में |
 | UI framework | **Bootstrap 5.3** + **React-Bootstrap** | Reference theme (Crafto) Bootstrap पर बना है, इसलिए grid, spacing और breakpoints वैसे ही मिलेंगे |
 | Styling | **Sass (SCSS)**, Bootstrap variables override | Theme जैसे colors, fonts, spacing के design tokens |
-| Fonts | Inter (body), Space Grotesk (headings) via `next/font/local` + `@fontsource-variable` (OFL-1.1) | Theme वाले fonts, layout shift नहीं। Google Fonts से build के समय download नहीं होते, इसलिए network flaky होने पर भी build fail नहीं होता। *(Phase 3 में बदला गया)* |
+| Fonts | Lato (body, interface) + Merriweather (headings) via `next/font/local` + Fontsource (OFL-1.1); client choice 24 Oct 2026 | Theme वाले fonts, layout shift नहीं। Google Fonts से build के समय download नहीं होते, इसलिए network flaky होने पर भी build fail नहीं होता। *(Phase 3 में बदला गया)* |
 | Animation | **Custom `Reveal`** (IntersectionObserver + CSS, ~1 kB), सिर्फ़ हल्का fade-up | Client ने fancy animation मना किया है। Framer Motion (~30 kB+) की ज़रूरत नहीं पड़ी। *(Implementation में बदला गया)* |
 | Carousel | — (अभी नहीं) | Client ने simple UI माँगा है। Logos मिलने पर ज़रूरत हुई तो Swiper जोड़ेंगे। *(Implementation में बदला गया)* |
 | Gallery lightbox | **yet-another-react-lightbox** | Executed project photos |
@@ -286,7 +286,7 @@ insta-mark/
 | `$body-color` | `#1d1d1d` | |
 | `$secondary` (muted text) | `#7b7a7a` | |
 | `$primary` (accent) | **TBD: Insta Mark logo color** | Logo मिलने तक `#e99022` placeholder |
-| Fonts | Inter (body), Space Grotesk (headings) | |
+| Fonts | Lato (body, interface), Merriweather (headings); client choice 24 Oct 2026 | |
 | Section spacing | `py-6` / `py-lg-8` (custom spacers) | Theme जैसी खुली spacing |
 | Container | `max-width: 1320px` (xxl) | |
 | Radius | 0–4px | Theme का sharp, professional look |

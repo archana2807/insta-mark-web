@@ -504,6 +504,30 @@ test("inner page photos move like the home banner photo: same box, same scroll d
   }
 });
 
+test("scroll-linked photos glide to their place like the reference, the same way down and up", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+  await page.waitForTimeout(2800); // after the load zoom
+  const drift = page.locator(".inner-hero__media .drift-fill");
+  const y = () => drift.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f);
+  const start = await y();
+
+  // A sudden scroll: the photo does not jump; it glides there in about 200 ms.
+  await page.evaluate(() => window.scrollTo(0, 300));
+  const early = await y();
+  await page.waitForTimeout(600);
+  const settled = await y();
+  expect(Math.abs(settled - start)).toBeGreaterThan(3);
+  expect(Math.abs(early - start)).toBeLessThan(Math.abs(settled - start));
+
+  // Back up: it glides back to where it started.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(600);
+  expect(Math.abs((await y()) - start)).toBeLessThanOrEqual(0.5);
+});
+
 test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
   page,
 }) => {

@@ -547,25 +547,26 @@
 // (0 = front), --abs its distance, --drag a live drag.
 .card-deck {
   // One card step, as a share of the card's own width: centre + step + half a side card
-  // (scaled 0.9) stays within the stage, with a little air.
-  --spread: 42%;
+  // (scaled 0.9) stays within the stage, with a little air. The cards are a little bigger
+  // than at first (client, 24 Oct 2026), so the step is shorter.
+  --spread: 34%;
 
   @include media-breakpoint-up(lg) {
-    --spread: 60%;
+    --spread: 50%;
   }
 
   position: relative;
 
   &__stage {
     position: relative;
-    aspect-ratio: 10 / 9;
+    aspect-ratio: 10 / 11; // tall enough for the bigger card and its caption
     overflow-x: clip; // side cards never cause sideways scroll; shadows may spill below
     perspective: 1400px;
     touch-action: pan-y; // a sideways swipe changes the card, an up-down one scrolls
     user-select: none;
 
     @include media-breakpoint-up(lg) {
-      aspect-ratio: 5 / 4;
+      aspect-ratio: 1 / 1;
     }
   }
 
@@ -576,7 +577,7 @@
     z-index: calc(10 - var(--abs));
     display: flex;
     flex-direction: column;
-    width: 56%;
+    width: 62%;
     padding: 10px;
     background: #fff;
     border: 1px solid $line;
@@ -607,7 +608,7 @@
     }
 
     @include media-breakpoint-up(lg) {
-      width: 46%;
+      width: 52%;
     }
   }
 

@@ -34,7 +34,7 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
   expect(b.y).toBeGreaterThan(a.y + a.height - 1);
 });
 
-test("Where it is used: a fanned photo deck on the left, every industry with a + icon on the right (10e)", async ({
+test("Where it is used: a fanned photo deck (auto-play, no cut-off cards) on the left, every industry with a + icon on the right (10e)", async ({
   page,
 }) => {
   await page.goto("/solutions/tailor-made-signage");
@@ -43,9 +43,10 @@ test("Where it is used: a fanned photo deck on the left, every industry with a +
   await deck.scrollIntoViewIfNeeded();
   await page.getByRole("button", { name: "Pause the photo deck" }).click();
 
-  // The front card stands in the middle; the cards beside it are smaller, on both sides.
+  // The front card stands in the middle with one smaller card on each side, fully inside the
+  // deck (no cut-off cards, client 24 Oct 2026).
   const cards = section.locator(".card-deck__card:not(.is-far)");
-  expect(await cards.count()).toBeGreaterThanOrEqual(5);
+  expect(await cards.count()).toBe(3);
   await page.waitForTimeout(1000); // the cards have settled
   const boxes = await cards.evaluateAll((els) =>
     els.map((el) => {
@@ -59,16 +60,33 @@ test("Where it is used: a fanned photo deck on the left, every industry with a +
   for (const b of boxes.filter((b) => !b.front)) expect(b.w).toBeLessThan(front.w);
   expect(boxes.some((b) => b.x < front.x)).toBe(true);
   expect(boxes.some((b) => b.x > front.x)).toBe(true);
+  const edges = await cards.evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return [r.left, r.right];
+    }),
+  );
+  for (const [left, right] of edges) {
+    expect(left).toBeGreaterThanOrEqual(d.x - 1);
+    expect(right).toBeLessThanOrEqual(d.x + d.width + 1);
+  }
 
-  // Next / previous buttons, the arrow keys and the dots change the front card.
-  const current = () => section.locator(".card-deck__dots .is-active").getAttribute("aria-label");
-  await expect.poll(current).toBe("Show photo 1 of 7");
-  await page.getByRole("button", { name: "Next photo" }).click();
-  await expect.poll(current).toBe("Show photo 2 of 7");
+  // Auto-play only: no arrows and no dots, just the pause/play button.
+  await expect(deck.locator(".card-deck__dots")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Previous photo|Next photo/ })).toHaveCount(0);
+
+  // The arrow keys (on the focused play button) and a click on a side card change it.
+  const current = () => section.locator(".card-deck__card.is-active").getAttribute("aria-label");
+  await expect.poll(current).toBe("1 of 7");
+  await page.getByRole("button", { name: "Play the photo deck" }).focus();
   await page.keyboard.press("ArrowRight");
-  await expect.poll(current).toBe("Show photo 3 of 7");
-  await page.getByRole("button", { name: "Show photo 6 of 7" }).click();
-  await expect.poll(current).toBe("Show photo 6 of 7");
+  await expect.poll(current).toBe("2 of 7");
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(current).toBe("3 of 7");
+  await page.waitForTimeout(900);
+  const right = boxes.reduce((a, b) => (b.x > a.x ? b : a));
+  await page.mouse.click(right.x + right.w / 2 - 10, (await deck.boundingBox()).y + 120);
+  await expect.poll(current).toBe("4 of 7");
 
   // A drag to the left brings the next card forward.
   const box = await section.locator(".card-deck__stage").boundingBox();
@@ -77,7 +95,7 @@ test("Where it is used: a fanned photo deck on the left, every industry with a +
   await page.mouse.down();
   for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width * (0.7 - i * 0.03), y);
   await page.mouse.up();
-  await expect.poll(current).toBe("Show photo 7 of 7");
+  await expect.poll(current).toBe("5 of 7");
 
   // The front card opens the full photo.
   await section.locator(".card-deck__card.is-active button").click();
@@ -106,13 +124,13 @@ test("Where it is used: the deck plays by itself, and stands still with reduced 
     const deck = page.locator(".card-deck");
     await deck.scrollIntoViewIfNeeded();
     await page.mouse.move(5, 5); // not over the deck
-    const current = () => deck.locator(".card-deck__dots .is-active").getAttribute("aria-label");
+    const current = () => deck.locator(".card-deck__card.is-active").getAttribute("aria-label");
     if (reducedMotion === "reduce") {
       await expect(deck.getByRole("button", { name: "Play the photo deck" })).toBeVisible();
       await page.waitForTimeout(4500);
-      expect(await current()).toBe("Show photo 1 of 7");
+      expect(await current()).toBe("1 of 7");
     } else {
-      await expect.poll(current, { timeout: 8000 }).toBe("Show photo 2 of 7");
+      await expect.poll(current, { timeout: 8000 }).toBe("2 of 7");
     }
     await context.close();
   }

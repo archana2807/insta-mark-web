@@ -13,7 +13,7 @@
 | Role | Who | Can do |
 |---|---|---|
 | Guest | Visitors: site and procurement staff, "not very tech friendly" (R-1.1) | View all public pages, send an enquiry |
-| Editor | Insta Mark staff | Dashboard, enquiries (status, owner, notes, CSV), categories and photos, projects, client logos, FAQs, banner |
+| Editor | Insta Mark staff | Dashboard, enquiries (status, owner, notes, CSV), categories and photos, client logos, FAQs, banner |
 | Admin | Insta Mark owner / manager | Everything Editor can, plus site settings, users and the audit log |
 
 ## 3. Features
@@ -51,11 +51,8 @@ A short, picture-led home page that leads visitors to the products (R-1.1, R-1.4
 - [x] ✅ Who We Are, Vision, Mission, Solutions, Industries + approach, Manufacturing (12 capabilities + quality) and Our Process (5 steps) are shown (R-5.2, R-5.4–R-5.7).
 - [ ] 🟡 "Why Choose Us" shows the six items from the client's About text (R-5.3).
 
-### F4 — Projects (Must)
-**Done when:**
-- [x] ✅ "Project Portfolio" shows the intro text, executed work grouped by category, and photos that open full size (R-6.1, R-6.2).
-- [x] ✅ Named projects added in admin get their own page (R-6.3).
-- [x] ✅ Galleries are an even grid: 9 photos, then "Show all" (R-6.5).
+### F4 — Projects (removed, client, 24 Oct 2026)
+The client does not want a Projects page. The public pages (`/projects`, `/projects/[slug]`), the admin Projects screens and their code are deleted; old links redirect to Home. The executed-work photos still show on every solution page ("Our work on site"). The `projects`, `project_images` and `project_categories` tables are kept, unused, until a migration removes them (that deletes data, so it needs its own approval).
 
 ### F5 — Contact and enquiry form (Must)
 **Done when:**
@@ -77,7 +74,7 @@ A short, picture-led home page that leads visitors to the products (R-1.1, R-1.4
 ### F7 — Admin content (Must)
 **Done when:**
 - [ ] 🟡 Staff can edit category text and photos (catalogue + executed), alt text, order and cover (R-8.2).
-- [x] ✅ Staff can manage projects, client logos and FAQs (R-8.3).
+- [x] ✅ Staff can manage client logos and FAQs (R-8.3); projects were removed (24 Oct 2026).
 - [ ] ⬜ Staff can upload the desktop and mobile banner images (R-8.1).
 - [x] ✅ Changes appear on the website without a redeploy (R-10.6, for database content).
 
@@ -109,8 +106,6 @@ Home and About text is edited in `/content` by a developer today. Build an edito
 | Solutions | `/solutions` | Guest | All 8 categories as theme service blocks, expertise lists | F2 |
 | Category | `/solutions/[slug]` (8) | Guest | Overview, features, applications, photos, enquiry form, FAQs | F2 |
 | About | `/about` | Guest | Company story, why choose us, manufacturing, process | F3 |
-| Projects | `/projects` | Guest | Featured projects, photos by category | F4 |
-| Project | `/projects/[slug]` | Guest | Photos, facts, enquiry form | F4 |
 | Contact | `/contact` | Guest | Enquiry form, contact details, map, FAQs | F5 |
 | Thank you | `/thank-you` | Guest | Confirmation (not indexed) | F5 |
 | Privacy policy | `/privacy-policy` | Guest | Draft policy text | — |
@@ -119,7 +114,6 @@ Home and About text is edited in `/content` by a developer today. Build an edito
 | Dashboard | `/admin` | Editor, Admin | Counts, recent enquiries | F8 |
 | Enquiries | `/admin/enquiries`, `/admin/enquiries/[id]` | Editor, Admin | List, filters, detail, status, notes, CSV | F8 |
 | Categories | `/admin/categories`, `/admin/categories/[id]` | Editor, Admin | Text, photos, cover | F7 |
-| Projects | `/admin/projects`, `/new`, `/[id]` | Editor, Admin | Create, edit, delete, gallery | F7 |
 | Client logos | `/admin/clients` | Editor, Admin | Upload, order, hide | F7 |
 | FAQs | `/admin/faqs` | Editor, Admin | Global / per category, home flag | F7 |
 | Banner | `/admin/banner` | Editor, Admin | Desktop + mobile images (new) | F7 |

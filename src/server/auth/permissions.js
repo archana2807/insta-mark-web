@@ -41,7 +41,6 @@ const ROUTE_PERMISSIONS = [
   ["/admin/enquiries/export", "enquiry:export"],
   ["/admin/enquiries", "enquiry:read"],
   ["/admin/categories", "content:write"],
-  ["/admin/projects", "content:write"],
   ["/admin/clients", "content:write"],
   ["/admin/faqs", "content:write"],
   ["/admin/banner", "content:write"],

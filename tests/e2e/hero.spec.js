@@ -332,15 +332,7 @@ test("home About photos do not float with reduced motion", async ({ page }) => {
 test("no small label above a headline on any public page (10b)", async ({ page }) => {
   await page.goto("/solutions");
   const solution = await page.locator('a[href^="/solutions/"]').first().getAttribute("href");
-  const routes = [
-    "/",
-    "/about",
-    "/solutions",
-    solution,
-    "/projects",
-    "/contact",
-    "/privacy-policy",
-  ];
+  const routes = ["/", "/about", "/solutions", solution, "/contact", "/privacy-policy"];
   for (const route of routes) {
     await page.goto(route);
     await expect(page.locator("h1").first()).toBeVisible();
@@ -370,7 +362,7 @@ test("the Solutions dropdown opens at the right side of the page, like the theme
 test("the footer carries the call to action text on every page; no logo, no buttons, no CTA panel (10d)", async ({
   page,
 }) => {
-  for (const route of ["/", "/about", "/projects", "/solutions"]) {
+  for (const route of ["/", "/about", "/contact", "/solutions"]) {
     await page.goto(route);
     await expect(page.locator(".cta-panel"), `${route} still has a CTA panel`).toHaveCount(0);
     const footer = page.locator(".site-footer");
@@ -510,13 +502,7 @@ test("inner page photos move like the home banner photo: same box, same scroll d
 test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
   page,
 }) => {
-  const routes = [
-    "/about",
-    "/solutions",
-    "/projects",
-    "/contact",
-    "/solutions/tailor-made-signage",
-  ];
+  const routes = ["/about", "/solutions", "/contact", "/solutions/tailor-made-signage"];
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const route of routes) {
     await page.goto(route);
@@ -555,13 +541,7 @@ test("About wording follows the client's content document (10f)", async ({ page 
 test("inner page heroes show no Home / page breadcrumb, but keep it for search engines (10f)", async ({
   page,
 }) => {
-  for (const route of [
-    "/about",
-    "/solutions",
-    "/projects",
-    "/contact",
-    "/solutions/tailor-made-signage",
-  ]) {
+  for (const route of ["/about", "/solutions", "/contact", "/solutions/tailor-made-signage"]) {
     await page.goto(route);
     await expect(page.locator(".inner-hero .breadcrumb"), `${route} still shows it`).toHaveCount(0);
     await expect(page.locator('nav[aria-label="Breadcrumb"]')).toHaveCount(0);
@@ -938,50 +918,32 @@ test("solution and project pages show a call to action to the Contact form, not 
   await expect(page.locator("#contact-form-requirement")).toHaveValue("Modular Signs");
   await expect(page.locator('#contact-form input[name="category"]')).toHaveValue("modular-signs");
 
-  // Project page: the portfolio call to action from the document.
-  await page.goto("/projects");
-  const project = await page.locator('a[href^="/projects/"]').first().getAttribute("href");
-  await page.goto(project);
-  await expect(page.locator("form.enquiry-form")).toHaveCount(0);
-  await expect(page.locator(".cta-band h2")).toHaveText("Have a project in mind?");
-  await expect(page.locator(".cta-band")).toContainText(
-    "Let's create a signage solution tailored to your space.",
-  );
-
   // Contact without a requirement: nothing pre-selected.
   await page.goto("/contact");
   await expect(page.locator("#contact-form-requirement")).toHaveValue("");
 });
 
-test("the Projects hero follows the reference's portfolio page: big centred title, the client's text, no photo", async ({
+test("the Projects pages are deleted: no menu or footer link, not in the sitemap, old links go Home", async ({
   page,
+  request,
 }) => {
-  const css = (loc, prop) => loc.evaluate((el, p) => getComputedStyle(el)[p], prop);
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.locator('header a[href^="/projects"]')).toHaveCount(0);
+  await expect(page.locator('footer a[href^="/projects"]')).toHaveCount(0);
+  for (const old of ["/projects", "/projects/sample-residential-tower"]) {
+    const res = await request.get(old, { maxRedirects: 0 });
+    expect(res.status(), old).toBe(307);
+    expect(res.headers().location, old).toBe("/");
+  }
   await page.goto("/projects");
-  const hero = page.locator(".portfolio-hero");
-  const h1 = hero.locator("h1");
-  await expect(h1).toHaveText("Project Portfolio");
-  expect(await css(h1, "fontSize")).toBe("70px");
-  expect(await css(h1, "textAlign")).toBe("center");
-  expect(await css(hero, "paddingTop")).toBe("90px");
-  await expect(hero.locator("img")).toHaveCount(0);
-  await expect(hero.locator(".portfolio-hero__text")).toContainText(
-    "Our portfolio spans luxury residences, hospitals, airports",
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("h1")).toHaveText(/Architectural Signage/);
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).not.toContain("/projects");
+  // The thank-you page now points to the solutions instead.
+  await page.goto("/thank-you");
+  await expect(page.getByRole("link", { name: /Our solutions/ })).toHaveAttribute(
+    "href",
+    "/solutions",
   );
-  const box = await h1.boundingBox();
-  expect(Math.abs(box.x + box.width / 2 - 720)).toBeLessThanOrEqual(2); // centred
-
-  // The category links still lead to their sections.
-  const first = hero.locator(".portfolio-hero__links a").first();
-  const target = await first.getAttribute("href");
-  await expect(page.locator(target)).toHaveCount(1);
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/projects");
-  expect(await css(page.locator(".portfolio-hero h1"), "fontSize")).toBe("52.48px");
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
 });

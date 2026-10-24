@@ -30,6 +30,8 @@ export async function findUsage(id) {
       _count: {
         select: {
           categoryImages: true,
+          // The Projects feature is removed but its tables are kept (24 Oct 2026); an asset
+          // still used by an old project row must not be deleted.
           projectImages: true,
           categoryHeroes: true,
           projectCovers: true,

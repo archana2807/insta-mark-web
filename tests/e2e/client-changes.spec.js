@@ -93,7 +93,9 @@ test.afterAll(async () => {
 
 // ── Banner ────────────────────────────────────────────────────────────
 
-test("editors open /admin/banner: sizes for the client and the add-a-slide button", async ({ page }) => {
+test("editors open /admin/banner: sizes for the client and the add-a-slide button", async ({
+  page,
+}) => {
   await login(page);
   const nav = page.getByRole("navigation", { name: "Admin" }).first();
   await nav.getByRole("link", { name: "Home banner" }).click();
@@ -167,13 +169,17 @@ test("the banner shows desktop on wide screens and mobile on phones; remove fall
     // Remove mobile → phones get the desktop banner.
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Remove mobile photo" }).click();
-    await expect(page.locator("[data-slide=\"0\"] [data-banner-slot=mobile]")).toContainText("No mobile banner yet");
+    await expect(page.locator('[data-slide="0"] [data-banner-slot=mobile]')).toContainText(
+      "No mobile banner yet",
+    );
     expect(await bannerSrc(phone)).toContain(enc(desktop.url));
 
     // Remove desktop too → the old photo is back everywhere.
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Remove desktop photo" }).click();
-    await expect(page.locator("[data-slide=\"0\"] [data-banner-slot=desktop]")).toContainText("No desktop banner yet");
+    await expect(page.locator('[data-slide="0"] [data-banner-slot=desktop]')).toContainText(
+      "No desktop banner yet",
+    );
     await wide.goto("/");
     await expect(wide.locator(".hero-split__media picture")).toHaveCount(0);
     expect(await bannerSrc(wide)).toContain(enc(featured.hero.src));

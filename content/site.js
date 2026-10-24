@@ -39,7 +39,6 @@ export const site = {
 export const mainNav = [
   { label: "Home", href: "/" },
   { label: "Solutions", href: "/solutions", hasMegaMenu: true },
-  { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

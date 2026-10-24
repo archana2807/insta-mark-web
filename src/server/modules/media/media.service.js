@@ -9,19 +9,13 @@ import {
   isCloudinaryConfigured,
   verifyUploadResponse,
 } from "@/server/integrations/cloudinary/cloudinary.adapter";
-import {
-  revalidateCategory,
-  revalidateGallery,
-  revalidatePage,
-  revalidateProjects,
-} from "@/server/cache";
+import { revalidateCategory, revalidateGallery, revalidatePage } from "@/server/cache";
 import * as auditService from "@/server/modules/audit/audit.service";
 import * as categoryService from "@/server/modules/categories/category.service";
-import * as projectService from "@/server/modules/projects/project.service";
 import * as mediaRepository from "./media.repository";
 
-// Gallery "kinds": which owner module an image belongs to. Built lazily because
-// projects.service also imports this module.
+// Gallery "kinds": which owner module an image belongs to (only categories since the
+// Projects feature was removed, client, 24 Oct 2026). Built lazily, at call time.
 const kinds = () => ({
   category: {
     gallery: categoryService.gallery,
@@ -34,18 +28,11 @@ const kinds = () => ({
       revalidateCategory(slug);
     },
   },
-  project: {
-    gallery: projectService.gallery,
-    entity: "project",
-    folder: (slug) => `insta-mark/projects/${slug}`,
-    adminPath: (id) => `/admin/projects/${id}`,
-    revalidate: (slug) => revalidateProjects(slug),
-  },
 });
 
 /**
  * Upload step 1: signed params for a direct browser → Cloudinary upload.
- * @param {{ kind: "category" | "project", ownerId: string, type?: string }} input
+ * @param {{ kind: "category", ownerId: string, type?: string }} input
  */
 export async function getGalleryUploadSignature({ kind, ownerId, type }) {
   if (!isCloudinaryConfigured()) throw new AppError("UPLOAD_NOT_CONFIGURED");
@@ -117,7 +104,7 @@ export async function updateAlt(assetId, alt) {
 
 /**
  * Upload step 2: register a verified upload and add it to the gallery.
- * @param {{ kind: "category" | "project", ownerId: string, type?: string, alt?: string, upload: import("@/shared/schemas/media.schema").CloudinaryUpload }} input
+ * @param {{ kind: "category", ownerId: string, type?: string, alt?: string, upload: import("@/shared/schemas/media.schema").CloudinaryUpload }} input
  * @param {{ id: string }} actor
  */
 export async function attachUploadedImage({ kind, ownerId, type, alt, upload }, actor) {
@@ -169,7 +156,7 @@ export async function updateImage({ kind, id, alt, type }, actor) {
 
 /**
  * Moves an image one place up or down.
- * @param {{ kind: "category" | "project", id: string, direction: "up" | "down" }} input
+ * @param {{ kind: "category", id: string, direction: "up" | "down" }} input
  * @returns {Promise<void>}
  */
 export async function moveImage({ kind, id, direction }) {
@@ -189,7 +176,7 @@ export async function moveImage({ kind, id, direction }) {
 }
 
 /**
- * @param {{ kind: "category" | "project", id: string }} input
+ * @param {{ kind: "category", id: string }} input
  * @param {{ id: string }} actor
  * @returns {Promise<void>}
  */
@@ -207,7 +194,7 @@ export async function setCoverImage({ kind, id }, actor) {
 
 /**
  * Removes an image from the gallery; deletes the asset if nothing else uses it.
- * @param {{ kind: "category" | "project", id: string }} input
+ * @param {{ kind: "category", id: string }} input
  * @param {{ id: string }} actor
  * @returns {Promise<void>}
  */

@@ -10,8 +10,6 @@ export const TAGS = {
   industries: "industries",
   faqs: "faqs",
   settings: "settings",
-  projects: "projects",
-  project: (slug) => `project:${slug}`,
   clients: "clients",
   home: "home", // home banner (site_settings home.banner)
 };
@@ -45,13 +43,6 @@ export function revalidateCategory(slug) {
 export function revalidateGallery(slug) {
   revalidateTag(TAGS.gallery);
   if (slug) revalidateTag(TAGS.category(slug));
-}
-
-/** @param {string | null | undefined} slug */
-export function revalidateProjects(slug) {
-  revalidateTag(TAGS.projects);
-  if (slug) revalidateTag(TAGS.project(slug));
-  revalidatePath("/sitemap.xml");
 }
 
 /** @param {string | null | undefined} categorySlug */

@@ -20,7 +20,7 @@ import { uploadToCloudinary } from "@/lib/cloudinary-upload";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 /**
- * Gallery editor for a category or project: upload (direct to Cloudinary,
+ * Gallery editor for a category: upload (direct to Cloudinary,
  * signed by the server), alt text, type, order, cover and remove.
  */
 export default function ImageManager({

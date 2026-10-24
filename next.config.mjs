@@ -59,6 +59,14 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The Projects pages were deleted at the client's request (24 Oct 2026); old links and
+  // search results go to Home. Temporary (307), so a future page can use the path again.
+  async redirects() {
+    return [
+      { source: "/projects", destination: "/", permanent: false },
+      { source: "/projects/:path*", destination: "/", permanent: false },
+    ];
+  },
 };
 
 // Source maps go to Sentry only when the upload is configured (Vercel build); otherwise

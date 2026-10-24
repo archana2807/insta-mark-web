@@ -5,7 +5,6 @@ import Icon from "@/components/ui/Icon";
 
 const companyLinks = [
   { label: "About Us", href: "/about" },
-  { label: "Projects", href: "/projects" },
   { label: "All Solutions", href: "/solutions" },
   { label: "Contact", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },

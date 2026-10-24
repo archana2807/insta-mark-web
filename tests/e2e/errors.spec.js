@@ -62,33 +62,3 @@ test("a section shows the loading screen while it loads from the sidebar", async
   await expect(page.getByRole("heading", { level: 1, name: "FAQs" })).toBeVisible();
   await expect(page.locator(".admin-loading [role=status]")).toHaveCount(0);
 });
-
-test("the admin projects list is paginated on the server", async ({ page }) => {
-  const prisma = testPrisma();
-  try {
-    const existing = await prisma.project.count();
-    await prisma.project.createMany({
-      data: Array.from({ length: 30 }, (_, i) => ({
-        slug: `${PREFIX.toLowerCase()}${i}`,
-        title: `${PREFIX}${String(i).padStart(2, "0")}`,
-        sortOrder: 9000 + i,
-      })),
-    });
-    const total = existing + 30;
-    const pages = Math.ceil(total / 25);
-
-    await page.goto("/admin/projects");
-    const rows = page.locator("table.admin-table tbody tr");
-    await expect(rows).toHaveCount(25);
-    const pager = page.getByRole("navigation", { name: "Pagination" });
-    await expect(pager).toContainText(`Page 1 of ${pages}`);
-
-    await pager.getByRole("link", { name: "Next" }).click();
-    await page.waitForURL(/[?&]page=2/);
-    await expect(rows).toHaveCount(Math.min(25, total - 25));
-    await expect(pager).toContainText(`Page 2 of ${pages}`);
-  } finally {
-    await prisma.project.deleteMany({ where: { title: { startsWith: PREFIX } } });
-    await prisma.$disconnect();
-  }
-});

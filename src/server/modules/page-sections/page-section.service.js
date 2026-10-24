@@ -4,14 +4,7 @@
 import "server-only";
 import { featured } from "@/content/gallery";
 import { mainNav, statsPlaceholders } from "@/content/site";
-import {
-  home,
-  whyChooseUs,
-  workingProcess,
-  about,
-  projectsPage,
-  contactPage,
-} from "@/content/company";
+import { home, whyChooseUs, workingProcess, about, contactPage } from "@/content/company";
 import * as bannerService from "@/server/modules/banner/banner.service";
 import * as categoryService from "@/server/modules/categories/category.service";
 import * as clientLogoService from "@/server/modules/client-logos/client-logo.service";
@@ -132,14 +125,10 @@ export async function getAboutContent() {
 
 /**
  * Photo for the inner-page hero.
- * @param {"about" | "solutions" | "projects" | "contact"} page
+ * @param {"about" | "solutions" | "contact"} page
  */
 export async function getPageHeroImage(page) {
   return featured.pages[page] ?? null;
-}
-
-export async function getProjectsPageContent() {
-  return projectsPage;
 }
 
 export async function getContactPageContent() {

@@ -3,7 +3,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { TEST_DATABASE_URL, assertTestDatabase } from "./env.js";
-import { FIXTURE_PROJECT, USERS } from "./fixtures.js";
+import { USERS } from "./fixtures.js";
 import { runSync } from "./proc.js";
 
 /**
@@ -32,7 +32,7 @@ function run(cmd, args, env) {
 }
 
 /**
- * Migrates and seeds a fresh test database: content, 3 users and 1 fixture project.
+ * Migrates and seeds a fresh test database: content and 3 users.
  * @param {Record<string, string | undefined>} env sealed env
  * @returns {Promise<Record<string, number>>} row counts, for proof
  */
@@ -49,33 +49,12 @@ export async function setupDatabase(env) {
 
   const prisma = testPrisma();
   try {
-    const categories = await prisma.category.findMany({
-      where: { slug: { in: ["tailor-made-signage", "general-signs"] } },
-      select: { id: true },
-    });
-    const assets = await prisma.mediaAsset.findMany({
-      where: { url: { contains: "tailor-made-signage/pylons" } },
-      orderBy: { url: "asc" },
-      take: 3,
-    });
-    const industry = await prisma.industry.findFirst({ where: { slug: "residential-townships" } });
-    await prisma.project.create({
-      data: {
-        ...FIXTURE_PROJECT,
-        industryId: industry?.id,
-        isFeatured: true,
-        coverImageId: assets[0]?.id,
-        categories: { create: categories.map((c) => ({ categoryId: c.id })) },
-        images: { create: assets.map((a, i) => ({ assetId: a.id, sortOrder: i })) },
-      },
-    });
     return {
       categories: await prisma.category.count(),
       categoryImages: await prisma.categoryImage.count(),
       industries: await prisma.industry.count(),
       faqs: await prisma.faq.count(),
       users: await prisma.adminUser.count(),
-      projects: await prisma.project.count(),
       enquiries: await prisma.enquiry.count(),
     };
   } finally {

@@ -1,5 +1,5 @@
 // Admin panel end to end: auth, lockout, roles, enquiries + CSV, content edits that must
-// appear on the public site, projects, FAQs, settings, users, audit, sessions.
+// appear on the public site, FAQs, settings, users, audit, sessions.
 // Ported from the 13–14 Oct admin suite (43 named checks), steps in the same order.
 import fs from "node:fs";
 import { test, expect } from "@playwright/test";
@@ -275,60 +275,6 @@ test("alt text validation", async () => {
     "too-short alt text rejected",
     (await item.locator(".alert-danger").textContent()).includes("Alt text"),
   );
-});
-
-test("projects CRUD", async () => {
-  await p.goto("/admin/projects/new");
-  await p.fill("#title", "CCI Residential Tower, Kandivali");
-  await p.fill("#clientName", "CCI");
-  await p.fill("#city", "Mumbai");
-  await p.fill("#year", "2024");
-  await p.check("text=Tailor-made Signage");
-  await p.check("text=General Signs");
-  await p.getByRole("button", { name: "Create project", exact: true }).click();
-  await p.waitForURL(/\/admin\/projects\/c.*created=1/);
-  check(
-    "project created with auto slug",
-    await eventually("/projects/cci-residential-tower-kandivali", (h) =>
-      h.includes("CCI Residential Tower, Kandivali"),
-    ),
-  );
-  check(
-    "project listed on public /projects",
-    await eventually(
-      "/projects",
-      (h) => h.includes("Featured projects") && h.includes("CCI Residential Tower"),
-    ),
-  );
-  check(
-    "project in sitemap",
-    await eventually("/sitemap.xml", (h) =>
-      h.includes("/projects/cci-residential-tower-kandivali"),
-    ),
-  );
-  const html = await (await fetch(`${base}/projects/cci-residential-tower-kandivali`)).text();
-  check(
-    "project page shows linked solutions",
-    html.includes("/solutions/tailor-made-signage") && html.includes("Solutions used"),
-  );
-  // duplicate title → unique slug
-  await p.goto("/admin/projects/new");
-  await p.fill("#title", "CCI Residential Tower, Kandivali");
-  await p.getByRole("button", { name: "Create project", exact: true }).click();
-  await p.waitForURL(/created=1/);
-  check(
-    "duplicate title gets unique slug",
-    await eventually("/projects/cci-residential-tower-kandivali-2", (h) =>
-      h.includes("CCI Residential Tower"),
-    ),
-  );
-  p.once("dialog", (d) => d.accept());
-  await Promise.all([
-    p.waitForURL(/deleted=1/),
-    p.getByRole("button", { name: "Delete project" }).click(),
-  ]);
-  const res = await fetch(`${base}/projects/cci-residential-tower-kandivali-2`);
-  check("deleted project page 404s", res.status === 404);
 });
 
 test("FAQ + settings → public", async () => {

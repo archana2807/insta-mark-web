@@ -246,12 +246,6 @@ export const about = {
   ],
 };
 
-export const projectsPage = {
-  title: "Project Portfolio",
-  text: "Our portfolio spans luxury residences, hospitals, airports, retail destinations, commercial developments, industrial parks, educational campuses, and infrastructure projects.",
-  cta: "Have a project in mind? Let's create a signage solution tailored to your space.",
-};
-
 export const contactPage = {
   title: "Get in Touch",
   text: "Looking for architectural signage or road safety solutions? Our team is ready to help from consultation to installation.",

@@ -589,7 +589,6 @@ export const featured = {
   pages: {
     about: pick("tailor-made-signage", "branding-071.jpg"),
     solutions: pick("tailor-made-signage", "branding-067.jpg"),
-    projects: pick("tailor-made-signage", "branding-063.jpg"),
     contact: pick("modular-signs", "modular-003.jpg"),
     // Left photo of the contact form section.
     contactForm: pick("tailor-made-signage", "pylons-055.jpg"),

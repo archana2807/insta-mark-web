@@ -7,13 +7,23 @@ $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 $motion-duration: 0.6s;
 
 // 1. Scroll entrances (components/ui/Reveal.jsx) ─────────────────────
-// Hidden state applies only while `.motion-armed` (set by JS for content
-// below the fold), so nothing is ever hidden without JavaScript.
+// Hidden state applies only while `.motion-armed` (set by JS for content below the fold,
+// and again whenever it has left the screen), so nothing is ever hidden without JavaScript.
 .motion:not(.motion-stagger),
 .motion-stagger > * {
   transition:
     opacity $motion-duration $ease-out-quad,
     transform $motion-duration $ease-out-quad;
+}
+
+// Replay (client, 24 Oct 2026): when an element has left the screen, Reveal puts it back in
+// its hidden state for one frame with no transition at all (itself, its children, the wipe
+// panels and the rolling digits), so the reset is never seen and the entrance plays again.
+.motion-reset,
+.motion-reset *,
+.motion-reset::after,
+.motion-reset *::after {
+  transition: none !important;
 }
 
 .motion-up.motion-armed:not(.motion-stagger),

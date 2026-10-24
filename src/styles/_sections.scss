@@ -435,6 +435,95 @@
   }
 }
 
+// ── Solution pages: ring gallery of executed work (client, 24 Oct 2026) ──────────
+// Full-width strip of portrait photos on a ring round the viewer: RingGallery.jsx places
+// each card (x, scale, lean) every frame and sets --card-w and the stage height.
+.ring-gallery {
+  position: relative;
+
+  &__stage {
+    position: relative;
+    height: 520px; // replaced by RingGallery as soon as it has measured the width
+    margin: 0;
+    padding: 0;
+    overflow: clip; // like hidden, but focus can never scroll it sideways
+    touch-action: pan-y; // a sideways swipe moves the ring, an up-down one scrolls
+    user-select: none;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--card-w, 160px);
+    aspect-ratio: 5 / 8;
+    margin: calc(var(--card-w, 160px) * -0.8) 0 0 calc(var(--card-w, 160px) * -0.5);
+    will-change: transform;
+  }
+
+  &__photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 14px;
+    background: $surface;
+    box-shadow: 0 18px 36px rgba($ink, 0.16);
+    cursor: inherit;
+
+    img {
+      object-fit: cover;
+      pointer-events: none; // no ghost-image drag
+    }
+
+    // Soft shade at the foot, as on the reference cards.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 55% 0 0;
+      background: linear-gradient(transparent, rgba($ink, 0.35));
+      pointer-events: none;
+    }
+
+    &:focus-visible {
+      outline: 3px solid $brand-teal;
+      outline-offset: 3px;
+    }
+  }
+
+  // Pause / play for the drift (WCAG 2.2.2), same look as the About carousel's button.
+  &__play {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin: 1rem auto 0;
+    padding: 0;
+    font-size: 0.875rem;
+    color: $ink;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 50%;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
+    }
+  }
+}
+
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
 // Three portrait photos of different sizes: a small one top-left, a taller one top-right
 // and the biggest in front at the bottom, with soft wide shadows.

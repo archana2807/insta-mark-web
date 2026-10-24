@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import InnerHero from "@/components/sections/InnerHero";
 import Gallery from "@/components/sections/Gallery";
+import RingGallery from "@/components/sections/RingGallery";
 import FaqSection from "@/components/sections/FaqSection";
 import CtaBand from "@/components/sections/CtaBand";
 import CategoryGrid from "@/components/sections/CategoryGrid";
@@ -163,11 +164,11 @@ export default async function CategoryPage({ params }) {
               title={<span id="work-title">Our work on site</span>}
               text={`Real ${category.name.toLowerCase()} projects designed, manufactured and installed by Insta Mark.`}
             />
-            <Gallery
-              images={category.executedImages}
-              label={`${category.name} executed projects`}
-            />
           </div>
+          <RingGallery
+            images={category.executedImages}
+            label={`${category.name} executed projects`}
+          />
         </section>
       )}
 

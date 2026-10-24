@@ -114,3 +114,122 @@ test("the Tailor-made Overview is the client's paragraph, word for word (10f)", 
     "Every space has unique communication and branding needs. Insta Mark designs and manufactures tailor-made signage solutions that seamlessly integrate with your architecture, brand identity, and operational requirements. From premium corporate offices and hospitals to retail destinations, airports, and residential developments, our bespoke signage systems are engineered for aesthetics, durability, and functionality.",
   );
 });
+
+// ── Our work on site: ring gallery (client, 24 Oct 2026) ──────────
+
+/**
+ * Centre x of every card that is on screen, and its width.
+ * @param {import("@playwright/test").Page} page
+ * @returns {Promise<{ i: number, x: number, w: number }[]>}
+ */
+async function ringCards(page) {
+  return page.locator(".ring-gallery__card").evaluateAll((els) =>
+    els
+      .map((el, i) => {
+        const r = el.getBoundingClientRect();
+        return { i, x: r.left + r.width / 2, w: r.width, shown: getComputedStyle(el).opacity };
+      })
+      .filter((c) => c.shown === "1"),
+  );
+}
+
+/**
+ * Centre x of one card.
+ * @param {import("@playwright/test").Page} page
+ * @param {number} i
+ * @returns {Promise<number>}
+ */
+async function cardX(page, i) {
+  return page
+    .locator(".ring-gallery__card")
+    .nth(i)
+    .evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return r.left + r.width / 2;
+    });
+}
+
+test("Our work on site: photos stand on a ring, smallest in the middle and bigger towards both edges", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const stage = page.locator(".ring-gallery__stage");
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute("aria-label", /executed projects/);
+  await page.waitForTimeout(500);
+
+  const cards = await ringCards(page);
+  expect(cards.length).toBeGreaterThanOrEqual(6);
+  const mid = 720;
+  const centre = cards.reduce((a, b) => (Math.abs(a.x - mid) < Math.abs(b.x - mid) ? a : b));
+  const left = cards.reduce((a, b) => (a.x < b.x ? a : b));
+  const right = cards.reduce((a, b) => (a.x > b.x ? a : b));
+  expect(left.w).toBeGreaterThan(centre.w);
+  expect(right.w).toBeGreaterThan(centre.w);
+
+  // Every photo opens in the lightbox; copies that fill the ring are hidden from screen readers.
+  const count = await page.locator(".ring-gallery__card:not([aria-hidden]) button").count();
+  expect(count).toBeGreaterThan(0);
+});
+
+test("Our work on site: the ring drifts slowly left to right, a drag moves it and sets its direction", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const stage = page.locator(".ring-gallery__stage");
+  await stage.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+
+  // Drifts to the right by itself, slowly.
+  const cards = await ringCards(page);
+  const i = cards.reduce((a, b) => (Math.abs(a.x - 720) < Math.abs(b.x - 720) ? a : b)).i;
+  const a = await cardX(page, i);
+  await page.waitForTimeout(1500);
+  const b = await cardX(page, i);
+  expect(b).toBeGreaterThan(a + 2);
+  expect(b).toBeLessThan(a + 120);
+
+  // A drag to the left moves the cards left, and they keep drifting left afterwards.
+  const box = await stage.boundingBox();
+  const y = box.y + box.height / 2;
+  await page.mouse.move(900, y);
+  await page.mouse.down();
+  for (let x = 900; x >= 600; x -= 30) await page.mouse.move(x, y);
+  await page.mouse.up();
+  await page.waitForTimeout(2000); // the fling has slowed down
+  const c = await cardX(page, i);
+  await page.waitForTimeout(1500);
+  const d = await cardX(page, i);
+  expect(d).toBeLessThan(c - 2);
+
+  // The pause button stops it.
+  await page.getByRole("button", { name: "Pause the photos" }).click();
+  await page.waitForTimeout(300);
+  const e = await cardX(page, i);
+  await page.waitForTimeout(1000);
+  expect(Math.abs((await cardX(page, i)) - e)).toBeLessThan(1);
+  await expect(page.getByRole("button", { name: "Play the photos" })).toBeVisible();
+});
+
+test("Our work on site: a click opens the photo in the lightbox", async ({ page }) => {
+  await page.goto("/solutions/tailor-made-signage");
+  await page.locator(".ring-gallery__stage").scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Pause the photos" }).click();
+  await page.locator(".ring-gallery__card:not([aria-hidden]) button").first().focus();
+  await page.waitForTimeout(800); // focus turns the photo to the middle
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".yarl__container")).toBeVisible();
+});
+
+test("Our work on site: with reduced motion the ring stands still", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/solutions/tailor-made-signage");
+  await page.locator(".ring-gallery__stage").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("button", { name: "Play the photos" })).toBeVisible();
+  const a = await cardX(page, 0);
+  await page.waitForTimeout(1000);
+  expect(Math.abs((await cardX(page, 0)) - a)).toBeLessThan(1);
+  await context.close();
+});

@@ -449,6 +449,351 @@
   }
 }
 
+// ── Solution pages: ring gallery of executed work (client, 24 Oct 2026) ──────────
+// Full-width strip of portrait photos on a ring round the viewer: RingGallery.jsx places
+// each card (x, scale, lean) every frame and sets --card-w and the stage height.
+.ring-gallery {
+  position: relative;
+
+  &__stage {
+    position: relative;
+    height: 520px; // replaced by RingGallery as soon as it has measured the width
+    margin: 0;
+    padding: 0;
+    // Clip sideways only (focus can never scroll it); shadows may spill above and below.
+    overflow-x: clip;
+    overflow-y: visible;
+    touch-action: pan-y; // a sideways swipe moves the ring, an up-down one scrolls
+    user-select: none;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--card-w, 160px);
+    aspect-ratio: 5 / 8;
+    margin: calc(var(--card-w, 160px) * -0.8) 0 0 calc(var(--card-w, 160px) * -0.5);
+    will-change: transform;
+  }
+
+  &__photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 14px;
+    background: $surface;
+    box-shadow: 0 18px 36px rgba($ink, 0.16);
+    cursor: inherit;
+
+    img {
+      object-fit: cover;
+      pointer-events: none; // no ghost-image drag
+    }
+
+    // Soft shade at the foot, as on the reference cards.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 55% 0 0;
+      background: linear-gradient(transparent, rgba($ink, 0.35));
+      pointer-events: none;
+    }
+
+    &:focus-visible {
+      outline: 3px solid $brand-teal;
+      outline-offset: 3px;
+    }
+  }
+
+  // Pause / play for the drift (WCAG 2.2.2), same look as the About carousel's button.
+  &__play {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin: 1rem auto 0;
+    padding: 0;
+    font-size: 0.875rem;
+    color: $ink;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 50%;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
+    }
+  }
+}
+
+// ── Solution pages: "Where it is used" fanned photo deck (client, 24 Oct 2026) ──────────
+// The front card stands upright in the middle; each card beside it moves out, leans away,
+// shrinks and dims (the theme's ease-out-expo curve), and the deck fades out at both
+// edges. --d is the card's place (0 = front), --abs its distance, --drag a live drag.
+.card-deck {
+  --spread: 72%; // one card step, as a share of the card's own width
+
+  @include media-breakpoint-up(lg) {
+    --spread: 80%;
+  }
+
+  position: relative;
+
+  &__stage {
+    position: relative;
+    aspect-ratio: 10 / 9;
+    overflow-x: clip; // side cards never cause sideways scroll; shadows may spill below
+    perspective: 1400px;
+    touch-action: pan-y; // a sideways swipe changes the card, an up-down one scrolls
+    user-select: none;
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+
+    @include media-breakpoint-up(lg) {
+      aspect-ratio: 5 / 4;
+    }
+  }
+
+  &__card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: calc(10 - var(--abs));
+    display: flex;
+    flex-direction: column;
+    width: 56%;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba($ink, 0.14);
+    transform: translate(-50%, -50%) translateX(calc((var(--d) + var(--drag)) * var(--spread)))
+      translateZ(calc(var(--abs) * -60px)) rotateY(calc(var(--d) * -14deg))
+      scale(calc(1 - var(--abs) * 0.1));
+    filter: brightness(calc(1 - var(--abs) * 0.1)) saturate(calc(1 - var(--abs) * 0.25));
+    opacity: calc(1 - var(--abs) * 0.2);
+    transition:
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.6s ease,
+      opacity 0.6s ease;
+    cursor: pointer;
+
+    &.is-active {
+      cursor: grab;
+    }
+
+    &.is-far {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .is-dragging & {
+      transition: none;
+    }
+
+    @include media-breakpoint-up(lg) {
+      width: 46%;
+    }
+  }
+
+  &__photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 12px;
+    background: $surface;
+    cursor: inherit;
+
+    img {
+      object-fit: cover;
+      pointer-events: none; // no ghost-image drag
+      transition: transform 0.6s ease;
+    }
+
+    .is-active &:hover img {
+      transform: scale(1.04);
+    }
+
+    // Expand hint on the front card, as on the gallery tiles: a white circle (::after)
+    // with the icon (::before) on top.
+    &::before,
+    &::after {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &::before {
+      @include css-icon("arrows-angle-expand", 0.9rem);
+      right: calc(0.75rem + 0.65rem);
+      bottom: calc(0.75rem + 0.65rem);
+      z-index: 1;
+      color: $ink;
+    }
+
+    &::after {
+      content: "";
+      right: 0.75rem;
+      bottom: 0.75rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .is-active &:hover::before,
+    .is-active &:hover::after,
+    .is-active &:focus-visible::before,
+    .is-active &:focus-visible::after {
+      opacity: 1;
+    }
+  }
+
+  &__caption {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    margin: 0;
+    padding: 0.75rem 0.35rem 0.2rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: $body-text;
+    transition:
+      opacity 0.4s ease,
+      visibility 0.4s;
+
+    // Only the front card shows its caption: on the dimmed side cards the text would fail
+    // WCAG AA contrast (and could not be read anyway).
+    .card-deck__card:not(.is-active) & {
+      visibility: hidden;
+      opacity: 0;
+    }
+  }
+
+  &__num {
+    flex: none;
+    font-family: $headings-font-family;
+    font-weight: 700;
+    color: $brand-teal;
+  }
+
+  &__text {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-inline: 8%;
+
+    @include media-breakpoint-down(sm) {
+      padding-inline: 0;
+    }
+  }
+
+  // Progress dots: the current one stretches into a pill. Each dot has a 24 px hit area.
+  &__dots {
+    display: flex;
+    flex-wrap: wrap;
+
+    button {
+      position: relative;
+      width: 16px;
+      height: 24px;
+
+      @include media-breakpoint-up(sm) {
+        width: 20px;
+      }
+      padding: 0;
+      background: none;
+      border: 0;
+      transition: width 0.4s ease;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 4px;
+        right: 4px;
+        height: 8px;
+        background: #c4c4c4;
+        border-radius: 4px;
+        transform: translateY(-50%);
+        transition: background 0.3s ease;
+      }
+
+      &:hover::before {
+        background: $muted;
+      }
+
+      &.is-active {
+        width: 32px;
+
+        &::before {
+          background: $ink;
+        }
+      }
+    }
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      font-size: 0.9rem;
+      color: $ink;
+      background: #fff;
+      border: 1px solid $line;
+      border-radius: 50%;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
+      &:hover,
+      &:focus-visible {
+        color: #fff;
+        background: $ink;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__card,
+    &__photo img {
+      transition: none;
+    }
+  }
+}
+
 // ── About collage (3 overlapping photos, as in the Crafto "Branding Agency" demo) ──
 // Three portrait photos of different sizes: a small one top-left, a taller one top-right
 // and the biggest in front at the bottom, with soft wide shadows.

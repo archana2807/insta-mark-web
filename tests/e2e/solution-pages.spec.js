@@ -34,24 +34,55 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
   expect(b.y).toBeGreaterThan(a.y + a.height - 1);
 });
 
-test("Where it is used: three overlapping photos on the left, every industry with a + icon on the right (10e)", async ({
+test("Where it is used: a fanned photo deck on the left, every industry with a + icon on the right (10e)", async ({
   page,
 }) => {
   await page.goto("/solutions/tailor-made-signage");
   const section = page.locator("#used-title").locator("xpath=ancestor::section[1]");
+  const deck = section.locator(".card-deck");
+  await deck.scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Pause the photo deck" }).click();
 
-  // The theme's photo collage: three photos that overlap each other.
-  const photos = section.locator(".about-collage__item");
-  await expect(photos).toHaveCount(3);
-  await section.locator(".about-collage").scrollIntoViewIfNeeded();
-  const overlaps = () =>
-    photos.evaluateAll((items) => {
-      const r = items.map((el) => el.getBoundingClientRect());
-      const hit = (a, b) =>
-        a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-      return [hit(r[0], r[1]), hit(r[0], r[2]), hit(r[1], r[2])].filter(Boolean).length;
-    });
-  await expect.poll(overlaps, { timeout: 5000 }).toBeGreaterThanOrEqual(2);
+  // The front card stands in the middle; the cards beside it are smaller, on both sides.
+  const cards = section.locator(".card-deck__card:not(.is-far)");
+  expect(await cards.count()).toBeGreaterThanOrEqual(5);
+  await page.waitForTimeout(1000); // the cards have settled
+  const boxes = await cards.evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, w: r.width, front: el.classList.contains("is-active") };
+    }),
+  );
+  const front = boxes.find((b) => b.front);
+  const d = await deck.boundingBox();
+  expect(Math.abs(front.x - (d.x + d.width / 2))).toBeLessThan(4);
+  for (const b of boxes.filter((b) => !b.front)) expect(b.w).toBeLessThan(front.w);
+  expect(boxes.some((b) => b.x < front.x)).toBe(true);
+  expect(boxes.some((b) => b.x > front.x)).toBe(true);
+
+  // Next / previous buttons, the arrow keys and the dots change the front card.
+  const current = () => section.locator(".card-deck__dots .is-active").getAttribute("aria-label");
+  await expect.poll(current).toBe("Show photo 1 of 7");
+  await page.getByRole("button", { name: "Next photo" }).click();
+  await expect.poll(current).toBe("Show photo 2 of 7");
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(current).toBe("Show photo 3 of 7");
+  await page.getByRole("button", { name: "Show photo 6 of 7" }).click();
+  await expect.poll(current).toBe("Show photo 6 of 7");
+
+  // A drag to the left brings the next card forward.
+  const box = await section.locator(".card-deck__stage").boundingBox();
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width * 0.7, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width * (0.7 - i * 0.03), y);
+  await page.mouse.up();
+  await expect.poll(current).toBe("Show photo 7 of 7");
+
+  // The front card opens the full photo.
+  await section.locator(".card-deck__card.is-active button").click();
+  await expect(page.locator(".yarl__container")).toBeVisible();
+  await page.keyboard.press("Escape");
 
   // All industries from the client's text, each with a + icon.
   const items = section.locator(".used-list li");
@@ -59,10 +90,32 @@ test("Where it is used: three overlapping photos on the left, every industry wit
   await expect(items.first()).toContainText("Corporate offices");
   await expect(items.first().locator("svg, .bi").first()).toBeVisible();
 
-  // Collage on the left, list on the right.
-  const c = await section.locator(".about-collage").boundingBox();
+  // Deck on the left, list on the right.
   const l = await section.locator(".used-list").boundingBox();
-  expect(c.x + c.width).toBeLessThanOrEqual(l.x + 1);
+  expect(d.x + d.width).toBeLessThanOrEqual(l.x + 1);
+});
+
+test("Where it is used: the deck plays by itself, and stands still with reduced motion (10e)", async ({
+  browser,
+}) => {
+  for (const reducedMotion of ["no-preference", "reduce"]) {
+    const context = await browser.newContext({ reducedMotion });
+    const page = await context.newPage();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/solutions/tailor-made-signage");
+    const deck = page.locator(".card-deck");
+    await deck.scrollIntoViewIfNeeded();
+    await page.mouse.move(5, 5); // not over the deck
+    const current = () => deck.locator(".card-deck__dots .is-active").getAttribute("aria-label");
+    if (reducedMotion === "reduce") {
+      await expect(deck.getByRole("button", { name: "Play the photo deck" })).toBeVisible();
+      await page.waitForTimeout(4500);
+      expect(await current()).toBe("Show photo 1 of 7");
+    } else {
+      await expect.poll(current, { timeout: 8000 }).toBe("Show photo 2 of 7");
+    }
+    await context.close();
+  }
 });
 
 test("What you get stacks in two columns on a phone without sideways scroll (10e)", async ({
@@ -113,4 +166,123 @@ test("the Tailor-made Overview is the client's paragraph, word for word (10f)", 
   await expect(page.locator("#overview-title").locator("xpath=ancestor::section[1]")).toContainText(
     "Every space has unique communication and branding needs. Insta Mark designs and manufactures tailor-made signage solutions that seamlessly integrate with your architecture, brand identity, and operational requirements. From premium corporate offices and hospitals to retail destinations, airports, and residential developments, our bespoke signage systems are engineered for aesthetics, durability, and functionality.",
   );
+});
+
+// ── Our work on site: ring gallery (client, 24 Oct 2026) ──────────
+
+/**
+ * Centre x of every card that is on screen, and its width.
+ * @param {import("@playwright/test").Page} page
+ * @returns {Promise<{ i: number, x: number, w: number }[]>}
+ */
+async function ringCards(page) {
+  return page.locator(".ring-gallery__card").evaluateAll((els) =>
+    els
+      .map((el, i) => {
+        const r = el.getBoundingClientRect();
+        return { i, x: r.left + r.width / 2, w: r.width, shown: getComputedStyle(el).opacity };
+      })
+      .filter((c) => c.shown === "1"),
+  );
+}
+
+/**
+ * Centre x of one card.
+ * @param {import("@playwright/test").Page} page
+ * @param {number} i
+ * @returns {Promise<number>}
+ */
+async function cardX(page, i) {
+  return page
+    .locator(".ring-gallery__card")
+    .nth(i)
+    .evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return r.left + r.width / 2;
+    });
+}
+
+test("Our work on site: photos stand on a ring, smallest in the middle and bigger towards both edges", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const stage = page.locator(".ring-gallery__stage");
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute("aria-label", /executed projects/);
+  await page.waitForTimeout(500);
+
+  const cards = await ringCards(page);
+  expect(cards.length).toBeGreaterThanOrEqual(6);
+  const mid = 720;
+  const centre = cards.reduce((a, b) => (Math.abs(a.x - mid) < Math.abs(b.x - mid) ? a : b));
+  const left = cards.reduce((a, b) => (a.x < b.x ? a : b));
+  const right = cards.reduce((a, b) => (a.x > b.x ? a : b));
+  expect(left.w).toBeGreaterThan(centre.w);
+  expect(right.w).toBeGreaterThan(centre.w);
+
+  // Every photo opens in the lightbox; copies that fill the ring are hidden from screen readers.
+  const count = await page.locator(".ring-gallery__card:not([aria-hidden]) button").count();
+  expect(count).toBeGreaterThan(0);
+});
+
+test("Our work on site: the ring drifts slowly left to right, a drag moves it and sets its direction", async ({
+  page,
+}) => {
+  await page.goto("/solutions/tailor-made-signage");
+  const stage = page.locator(".ring-gallery__stage");
+  await stage.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+
+  // Drifts to the right by itself, slowly.
+  const cards = await ringCards(page);
+  const i = cards.reduce((a, b) => (Math.abs(a.x - 720) < Math.abs(b.x - 720) ? a : b)).i;
+  const a = await cardX(page, i);
+  await page.waitForTimeout(1500);
+  const b = await cardX(page, i);
+  expect(b).toBeGreaterThan(a + 2);
+  expect(b).toBeLessThan(a + 120);
+
+  // A drag to the left moves the cards left, and they keep drifting left afterwards.
+  const box = await stage.boundingBox();
+  const y = box.y + box.height / 2;
+  await page.mouse.move(900, y);
+  await page.mouse.down();
+  for (let x = 900; x >= 600; x -= 30) await page.mouse.move(x, y);
+  await page.mouse.up();
+  await page.waitForTimeout(2000); // the fling has slowed down
+  const c = await cardX(page, i);
+  await page.waitForTimeout(1500);
+  const d = await cardX(page, i);
+  expect(d).toBeLessThan(c - 2);
+
+  // The pause button stops it.
+  await page.getByRole("button", { name: "Pause the photos" }).click();
+  await page.waitForTimeout(300);
+  const e = await cardX(page, i);
+  await page.waitForTimeout(1000);
+  expect(Math.abs((await cardX(page, i)) - e)).toBeLessThan(1);
+  await expect(page.getByRole("button", { name: "Play the photos" })).toBeVisible();
+});
+
+test("Our work on site: a click opens the photo in the lightbox", async ({ page }) => {
+  await page.goto("/solutions/tailor-made-signage");
+  await page.locator(".ring-gallery__stage").scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Pause the photos" }).click();
+  await page.locator(".ring-gallery__card:not([aria-hidden]) button").first().focus();
+  await page.waitForTimeout(800); // focus turns the photo to the middle
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".yarl__container")).toBeVisible();
+});
+
+test("Our work on site: with reduced motion the ring stands still", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/solutions/tailor-made-signage");
+  await page.locator(".ring-gallery__stage").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("button", { name: "Play the photos" })).toBeVisible();
+  const a = await cardX(page, 0);
+  await page.waitForTimeout(1000);
+  expect(Math.abs((await cardX(page, 0)) - a)).toBeLessThan(1);
+  await context.close();
 });

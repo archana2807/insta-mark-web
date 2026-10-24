@@ -418,6 +418,11 @@ test("home sections follow the client's order and look (10c)", async ({ page }) 
   // Trusted by: logos, not photos.
   const wall = page.locator(".logo-wall img");
   expect(await wall.count()).toBeGreaterThanOrEqual(8);
+  // Five logos per row on a laptop (client, 24 Oct 2026).
+  const rowTops = await page
+    .locator(".logo-wall > li")
+    .evaluateAll((els) => els.map((el) => el.offsetTop));
+  expect(rowTops.filter((t) => t === rowTops[0]).length).toBe(5);
   await expect(page.locator("#trusted-title")).toHaveText("Trusted by Leading Brands");
 
   // Products: the heading is "Our products", with its description and no small label above.

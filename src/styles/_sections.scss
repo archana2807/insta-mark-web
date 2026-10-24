@@ -771,8 +771,9 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  // Five logos per row on laptops and desktops (client, 24 Oct 2026).
   @include media-breakpoint-up(lg) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   > li {

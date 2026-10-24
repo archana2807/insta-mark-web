@@ -237,11 +237,20 @@ test("Home has only the one counter row under the banner; the About counters sta
   // A white gap between the band and the About content (the band's bottom margin; the
   // About row's negative gutter and its columns' gutter cancel out). The columns are
   // centred, so the gap you see is to the highest one, not to the section box.
-  const band = await page.locator(".project-logos").boundingBox();
-  const tops = await page
-    .locator(".about-short .row > *")
-    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().top + scrollY));
-  const gap = Math.min(...tops) - (band.y + band.height);
+  const bandBottom = await page.locator(".project-logos").evaluate((el) => {
+    let y = el.offsetHeight;
+    for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  });
+  // Layout positions (offsetTop), so an entrance animation's 30 px start offset does not count.
+  const tops = await page.locator(".about-short .row > *").evaluateAll((els) =>
+    els.map((el) => {
+      let y = 0;
+      for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+      return y;
+    }),
+  );
+  const gap = Math.min(...tops) - bandBottom;
   expect(gap).toBeGreaterThanOrEqual(76);
   expect(gap).toBeLessThanOrEqual(92);
   await page.goto("/about");

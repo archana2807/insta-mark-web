@@ -541,14 +541,17 @@
 }
 
 // ── Solution pages: "Where it is used" fanned photo deck (client, 24 Oct 2026) ──────────
-// The front card stands upright in the middle; each card beside it moves out, leans away,
-// shrinks and dims (the theme's ease-out-expo curve), and the deck fades out at both
-// edges. --d is the card's place (0 = front), --abs its distance, --drag a live drag.
+// The front card stands upright in the middle; one card on each side moves out, leans away,
+// shrinks and dims (the theme's ease-out-expo curve). The spread keeps that side card fully
+// inside the deck (client, 24 Oct 2026: no cut-off cards). --d is the card's place
+// (0 = front), --abs its distance, --drag a live drag.
 .card-deck {
-  --spread: 72%; // one card step, as a share of the card's own width
+  // One card step, as a share of the card's own width: centre + step + half a side card
+  // (scaled 0.9) stays within the stage, with a little air.
+  --spread: 42%;
 
   @include media-breakpoint-up(lg) {
-    --spread: 80%;
+    --spread: 60%;
   }
 
   position: relative;
@@ -560,7 +563,6 @@
     perspective: 1400px;
     touch-action: pan-y; // a sideways swipe changes the card, an up-down one scrolls
     user-select: none;
-    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
 
     @include media-breakpoint-up(lg) {
       aspect-ratio: 5 / 4;
@@ -701,88 +703,32 @@
     -webkit-box-orient: vertical;
   }
 
+  // The one control: a small pause/play button centred under the deck.
   &__controls {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    justify-content: center;
     margin-top: 1.25rem;
-    padding-inline: 8%;
-
-    @include media-breakpoint-down(sm) {
-      padding-inline: 0;
-    }
   }
 
-  // Progress dots: the current one stretches into a pill. Each dot has a 24 px hit area.
-  &__dots {
-    display: flex;
-    flex-wrap: wrap;
+  &__play {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 0.9rem;
+    color: $ink;
+    background: #fff;
+    border: 1px solid $line;
+    border-radius: 50%;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
 
-    button {
-      position: relative;
-      width: 16px;
-      height: 24px;
-
-      @include media-breakpoint-up(sm) {
-        width: 20px;
-      }
-      padding: 0;
-      background: none;
-      border: 0;
-      transition: width 0.4s ease;
-
-      &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 4px;
-        right: 4px;
-        height: 8px;
-        background: #c4c4c4;
-        border-radius: 4px;
-        transform: translateY(-50%);
-        transition: background 0.3s ease;
-      }
-
-      &:hover::before {
-        background: $muted;
-      }
-
-      &.is-active {
-        width: 32px;
-
-        &::before {
-          background: $ink;
-        }
-      }
-    }
-  }
-
-  &__buttons {
-    display: flex;
-    gap: 0.5rem;
-
-    button {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      font-size: 0.9rem;
-      color: $ink;
-      background: #fff;
-      border: 1px solid $line;
-      border-radius: 50%;
-      transition:
-        background 0.2s ease,
-        color 0.2s ease;
-
-      &:hover,
-      &:focus-visible {
-        color: #fff;
-        background: $ink;
-      }
+    &:hover,
+    &:focus-visible {
+      color: #fff;
+      background: $ink;
     }
   }
 

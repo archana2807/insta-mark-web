@@ -12,7 +12,7 @@ const Lightbox = dynamic(() => import("yet-another-react-lightbox"), { ssr: fals
 const INTERVAL_MS = 3500; // auto-play: the next card every 3.5 s
 const DRAG_PX = 50; // how far a drag or swipe must go to change the card
 const WHEEL_PX = 40; // sideways trackpad scroll needed for one card
-const SHOWN = 2; // cards visible on each side of the front one
+const SHOWN = 1; // one card on each side of the front one, fully inside the deck (client)
 
 /**
  * Where a card sits relative to the front one: 0 = front, ±1 = beside it, … The cards wrap
@@ -31,13 +31,14 @@ function offsetOf(i, active, count) {
 
 /**
  * Fanned photo deck for "Where it is used" on solution pages (client, 24 Oct 2026;
- * reference: a "quote deck"). The front card stands upright in the middle; the others fan
- * out to both sides, leaning away, smaller and dimmer, and fade out at the edges.
- *  - Auto-play loops through the cards. It waits while the mouse is over the deck, while a
- *    control has focus, while it is off screen and while the tab is hidden. A pause/play
- *    button stops it (WCAG 2.2.2); it does not start by itself for prefers-reduced-motion.
+ * reference: a "quote deck"). The front card stands upright in the middle, with one card
+ * on each side leaning away, smaller and dimmer, fully inside the deck (no cut-off cards).
+ *  - Auto-play loops through the cards; there are no arrows or dots (client, 24 Oct 2026).
+ *    It waits while the mouse is over the deck, while a control has focus, while it is off
+ *    screen and while the tab is hidden. One small pause/play button stops it (WCAG 2.2.2);
+ *    it does not start by itself for prefers-reduced-motion.
  *  - A drag or swipe (the cards follow the finger), a sideways trackpad scroll, the arrow
- *    keys, the prev/next buttons, the dots or a click on a side card change the card.
+ *    keys (while the pause button has focus) or a click on a side card still change it.
  *  - The front card opens the full photo in the lightbox; only it is exposed to assistive
  *    technology.
  * @param {{ images: { src: string, alt: string, width?: number, height?: number }[],
@@ -189,8 +190,8 @@ export default function CardDeck({ images, label }) {
               aria-roledescription={front ? "slide" : undefined}
               aria-label={front ? `${i + 1} of ${count}` : undefined}
               aria-hidden={front ? undefined : true}
-              // A side card comes to the front when clicked (keyboard users use the
-              // buttons or the arrow keys, so it needs no focus).
+              // A side card comes to the front when clicked (keyboard users use the arrow
+              // keys, so it needs no focus).
               onClick={front ? undefined : () => setActive(i)}
             >
               <button
@@ -217,35 +218,17 @@ export default function CardDeck({ images, label }) {
         })}
       </div>
 
+      {/* Auto-play only; the one control is pause/play (WCAG 2.2.2). */}
       <div className="card-deck__controls" hidden={count < 2}>
-        <div className="card-deck__dots">
-          {images.map((img, i) => (
-            <button
-              type="button"
-              key={img.src}
-              className={i === active ? "is-active" : ""}
-              aria-label={`Show photo ${i + 1} of ${count}`}
-              aria-current={i === active || undefined}
-              onClick={() => setActive(i)}
-            />
-          ))}
-        </div>
-        <div className="card-deck__buttons">
-          <button type="button" aria-label="Previous photo" onClick={() => go(-1)}>
-            <ClientIcon name="arrow-left" />
-          </button>
-          <button
-            type="button"
-            aria-label={playing ? "Pause the photo deck" : "Play the photo deck"}
-            aria-pressed={!playing}
-            onClick={() => setPlaying((p) => !p)}
-          >
-            <ClientIcon name={playing ? "pause-fill" : "play-fill"} />
-          </button>
-          <button type="button" aria-label="Next photo" onClick={() => go(1)}>
-            <ClientIcon name="arrow-right" />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="card-deck__play"
+          aria-label={playing ? "Pause the photo deck" : "Play the photo deck"}
+          aria-pressed={!playing}
+          onClick={() => setPlaying((p) => !p)}
+        >
+          <ClientIcon name={playing ? "pause-fill" : "play-fill"} />
+        </button>
       </div>
 
       {/* Announced only while paused, so auto-play does not keep talking. */}

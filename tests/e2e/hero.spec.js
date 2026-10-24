@@ -1058,3 +1058,28 @@ test("the Projects pages are deleted: no menu or footer link, not in the sitemap
     "/solutions",
   );
 });
+
+test("FAQs and footer animate in: questions 300 ms apart (as in the reference), footer columns 150 ms apart", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/contact");
+  for (const [sel, step] of [
+    [".faq-accordion", 300],
+    ["footer .row.motion", 150],
+  ]) {
+    const block = page.locator(sel).first();
+    await expect(block).toHaveClass(/motion-stagger/);
+    // Off screen at load: hidden and ready.
+    await expect(block).toHaveClass(/motion-armed/);
+    await block.scrollIntoViewIfNeeded();
+    // In view: each child starts `step` ms after the one before, then all are fully shown.
+    const delays = () =>
+      block.evaluate((el) => [...el.children].slice(0, 3).map((c) => c.style.transitionDelay));
+    await expect.poll(delays, { timeout: 3000 }).toEqual(["0ms", `${step}ms`, `${2 * step}ms`]);
+    await expect(block).not.toHaveClass(/motion-armed/);
+    const lastOpacity = () =>
+      block.evaluate((el) => Number(getComputedStyle(el.lastElementChild).opacity));
+    await expect.poll(lastOpacity, { timeout: 5000 }).toBe(1);
+  }
+});

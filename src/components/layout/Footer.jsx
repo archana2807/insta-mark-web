@@ -2,6 +2,7 @@ import Link from "next/link";
 import { telHref } from "@/lib/format";
 import { footerPlaceholders as sample } from "@/content/site";
 import Icon from "@/components/ui/Icon";
+import Reveal from "@/components/ui/Reveal";
 
 const companyLinks = [
   { label: "About Us", href: "/about" },
@@ -22,6 +23,8 @@ const socialNetworks = [
  * details and social icons on the left; solutions and company links on the right.
  * Contact details and social links come from Admin → Settings; until they are set, obviously
  * fake sample values (content/site.js `footerPlaceholders`) stand in for them in this footer.
+ * Motion: the three columns rise in one after another and the bottom line fades in, in the
+ * site's entrance style (client, 24 Oct 2026).
  * @param {{ site: object, categories: { slug: string, name: string }[],
  *   cta: { title: string } }} props
  * @returns {JSX.Element}
@@ -44,7 +47,7 @@ export default function Footer({ site, categories, cta }) {
   return (
     <footer className="site-footer pt-7 pb-4">
       <div className="container">
-        <div className="row g-4 g-lg-5">
+        <Reveal stagger={150} className="row g-4 g-lg-5">
           <div className="col-lg-6">
             <h2 className="site-footer__title mb-6">{cta.title}</h2>
 
@@ -110,14 +113,17 @@ export default function Footer({ site, categories, cta }) {
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="site-footer__bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-7 pt-4">
+        <Reveal
+          effect="fade"
+          className="site-footer__bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-7 pt-4"
+        >
           <span>
             © {year} {site.legalName}. All rights reserved.
           </span>
           <span>Architectural Signage · Wayfinding · Road Safety</span>
-        </div>
+        </Reveal>
       </div>
     </footer>
   );

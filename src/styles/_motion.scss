@@ -99,12 +99,6 @@ $motion-duration: 0.6s;
   inset: 0;
 }
 
-// Taller than its box, so the photo can move 0.2 × the scroll speed without showing an edge
-// (the Crafto hero "liquid parallax"): 90 px spare above, 24 px below.
-.drift-fill--parallax {
-  inset: -90px 0 -24px;
-}
-
 // 2. Page-load animations (hero, inner hero) — CSS only, no JS wait ────
 @keyframes motion-rise {
   from {

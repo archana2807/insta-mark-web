@@ -472,6 +472,37 @@ test("inner page photos have the home banner's size on laptops and a phone", asy
   }
 });
 
+test("inner page photos move like the home banner photo: same box, same scroll drift and zoom", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const look = async (route) => {
+    await page.goto(route);
+    await page.waitForTimeout(2800); // after the load zoom
+    return page.evaluate(() => {
+      const media = document.querySelector(".hero-split__media, .inner-hero__media");
+      const drift = media.querySelector(".drift-fill");
+      const img = drift.querySelector("img");
+      const m = new DOMMatrix(getComputedStyle(drift).transform);
+      return {
+        box: [img.offsetWidth, img.offsetHeight], // no taller parallax layer
+        frame: [media.offsetWidth, media.offsetHeight],
+        scale: Math.round(m.a * 100) / 100,
+        y: Math.round(m.f),
+        zoom: getComputedStyle(img).animationName,
+      };
+    });
+  };
+  const home = await look("/");
+  for (const route of ["/about", "/contact", "/solutions/road-signs"]) {
+    const inner = await look(route);
+    expect(inner.box, route).toEqual(inner.frame);
+    expect(inner.scale, route).toBe(home.scale);
+    expect(Math.abs(inner.y - home.y), route).toBeLessThanOrEqual(2);
+    expect(inner.zoom, route).toBe(home.zoom);
+  }
+});
+
 test("inner page titles stay beside the photo, like the home banner; no vertical label", async ({
   page,
 }) => {

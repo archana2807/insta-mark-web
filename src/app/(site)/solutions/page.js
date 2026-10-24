@@ -34,7 +34,7 @@ export default async function SolutionsPage() {
     <>
       <InnerHero
         image={heroImage}
-        title="Complete signage & road safety solutions"
+        title="Complete Signage & Road Safety Solutions"
         lead={home.about.text}
         breadcrumbs={[{ label: "Solutions", href: "/solutions" }]}
       />

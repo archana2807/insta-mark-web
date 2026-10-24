@@ -59,7 +59,7 @@ export default async function ContactPage({ searchParams }) {
       <OfficeColumns offices={offices} />
       <EnquirySection
         id="contact-form"
-        title="Request a consultation"
+        title="Request a Consultation"
         categories={categories}
         contact={site.contact}
         photo={formPhoto}

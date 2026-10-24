@@ -10,7 +10,7 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
 }) => {
   await page.goto("/solutions/tailor-made-signage");
   const section = page.locator("#features-title").locator("xpath=ancestor::section[1]");
-  await expect(section.locator("#features-title")).toHaveText("What you get");
+  await expect(section.locator("#features-title")).toHaveText("What You Get");
 
   // One column per feature: the feature on top, a big number below, vertical rules between.
   const columns = section.locator(".counter-cols > div");
@@ -28,7 +28,7 @@ test("What you get is shown as numbered columns, like the theme's counters (10e)
 
   // "Where it is used" follows as its own section.
   const used = page.locator("#used-title");
-  await expect(used).toHaveText("Where it is used");
+  await expect(used).toHaveText("Where It Is Used");
   const a = await section.boundingBox();
   const b = await used.boundingBox();
   expect(b.y).toBeGreaterThan(a.y + a.height - 1);
@@ -303,4 +303,46 @@ test("Our work on site: with reduced motion the ring stands still", async ({ bro
   await page.waitForTimeout(1000);
   expect(Math.abs((await cardX(page, 0)) - a)).toBeLessThan(1);
   await context.close();
+});
+
+// Client, 24 Oct 2026: every section heading starts each word with a capital letter
+// (Title Case); short words (a, and, of, on, the, …) stay small inside a heading. Questions
+// (FAQs, the call to action) and full sentences (statements of more than 8 words, such as
+// the vision) keep sentence case, as they read better that way.
+test("section headings on every public page are in Title Case", async ({ page }) => {
+  await page.goto("/solutions");
+  const slugs = await page
+    .locator('a[href^="/solutions/"]')
+    .evaluateAll((els) => [...new Set(els.map((a) => a.getAttribute("href")))]);
+  const small = new Set([
+    "a",
+    "an",
+    "and",
+    "as",
+    "at",
+    "by",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+    "&",
+  ]);
+  const wrong = [];
+  for (const route of ["/", "/about", "/solutions", "/contact", "/privacy-policy", ...slugs]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    const headings = await page
+      .locator("main h1, main h2, main h3")
+      .evaluateAll((els) => els.map((el) => el.textContent.replace(/\s+/g, " ").trim()));
+    for (const text of headings) {
+      const words = text.split(" ");
+      if (!text || text.endsWith("?") || words.length > 8) continue; // questions, sentences
+      const bad = words.some((w, i) => /^[a-z]/.test(w) && !(i > 0 && small.has(w)));
+      if (bad) wrong.push(`${route}: ${text}`);
+    }
+  }
+  expect(wrong).toEqual([]);
 });

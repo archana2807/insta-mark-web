@@ -64,7 +64,7 @@ export default async function HomePage() {
         <div className="container">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-4 mb-6">
             <SectionHeading
-              title={<span id="solutions-title">Our products</span>}
+              title={<span id="solutions-title">Our Products</span>}
               text="Click a category to see the products, real projects we have executed, and to request a quote."
             />
             <Link href="/solutions" className="btn btn-outline-ink btn-lg flex-shrink-0">
@@ -75,12 +75,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Industries we serve — straight after the products */}
+      {/* 4. Industries We Serve — straight after the products */}
       <section className="section bg-surface" aria-labelledby="industries-title">
         <div className="container">
           <SectionHeading
             className="mb-6"
-            title={<span id="industries-title">Industries we serve</span>}
+            title={<span id="industries-title">Industries We Serve</span>}
           />
           <IconGrid items={home.industries} />
         </div>

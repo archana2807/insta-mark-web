@@ -82,7 +82,7 @@ export default async function AboutPage() {
       {/* 5. Manufacturing: image left, heading overlapping */}
       <OverlapFeature
         id="mfg-title"
-        title="Precision-made in our own facility."
+        title="Precision-Made in Our Own Facility."
         intro={about.manufacturing.title}
         text={about.manufacturing.text}
         image={about.featureImage}
@@ -101,7 +101,7 @@ export default async function AboutPage() {
       <RowList
         id="solutions-title"
         className="section bg-surface"
-        title="Solutions under one roof."
+        title="Solutions Under One Roof."
         rows={about.solutions}
       />
 
@@ -110,7 +110,7 @@ export default async function AboutPage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            title={<span id="industries-title">Built for every sector</span>}
+            title={<span id="industries-title">Built for Every Sector</span>}
             text={about.industriesApproach}
           />
           <IconGrid items={about.industries} />
@@ -122,7 +122,7 @@ export default async function AboutPage() {
         <div className="container">
           <SectionHeading
             className="mb-6"
-            title={<span id="process-title">From discovery to support</span>}
+            title={<span id="process-title">From Discovery to Support</span>}
           />
           <ProcessSteps steps={about.process} />
         </div>

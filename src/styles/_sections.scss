@@ -446,7 +446,9 @@
     height: 520px; // replaced by RingGallery as soon as it has measured the width
     margin: 0;
     padding: 0;
-    overflow: clip; // like hidden, but focus can never scroll it sideways
+    // Clip sideways only (focus can never scroll it); shadows may spill above and below.
+    overflow-x: clip;
+    overflow-y: visible;
     touch-action: pan-y; // a sideways swipe moves the ring, an up-down one scrolls
     user-select: none;
     cursor: grab;

@@ -157,7 +157,7 @@ export default async function CategoryPage({ params }) {
 
       {/* Executed work */}
       {category.executedImages.length > 0 && (
-        <section className="section" id="work" aria-labelledby="work-title">
+        <section className="section pb-5" id="work" aria-labelledby="work-title">
           <div className="container">
             <SectionHeading
               className="mb-6"

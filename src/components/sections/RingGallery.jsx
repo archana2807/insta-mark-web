@@ -42,7 +42,7 @@ function buildRing(width) {
   let x = 0;
   // Walk outwards until a card is fully off screen.
   while (x < half + card * (1 + EDGE_GROW) * 1.5) {
-    const k = Math.min(x / half, 1.4);
+    const k = Math.min(x / half, 1);
     const tilt = (MAX_TILT * k * Math.PI) / 180;
     x += (card * (1 + EDGE_GROW * k * k) * Math.cos(tilt) + card * GAP) * STEP;
     table.push(x);
@@ -116,7 +116,8 @@ export default function RingGallery({ images, label }) {
       const ring = buildRing(entry.contentRect.width);
       motion.current.ring = ring;
       stage.style.setProperty("--card-w", `${ring.card}px`);
-      stage.style.height = `${ring.card * ASPECT * (1 + EDGE_GROW) + 120}px`;
+      // Tallest card: an edge one, a little taller again for its lean (shadows may spill).
+      stage.style.height = `${ring.card * ASPECT * (1 + EDGE_GROW) * 1.08}px`;
       const needed = Math.ceil(((ring.table.length - 1) * STEP + 1) * 2);
       setCopies(Math.max(1, Math.ceil(needed / count)));
     });
@@ -148,7 +149,7 @@ export default function RingGallery({ images, label }) {
           el.style.transform = `translateX(${t < 0 ? -ring.half * 2 : ring.half * 2}px)`;
           return;
         }
-        const k = Math.min(Math.abs(x) / ring.half, 1.4);
+        const k = Math.min(Math.abs(x) / ring.half, 1);
         const scale = 1 + EDGE_GROW * k * k;
         const tilt = MAX_TILT * k * Math.sign(x);
         el.style.opacity = "1";
